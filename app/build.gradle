@@ -11,6 +11,14 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters "armeabi-v7a", "armeabi"
+        }
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDir(['libs'])
+        }
     }
     buildTypes {
         release {
@@ -55,4 +63,5 @@ dependencies {
     //annotationProcessor 'com.alibaba:arouter-compiler:1.1.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation files('libs/AIUI.jar')
+    implementation files('libs/Msc.jar')
 }

@@ -1,22 +1,31 @@
 package com.cmcc.cmvideo.search;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.cmcc.cmvideo.R;
 import com.cmcc.cmvideo.base.MainThreadImpl;
 import com.cmcc.cmvideo.base.ThreadExecutor;
 import com.cmcc.cmvideo.search.adapter.SearchByAIAdapter;
+import com.cmcc.cmvideo.search.aiui.AIUIService;
+import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
 import com.cmcc.cmvideo.search.presenters.SearchByAIPresenter;
@@ -49,6 +58,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private SearchByAIPresenterImpl mSearchByAIPresenter;
     private Context mContext;
     private SearchByAIAdapter mSearchByAIAdapter;
+    private IAIUIService aiuiService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,7 +75,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                 MainThreadImpl.getInstance(),
                 this,
                 this);
-
+        bindService(new Intent(this, AIUIService.class),connection,Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
         initCustomView();
         setViewAnimation(true);
         mSearchByAIPresenter.initListSearchItem();
@@ -78,8 +88,37 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         mSearchRecyclerView.setHasFixedSize(true);
         mSearchRecyclerView.setLayoutManager(layoutManager);
         mSearchRecyclerView.setAdapter(mSearchByAIAdapter);
+        btSearchVoiceInput.setOnTouchListener(onTouchListener);
     }
 
+    private View.OnTouchListener onTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                   if(aiuiService!=null)
+                       aiuiService.startRecordAudio();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if(aiuiService!=null)
+                        aiuiService.stopRecordAudio();
+                    break;
+            }
+            return true;
+        }
+    };
+
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            aiuiService = (IAIUIService)service;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
     /**
      * 标题栏关闭事件
      */
