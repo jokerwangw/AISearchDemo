@@ -2,11 +2,10 @@ package com.cmcc.cmvideo.search.aiui;
 
 import android.text.TextUtils;
 
-import com.alibaba.fastjson.JSON;
+import com.cmcc.cmvideo.search.aiui.bean.NlpData;
+import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.google.gson.Gson;
-import com.google.zxing.common.StringUtils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,21 +20,16 @@ public class TppHandle implements IHandle{
     public void handle(String tppHandle){
         if(TextUtils.isEmpty(tppHandle))
             return;
-        try{
-            JSONObject jsonObject = new JSONObject(tppHandle);
-            int rc = jsonObject.getInt("rc");
-            if(rc==4)
-                return;
-            String service = jsonObject.getString("service");
-            if(!"video".equals(service))
-                return;
-            JSONObject jsonDataObj = jsonObject.getJSONObject("data");
-
-            if(jsonDataObj ==null||jsonDataObj.isNull("lxresult"))
-                return;
-            TppData data =  gson.fromJson(jsonDataObj.toString(),TppData.class);
-        }catch (JSONException je){
-
+        NlpData nlpData =  gson.fromJson(tppHandle,NlpData.class);
+        if(nlpData.rc==4
+                ||!"video".equals(nlpData.service)
+                ||nlpData.data ==null
+                ||nlpData.data.lxresult == null)
+            return;
+        if(nlpData.data.lxresult.data.detailslist!=null&&nlpData.data.lxresult.data.detailslist.size()>0){
+            aiuiService.tts("为你找到"+nlpData.data.lxresult.data.detailslist.size()+"个结果",null);
+        }else if(nlpData.answer!=null&&!TextUtils.isEmpty(nlpData.answer.text)){
+            aiuiService.tts(nlpData.answer.text,null);
         }
     }
 }

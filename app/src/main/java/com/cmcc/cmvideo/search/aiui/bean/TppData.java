@@ -1,4 +1,4 @@
-package com.cmcc.cmvideo.search.aiui;
+package com.cmcc.cmvideo.search.aiui.bean;
 
 import java.util.List;
 
