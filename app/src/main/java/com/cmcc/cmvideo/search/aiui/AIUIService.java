@@ -7,6 +7,7 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.iflytek.aiui.AIUIAgent;
 import com.iflytek.aiui.AIUIConstant;
@@ -109,14 +110,19 @@ public class AIUIService extends Service {
                             String sub = params.optString("sub");
                             if ("nlp".equals(sub)||"tpp".equals(sub)) {
                                 // 解析得到语义结果
-                                String resultStr = cntJson.optString("intent");
-                                if (resultStr.equals("{}") || resultStr.isEmpty())
-                                    return;
-                                Logger.debug("semantic [" + resultStr + "]");
+
                                 if("nlp".equals(sub)){
+                                    String resultStr = cntJson.optString("intent");
+                                    if (resultStr.equals("{}") || resultStr.isEmpty())
+                                        return;
+                                    Logger.debug("NLP 【" + resultStr + "】");
                                     mNlpHandle.handle(resultStr);
                                 }else {
-                                    mTppHandle.handle(resultStr);
+                                    String resultStr = cntJson.optString("intent");
+                                    if (resultStr.equals("{}"))
+                                        return;
+                                    Logger.debug("TPP 【" + cntJson.toString() + "】");
+                                    mTppHandle.handle(cntJson.toString());
                                 }
                             }
                         }
