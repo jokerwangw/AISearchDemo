@@ -1,0 +1,15 @@
+<resources>
+    <dimen name="turn_to_ai_search_marginB">200dp</dimen>
+
+    <dimen name="dimen_25dp">25dp</dimen>
+    <dimen name="dimen_8dp">8dp</dimen>
+    <dimen name="dimen_18dp">18dp</dimen>
+    <dimen name="dimen_150dp">150dp</dimen>
+    <dimen name="dimen_136dp">136dp</dimen>
+    <dimen name="dimen_80dp">80dp</dimen>
+    <dimen name="dimen_20dp">20dp</dimen>
+    <dimen name="dimen_16dp">16dp</dimen>
+    <dimen name="dimen_40dp">40dp</dimen>
+    <dimen name="dimen_15dp">15dp</dimen>
+
+</resources>
