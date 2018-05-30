@@ -75,7 +75,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                 MainThreadImpl.getInstance(),
                 this,
                 this);
-        bindService(new Intent(this, AIUIService.class),connection,Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
+        bindService(new Intent(this, AIUIService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
         initCustomView();
         setViewAnimation(true);
         mSearchByAIPresenter.initListSearchItem();
@@ -96,11 +96,11 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                   if(aiuiService!=null)
-                       aiuiService.startRecordAudio();
+                    if (aiuiService != null)
+                        aiuiService.startRecordAudio();
                     break;
                 case MotionEvent.ACTION_UP:
-                    if(aiuiService!=null)
+                    if (aiuiService != null)
                         aiuiService.stopRecordAudio();
                     break;
             }
@@ -111,7 +111,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            aiuiService = (IAIUIService)service;
+            aiuiService = (IAIUIService) service;
         }
 
         @Override
@@ -119,6 +119,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
 
         }
     };
+
     /**
      * 标题栏关闭事件
      */
