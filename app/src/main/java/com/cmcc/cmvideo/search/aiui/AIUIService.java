@@ -47,6 +47,19 @@ public class AIUIService extends Service {
         init();
     }
 
+    @Override
+    public void onDestroy() {
+        if(mAIUIAgent!=null)
+            mAIUIAgent.destroy();
+        if(mTTs!=null) {
+            if(mTTs.isSpeaking())
+                mTTs.stopSpeaking();
+            mTTs.destroy();
+        }
+        SpeechUtility.getUtility().destroy();
+        super.onDestroy();
+    }
+
     /**
      * SDK 初始化
      */
@@ -216,6 +229,10 @@ public class AIUIService extends Service {
         }
     };
 
+    /**
+     * 发送AIUI消息
+     * @param message
+     */
     private void sendMessage(AIUIMessage message) {
         if (mAIUIAgent != null) {
             //确保AIUI处于唤醒状态
