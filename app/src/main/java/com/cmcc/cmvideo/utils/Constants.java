@@ -12,4 +12,5 @@ public class Constants {
     public final static String MESSAGE_FROM_AI = "message_from_ai";
     public final static String MESSAGE_FROM_USER = "message_from_user";
     public final static String MESSAGE_FROM_OTHER = "message_from_other";
+
 }
