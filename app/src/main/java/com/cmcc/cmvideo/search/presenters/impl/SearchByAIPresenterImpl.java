@@ -211,25 +211,33 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
      */
     private void intentQuery(String intent) {
         switch (intent) {
+            // TODO: 2018/5/31 跳转页面操作
             case AiuiConstants.MEMBER_INTENT:
                 //会员业务
+                Logger.debug("会员业务意图===" + intent);
+
 
                 break;
             case AiuiConstants.INTERNET_INTENT:
                 //流量业务
+                Logger.debug("流量意图===" + intent);
+
 
                 break;
             case AiuiConstants.TICKET_INTENT:
                 //购票业务
+                Logger.debug("购票意图===" + intent);
+
 
                 break;
             case AiuiConstants.ACYIVITY_INTENT:
                 //活动打折业务
+                Logger.debug("活动意图===" + intent);
 
                 break;
             case AiuiConstants.GCUSTOMER_INTENT:
                 //G客业务，如：上传视频
-
+                Logger.debug("G客意图===" + intent);
                 break;
         }
 
