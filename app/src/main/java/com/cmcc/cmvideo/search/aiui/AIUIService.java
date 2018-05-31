@@ -7,8 +7,11 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.cmcc.cmvideo.search.aiui.bean.IatBean;
+import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIAgent;
 import com.iflytek.aiui.AIUIConstant;
 import com.iflytek.aiui.AIUIEvent;
@@ -26,9 +29,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 public class AIUIService extends Service {
-    private static final String TAG ="AIUIService";
+    private static final String TAG = "AIUIService";
 
     private AIUIServiceImpl aiuiService;
     private AIUIAgent mAIUIAgent;
@@ -55,9 +59,9 @@ public class AIUIService extends Service {
         mTTs = SpeechSynthesizer.createSynthesizer(this, new InitListener() {
             @Override
             public void onInit(int i) {
-                if(i!=0) {
+                if (i != 0) {
                     Logger.debug("合成初始化失败");
-                }else {
+                } else {
                     Logger.debug("合成初始化成功");
                 }
             }
@@ -72,8 +76,8 @@ public class AIUIService extends Service {
 
     private class AIUIServiceImpl extends Binder implements IAIUIService {
         @Override
-        public void tts(String ttsText,SynthesizerListener synthesizerListener) {
-            ttsStartSpeaking(ttsText,synthesizerListener);
+        public void tts(String ttsText, SynthesizerListener synthesizerListener) {
+            ttsStartSpeaking(ttsText, synthesizerListener);
         }
 
         @Override
@@ -113,10 +117,22 @@ public class AIUIService extends Service {
                             JSONObject cntJson = new JSONObject(new String(event.data.getByteArray(cnt_id), "utf-8"));
 
                             String sub = params.optString("sub");
-                            if ("nlp".equals(sub)||"tpp".equals(sub)) {
+                            if ("iat".equals(sub) || "nlp".equals(sub) || "tpp".equals(sub)) {
                                 // 解析得到语义结果
 
-                                if("nlp".equals(sub)){
+                                if ("iat".equals(sub)) {
+                                    String iat = cntJson.optString("text");
+                                    if (iat.equals("{}") || iat.isEmpty()) {
+                                        return;
+                                    }
+
+                                    String iatTxt = getIatTxt(iat);
+                                    Logger.debug("听写结果==============" + iatTxt);
+                                    if (TextUtils.isEmpty(iatTxt)) {
+                                        return;
+                                    }
+
+                                } else if ("nlp".equals(sub)) {
                                     String resultStr = cntJson.optString("intent");
                                     if (resultStr.equals("{}") || resultStr.isEmpty())
                                         return;
@@ -153,13 +169,14 @@ public class AIUIService extends Service {
             }
         }
     };
-    private void ttsStartSpeaking(String ttsText,SynthesizerListener listener){
-        if(mTTs!=null){
-            mTTs.startSpeaking(ttsText,listener==null?synthesizerListener:listener);
+
+    private void ttsStartSpeaking(String ttsText, SynthesizerListener listener) {
+        if (mTTs != null) {
+            mTTs.startSpeaking(ttsText, listener == null ? synthesizerListener : listener);
         }
     }
 
-    private SynthesizerListener synthesizerListener  = new SynthesizerListener() {
+    private SynthesizerListener synthesizerListener = new SynthesizerListener() {
         @Override
         public void onSpeakBegin() {
 
@@ -196,36 +213,37 @@ public class AIUIService extends Service {
         }
     };
 
-    private void sendMessage(AIUIMessage message){
-        if(mAIUIAgent != null) {
+    private void sendMessage(AIUIMessage message) {
+        if (mAIUIAgent != null) {
             //确保AIUI处于唤醒状态
-            if(mCurrentState != AIUIConstant.STATE_WORKING){
+            if (mCurrentState != AIUIConstant.STATE_WORKING) {
                 mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
             }
             mAIUIAgent.sendMessage(message);
         }
     }
+
     /**
      * 设置TTS 参数
      */
-    private void setTTSParam()
-    {
-        if(mTTs == null) return;
+    private void setTTSParam() {
+        if (mTTs == null) return;
         // 清空参数
         mTTs.setParameter(SpeechConstant.PARAMS, null);
         //设置使用云端引擎
         mTTs.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD);
         //设置发音人
-        mTTs.setParameter(SpeechConstant.VOICE_NAME,"xiaoyan");
+        mTTs.setParameter(SpeechConstant.VOICE_NAME, "xiaoyan");
         //设置语速
-        mTTs.setParameter(SpeechConstant.SPEED,"50");
+        mTTs.setParameter(SpeechConstant.SPEED, "50");
         //设置音调
-        mTTs.setParameter(SpeechConstant.PITCH,"50");
+        mTTs.setParameter(SpeechConstant.PITCH, "50");
         //设置音量
-        mTTs.setParameter(SpeechConstant.VOLUME,"50");
+        mTTs.setParameter(SpeechConstant.VOLUME, "50");
         //设置播放器音频流类型
-        mTTs.setParameter(SpeechConstant.STREAM_TYPE,"3");
+        mTTs.setParameter(SpeechConstant.STREAM_TYPE, "3");
     }
+
     /**
      * 获取AIUI参数
      */
@@ -252,9 +270,31 @@ public class AIUIService extends Service {
         }
         return params;
     }
+
     public interface ResultDispatchListener{
         void onIatResult(String result);
         void onNlpResult(String result);
         void onTppResult(String result);
     }
+
+    private static Gson mGson;
+
+    private String getIatTxt(String iat) {
+        if (mGson == null) {
+            mGson = new Gson();
+        }
+        IatBean iatBean = mGson.fromJson(iat, IatBean.class);
+        String text = "";
+        List<IatBean.WsBean> ws = iatBean.ws;
+        for (int i = 0; i < ws.size(); i++) {
+            IatBean.WsBean wsBean = ws.get(i);
+            List<IatBean.WsBean.CwBean> cw = wsBean.cw;
+            for (int j = 0; j < cw.size(); j++) {
+                IatBean.WsBean.CwBean cwBean = cw.get(j);
+                text = text + cwBean.w;
+            }
+        }
+        return text;
+    }
+
 }

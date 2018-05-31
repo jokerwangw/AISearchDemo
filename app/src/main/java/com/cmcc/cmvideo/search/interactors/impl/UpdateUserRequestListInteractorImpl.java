@@ -28,12 +28,14 @@ public class UpdateUserRequestListInteractorImpl extends AbstractInteractor impl
         this.mCallback = callback;
     }
 
+
     @Override
     public void dataObjectChanged(BaseObject dataObject, int what) {
     }
 
     @Override
     public void dataObjectFailed(BaseObject dataObject, int what, JSONObject errorMsg) {
+
     }
 
     @Override

@@ -233,6 +233,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
+        unbindService(connection);
     }
 
     @Override

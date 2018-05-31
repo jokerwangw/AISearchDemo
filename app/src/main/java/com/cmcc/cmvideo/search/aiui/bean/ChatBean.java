@@ -1,4 +1,4 @@
-package com.cmcc.cmvideo.search.model;
+package com.cmcc.cmvideo.search.aiui.bean;
 
 /**
  * @Author lhluo

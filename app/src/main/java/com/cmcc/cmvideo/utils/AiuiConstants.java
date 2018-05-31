@@ -29,4 +29,10 @@ public class AiuiConstants {
     public final static String CONTROL_INTENT = "Assistant";
     public final static String SREEN_INTENT = "Screen";
 
+    public final static String MEMBER_INTENT = "Member";
+    public final static String INTERNET_INTENT = "InternetTraffic";
+    public final static String TICKET_INTENT="Ticket";
+    public final static String ACYIVITY_INTENT = "Activity";
+    public final static String GCUSTOMER_INTENT= "Gcustomer";
+
 }
