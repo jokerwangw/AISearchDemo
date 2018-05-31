@@ -2,6 +2,7 @@ package com.cmcc.cmvideo.search.presenters.impl;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.cmcc.cmvideo.base.AbstractPresenter;
 import com.cmcc.cmvideo.base.Executor;
@@ -47,6 +48,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     private IAIUIService aiuiService;
     private Gson gson;
     private String intent;
+    private NlpData mData = null;
 
     public SearchByAIPresenterImpl(
             Executor executor,
@@ -144,19 +146,16 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     @Override
     public void onNlpResult(String result) {
         if (TextUtils.isEmpty(result)) return;
-        NlpData nlpData = gson.fromJson(result, NlpData.class);
-        Logger.debug("nlp " + result + "应答码==="
-                + nlpData.service + "-------------"
-                + nlpData.answer.text);
-        if (4 == nlpData.rc) {
+        mData = gson.fromJson(result, NlpData.class);
+        if (mData.rc == 4) {
             //播报
             aiuiService.tts(AiuiConstants.ERROR_MESSAGE, null);
             return;
         }
-        String service = nlpData.service;
+        String service = mData.service;
 
-        if (null != nlpData.semantic) {
-            intent = nlpData.semantic.get(0).getIntent();
+        if (null != mData.semantic) {
+            intent = mData.semantic.get(0).getIntent();
         }
 
         switch (service) {
@@ -176,7 +175,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
 
             case AiuiConstants.CONTROL_MIGU:
                 //指令控制  如：打开语音助手/投屏播放
-                intentControl(intent);
+                intentControl(mData, intent);
                 break;
 
         }
@@ -243,16 +242,15 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
      *
      * @param intent
      */
-    private void intentControl(String intent) {
+    private void intentControl(NlpData mData, String intent) {
         switch (intent) {
             case AiuiConstants.CONTROL_INTENT:
                 // TODO: 2018/5/30 控制指令跳转
-                Logger.debug("控制指令intent===" + intent);
-
+                aiuiService.tts("正在为您" + mData.text, null);
                 break;
             case AiuiConstants.SREEN_INTENT:
                 // TODO: 2018/5/30 投屏跳转
-                Logger.debug("投屏指令intent===" + intent);
+                aiuiService.tts("正在为您" + mData.text, null);
                 break;
         }
 
@@ -267,7 +265,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
         List<SearchByAIBean> userRequestList = new ArrayList<SearchByAIBean>();
         userRequestList.add(new SearchByAIBean(nlpData.getAnswer().text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
         EventBus.getDefault().post(new SearchByAIEventBean(userRequestList));
-        Logger.debug("闲聊数据Q&A ==== " + nlpData.text + "-----" + nlpData.getAnswer().text);
     }
 
 

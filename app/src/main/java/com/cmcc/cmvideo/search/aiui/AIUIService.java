@@ -140,7 +140,6 @@ public class AIUIService extends Service {
                                     }
 
                                     String iatTxt = getIatTxt(iat);
-                                    Logger.debug("听写结果==============" + iatTxt);
                                     if (TextUtils.isEmpty(iatTxt)) {
                                         return;
                                     }
@@ -153,7 +152,6 @@ public class AIUIService extends Service {
                                     if (resultStr.equals("{}") || resultStr.isEmpty())
                                         return;
                                     Logger.debug("NLP 【" + resultStr + "】");
-                                    //mNlpHandle.handle(resultStr);
                                     if(dispatchListener!=null)
                                         dispatchListener.onNlpResult(resultStr);
                                 }else {
@@ -161,7 +159,6 @@ public class AIUIService extends Service {
                                     if (resultStr.equals("{}"))
                                         return;
                                     Logger.debug("TPP 【" + cntJson.toString() + "】");
-                                    //mTppHandle.handle(cntJson.toString());
                                     if(dispatchListener!=null)
                                         dispatchListener.onTppResult(cntJson.toString());
                                 }
