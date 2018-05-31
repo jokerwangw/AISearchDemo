@@ -152,10 +152,10 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
         if(nlpData.data.lxresult.data.detailslist!=null&&nlpData.data.lxresult.data.detailslist.size()>0){
             aiuiService.tts("为你找到"+nlpData.data.lxresult.data.detailslist.size()+"个结果",null);
             //TODO 展示图片列表
-        }else if(nlpData.answer!=null&&!TextUtils.isEmpty(nlpData.answer.text)){
-            aiuiService.tts(nlpData.answer.text,null);
+        }else if(nlpData.answer!=null&&!TextUtils.isEmpty(nlpData.answer.getText())){
+            aiuiService.tts(nlpData.answer.getText(),null);
             final List<SearchByAIBean> responseList = new ArrayList<SearchByAIBean>();
-            responseList.add(new SearchByAIBean(nlpData.answer.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
+            responseList.add(new SearchByAIBean(nlpData.answer.getText(), MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
             EventBus.getDefault().post(new SearchByAIEventBean(responseList));
         }
     }
