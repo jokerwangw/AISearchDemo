@@ -18,6 +18,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cmcc.cmvideo.R;
@@ -55,6 +56,8 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     ImageView imSearchVoiceInputRing;
     @BindView(R.id.bt_search_voice_input)
     Button btSearchVoiceInput;
+    @BindView(R.id.tv_title)
+    TextView tvTitle;
     private SearchByAIPresenterImpl mSearchByAIPresenter;
     private Context mContext;
     private SearchByAIAdapter mSearchByAIAdapter;
@@ -96,12 +99,16 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                   if(aiuiService!=null)
+                   if(aiuiService!=null) {
+                       tvTitle.setText(getResources().getString(R.string.listening));
                        aiuiService.startRecordAudio();
+                   }
                     break;
                 case MotionEvent.ACTION_UP:
-                    if(aiuiService!=null)
+                    if(aiuiService!=null) {
+                        tvTitle.setText(getResources().getString(R.string.cmvideo));
                         aiuiService.stopRecordAudio();
+                    }
                     break;
             }
             return true;
