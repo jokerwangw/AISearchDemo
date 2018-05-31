@@ -147,7 +147,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
         NlpData nlpData = gson.fromJson(result, NlpData.class);
         Logger.debug("nlp " + result + "应答码==="
                 + nlpData.service + "-------------"
-                + nlpData.answer.getText());
+                + nlpData.answer.text);
         if (4 == nlpData.rc) {
             //播报
             aiuiService.tts(AiuiConstants.ERROR_MESSAGE, null);
@@ -196,10 +196,10 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
         if (nlpData.data.lxresult.data.detailslist != null && nlpData.data.lxresult.data.detailslist.size() > 0) {
             aiuiService.tts("为你找到" + nlpData.data.lxresult.data.detailslist.size() + "个结果", null);
             //TODO 展示图片列表
-        } else if (nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.getText())) {
-            aiuiService.tts(nlpData.answer.getText(), null);
+        } else if (nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text)) {
+            aiuiService.tts(nlpData.answer.text, null);
             final List<SearchByAIBean> responseList = new ArrayList<SearchByAIBean>();
-            responseList.add(new SearchByAIBean(nlpData.answer.getText(), MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
+            responseList.add(new SearchByAIBean(nlpData.answer.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
             EventBus.getDefault().post(new SearchByAIEventBean(responseList));
         }
     }
@@ -263,11 +263,11 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
      */
     private void intentQa(String nlpHandle) {
         NlpData nlpData = gson.fromJson(nlpHandle, NlpData.class);
-        aiuiService.tts(nlpData.getAnswer().getText(), null);
+        aiuiService.tts(nlpData.getAnswer().text, null);
         List<SearchByAIBean> userRequestList = new ArrayList<SearchByAIBean>();
-        userRequestList.add(new SearchByAIBean(nlpData.getAnswer().getText(), MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
+        userRequestList.add(new SearchByAIBean(nlpData.getAnswer().text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
         EventBus.getDefault().post(new SearchByAIEventBean(userRequestList));
-        Logger.debug("闲聊数据Q&A ==== " + nlpData.text + "-----" + nlpData.getAnswer().getText());
+        Logger.debug("闲聊数据Q&A ==== " + nlpData.text + "-----" + nlpData.getAnswer().text);
     }
 
 

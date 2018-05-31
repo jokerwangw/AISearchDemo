@@ -39,29 +39,6 @@ public class NlpData {
         public String value;
         public String normValue;
 
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
-
-        public String getNormValue() {
-            return normValue;
-        }
-
-        public void setNormValue(String normValue) {
-            this.normValue = normValue;
-        }
     }
 
 
@@ -87,60 +64,13 @@ public class NlpData {
          * type : T
          */
 
-        private String answerType;
-        private String emotion;
-        private QuestionBean question;
-        private String text;
-        private String topicID;
-        private String type;
+        public String answerType;
+        public String emotion;
+        public QuestionBean question;
+        public String text;
+        public String topicID;
+        public String type;
 
-        public String getAnswerType() {
-            return answerType;
-        }
-
-        public void setAnswerType(String answerType) {
-            this.answerType = answerType;
-        }
-
-        public String getEmotion() {
-            return emotion;
-        }
-
-        public void setEmotion(String emotion) {
-            this.emotion = emotion;
-        }
-
-        public QuestionBean getQuestion() {
-            return question;
-        }
-
-        public void setQuestion(QuestionBean question) {
-            this.question = question;
-        }
-
-        public String getText() {
-            return text;
-        }
-
-        public void setText(String text) {
-            this.text = text;
-        }
-
-        public String getTopicID() {
-            return topicID;
-        }
-
-        public void setTopicID(String topicID) {
-            this.topicID = topicID;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
 
         public static class QuestionBean {
             /**
@@ -148,24 +78,9 @@ public class NlpData {
              * question_ws : 我/NP// 好/VI// 无聊/AA// 啊/UE//
              */
 
-            private String question;
-            private String question_ws;
+            public String question;
+            public String question_ws;
 
-            public String getQuestion() {
-                return question;
-            }
-
-            public void setQuestion(String question) {
-                this.question = question;
-            }
-
-            public String getQuestion_ws() {
-                return question_ws;
-            }
-
-            public void setQuestion_ws(String question_ws) {
-                this.question_ws = question_ws;
-            }
         }
     }
 
