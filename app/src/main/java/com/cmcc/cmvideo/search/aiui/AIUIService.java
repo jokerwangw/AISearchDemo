@@ -131,6 +131,9 @@ public class AIUIService extends Service {
                                     if (TextUtils.isEmpty(iatTxt)) {
                                         return;
                                     }
+                                    if (dispatchListener != null){
+                                        dispatchListener.onIatResult(iatTxt);
+                                    }
 
                                 } else if ("nlp".equals(sub)) {
                                     String resultStr = cntJson.optString("intent");
@@ -147,7 +150,7 @@ public class AIUIService extends Service {
                                     Logger.debug("TPP 【" + cntJson.toString() + "】");
                                     //mTppHandle.handle(cntJson.toString());
                                     if(dispatchListener!=null)
-                                        dispatchListener.onNlpResult(cntJson.toString());
+                                        dispatchListener.onTppResult(cntJson.toString());
                                 }
                             }
                         }
