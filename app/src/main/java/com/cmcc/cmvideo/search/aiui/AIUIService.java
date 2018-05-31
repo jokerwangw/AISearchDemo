@@ -33,19 +33,19 @@ public class AIUIService extends Service {
     private AIUIServiceImpl aiuiService;
     private AIUIAgent mAIUIAgent;
     private int mCurrentState = AIUIConstant.STATE_IDLE;
-    private IHandle mNlpHandle;
-    private IHandle mTppHandle;
     private SpeechSynthesizer mTTs;
+    private ResultDispatchListener dispatchListener;
 
     @Override
     public void onCreate() {
         super.onCreate();
         aiuiService = new AIUIServiceImpl();
-        mNlpHandle  = new NlpHandle(aiuiService);
-        mTppHandle  = new TppHandle(aiuiService);
         init();
     }
 
+    /**
+     * SDK 初始化
+     */
     private void init() {
         //AIUI初始化
         mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
@@ -85,6 +85,11 @@ public class AIUIService extends Service {
         public void stopRecordAudio() {
             sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
         }
+
+        @Override
+        public void setResultDispatchListener(ResultDispatchListener resultDispatchListener) {
+            dispatchListener = resultDispatchListener;
+        }
     }
 
 
@@ -116,13 +121,17 @@ public class AIUIService extends Service {
                                     if (resultStr.equals("{}") || resultStr.isEmpty())
                                         return;
                                     Logger.debug("NLP 【" + resultStr + "】");
-                                    mNlpHandle.handle(resultStr);
+                                    //mNlpHandle.handle(resultStr);
+                                    if(dispatchListener!=null)
+                                        dispatchListener.onNlpResult(resultStr);
                                 }else {
                                     String resultStr = cntJson.optString("intent");
                                     if (resultStr.equals("{}"))
                                         return;
                                     Logger.debug("TPP 【" + cntJson.toString() + "】");
-                                    mTppHandle.handle(cntJson.toString());
+                                    //mTppHandle.handle(cntJson.toString());
+                                    if(dispatchListener!=null)
+                                        dispatchListener.onNlpResult(cntJson.toString());
                                 }
                             }
                         }
@@ -243,5 +252,9 @@ public class AIUIService extends Service {
         }
         return params;
     }
-
+    public interface ResultDispatchListener{
+        void onIatResult(String result);
+        void onNlpResult(String result);
+        void onTppResult(String result);
+    }
 }

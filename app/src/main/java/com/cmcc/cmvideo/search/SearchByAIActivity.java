@@ -112,6 +112,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             aiuiService = (IAIUIService)service;
+            mSearchByAIPresenter.setAIUIService(aiuiService);
         }
 
         @Override
@@ -228,6 +229,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unbindService(connection);
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }

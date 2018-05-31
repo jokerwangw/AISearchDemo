@@ -6,4 +6,5 @@ public interface IAIUIService {
     void tts(String ttsText, SynthesizerListener synthesizerListener);
     void startRecordAudio();
     void stopRecordAudio();
+    void setResultDispatchListener(AIUIService.ResultDispatchListener resultDispatchListener);
 }

@@ -1,10 +1,14 @@
 package com.cmcc.cmvideo.search.presenters.impl;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.cmcc.cmvideo.base.AbstractPresenter;
 import com.cmcc.cmvideo.base.Executor;
 import com.cmcc.cmvideo.base.MainThread;
+import com.cmcc.cmvideo.search.aiui.AIUIService;
+import com.cmcc.cmvideo.search.aiui.IAIUIService;
+import com.cmcc.cmvideo.search.aiui.bean.NlpData;
 import com.cmcc.cmvideo.search.interactors.InitSearchByAIListInteractor;
 import com.cmcc.cmvideo.search.interactors.UpdateAIResponseListInteractor;
 import com.cmcc.cmvideo.search.interactors.UpdateUserRequestListInteractor;
@@ -14,10 +18,15 @@ import com.cmcc.cmvideo.search.interactors.impl.UpdateUserRequestListInteractorI
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
 import com.cmcc.cmvideo.search.presenters.SearchByAIPresenter;
+import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.cmcc.cmvideo.utils.Constants.MESSAGE_FROM_AI;
+import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_NORMAL;
 
 /**
  * Created by Yyw on 2018/5/21.
@@ -25,13 +34,15 @@ import java.util.List;
  */
 
 public class SearchByAIPresenterImpl extends AbstractPresenter implements
-        SearchByAIPresenter,
+        SearchByAIPresenter, AIUIService.ResultDispatchListener,
         InitSearchByAIListInteractor.Callback,
         UpdateUserRequestListInteractor.Callback,
         UpdateAIResponseListInteractor.Callback {
 
     private Context mContext;
     private SearchByAIPresenter.View mView;
+    private IAIUIService aiuiService;
+    private Gson gson;
 
     public SearchByAIPresenterImpl(
             Executor executor,
@@ -41,6 +52,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
         super(executor, mainThread);
         mView = view;
         mContext = context;
+        gson = new Gson();
     }
 
     @Override
@@ -93,6 +105,12 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     }
 
     @Override
+    public void setAIUIService(IAIUIService service) {
+        aiuiService = service;
+        aiuiService.setResultDispatchListener(this);
+    }
+
+    @Override
     public void onInitSearchByAIListData(List<SearchByAIBean> searchByAIBeanList) {
         mView.showInitList(searchByAIBeanList);
     }
@@ -109,5 +127,36 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     @Override
     public void onUpdateAIResponseListData(List<SearchByAIBean> searchByAIBeanList) {
         EventBus.getDefault().post(new SearchByAIEventBean(searchByAIBeanList));
+    }
+
+    @Override
+    public void onIatResult(String result) {
+
+    }
+
+    @Override
+    public void onNlpResult(String result) {
+
+    }
+
+    @Override
+    public void onTppResult(String result) {
+        if(TextUtils.isEmpty(result))
+            return;
+        NlpData nlpData =  gson.fromJson(result,NlpData.class);
+        if(nlpData.rc==4
+                ||!"video".equals(nlpData.service)
+                ||nlpData.data ==null
+                ||nlpData.data.lxresult == null)
+            return;
+        if(nlpData.data.lxresult.data.detailslist!=null&&nlpData.data.lxresult.data.detailslist.size()>0){
+            aiuiService.tts("为你找到"+nlpData.data.lxresult.data.detailslist.size()+"个结果",null);
+            //TODO 展示图片列表
+        }else if(nlpData.answer!=null&&!TextUtils.isEmpty(nlpData.answer.text)){
+            aiuiService.tts(nlpData.answer.text,null);
+            final List<SearchByAIBean> responseList = new ArrayList<SearchByAIBean>();
+            responseList.add(new SearchByAIBean(nlpData.answer.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
+            EventBus.getDefault().post(new SearchByAIEventBean(responseList));
+        }
     }
 }

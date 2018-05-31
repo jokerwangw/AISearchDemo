@@ -3,6 +3,7 @@ package com.cmcc.cmvideo.search.presenters;
 
 import com.cmcc.cmvideo.base.BasePresenter;
 import com.cmcc.cmvideo.base.BaseView;
+import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 
 import java.util.List;
@@ -22,4 +23,6 @@ public interface SearchByAIPresenter extends BasePresenter {
     void updateUserRequestListItem();
 
     void updateAIResponseListItem(String order);
+
+    void setAIUIService(IAIUIService service);
 }
