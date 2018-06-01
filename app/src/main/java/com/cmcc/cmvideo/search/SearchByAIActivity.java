@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -78,7 +79,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                 MainThreadImpl.getInstance(),
                 this,
                 this);
-        bindService(new Intent(this, AIUIService.class),connection,Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
+        bindService(new Intent(this, AIUIService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
         initCustomView();
         setViewAnimation(true);
         mSearchByAIPresenter.initListSearchItem();
@@ -94,20 +95,30 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         btSearchVoiceInput.setOnTouchListener(onTouchListener);
     }
 
+    long downTime = 0;
+    long upTime = 0;
     private View.OnTouchListener onTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                   if(aiuiService!=null) {
-                       tvTitle.setText(getResources().getString(R.string.listening));
-                       aiuiService.startRecordAudio();
-                   }
+                    if (aiuiService != null) {
+                        downTime = System.currentTimeMillis();
+                        tvTitle.setText(getResources().getString(R.string.listening));
+                        aiuiService.startRecordAudio();
+                    }
                     break;
                 case MotionEvent.ACTION_UP:
-                    if(aiuiService!=null) {
-                        tvTitle.setText(getResources().getString(R.string.cmvideo));
-                        aiuiService.stopRecordAudio();
+                    if (aiuiService != null) {
+                        upTime = System.currentTimeMillis();
+                        long clickTime = upTime - downTime;
+                        if (clickTime <= 1000) {
+                            //点击事件
+                        } else {
+                            //长按事件
+                            tvTitle.setText(getResources().getString(R.string.cmvideo));
+                            aiuiService.stopRecordAudio();
+                        }
                     }
                     break;
             }
@@ -118,15 +129,15 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            aiuiService = (IAIUIService)service;
+            aiuiService = (IAIUIService) service;
             mSearchByAIPresenter.setAIUIService(aiuiService);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-
         }
     };
+
     /**
      * 标题栏关闭事件
      */
@@ -142,24 +153,24 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     public void clickTitleVoice() {
     }
 
-    /**
-     * 点击事件
-     */
-    @OnClick(R.id.bt_search_voice_input)
-    public void clickSearchInputVoice() {
-        setViewAnimation(true);
-        mSearchByAIPresenter.updateUserRequestListItem();
-    }
+    //    /**
+    //     * 点击事件
+    //     */
+    //    @OnClick(R.id.bt_search_voice_input)
+    //    public void clickSearchInputVoice() {
+    //        setViewAnimation(true);
+    //        mSearchByAIPresenter.updateUserRequestListItem();
+    //    }
 
-    /**
-     * 长按事件
-     */
-    @OnLongClick(R.id.bt_search_voice_input)
-    public boolean longClickSearchInputVoice() {
-        setViewAnimation(false);
-        mSearchByAIPresenter.updateUserRequestListItem();
-        return true;
-    }
+    //    /**
+    //     * 长按事件
+    //     */
+    //    @OnLongClick(R.id.bt_search_voice_input)
+    //    public boolean longClickSearchInputVoice() {
+    //        setViewAnimation(false);
+    //        mSearchByAIPresenter.updateUserRequestListItem();
+    //        return true;
+    //    }
 
     /**
      * 显示AI初始化数据
@@ -201,7 +212,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     }
 
     /**
-     * 给空间设置动画
+     * 给控件设置动画
      */
     private void setViewAnimation(boolean isClick) {
         closeViewAnimation();
