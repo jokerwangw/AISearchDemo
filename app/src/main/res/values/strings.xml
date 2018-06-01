@@ -3,4 +3,10 @@
     <string name="listening">正在聆听...</string>
     <string name="cmvideo">咪咕视频</string>
     <string name="cancel_search">取消搜索</string>
+
+    <string name="ai_ask_recommend1">大家都在看什么</string>
+    <string name="ai_ask_recommend2">我好像看好看的恐怖片</string>
+    <string name="ai_ask_recommend3">最近有什么新片子</string>
+    <string name="ai_ask_recommend4">我要开通钻石会员</string>
+    <string name="ai_ask_recommend5">我的流量还剩余多少</string>
 </resources>
