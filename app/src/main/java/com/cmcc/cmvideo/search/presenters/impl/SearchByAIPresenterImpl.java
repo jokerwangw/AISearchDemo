@@ -22,6 +22,7 @@ import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
 import com.cmcc.cmvideo.search.presenters.SearchByAIPresenter;
 import com.cmcc.cmvideo.utils.AiuiConstants;
 import com.google.gson.Gson;
+import com.iflytek.aiui.AIUIConstant;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -38,7 +39,7 @@ import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_NORMAL;
  */
 
 public class SearchByAIPresenterImpl extends AbstractPresenter implements
-        SearchByAIPresenter, AIUIService.ResultDispatchListener,
+        SearchByAIPresenter, AIUIService.AIUIEventListener,
         InitSearchByAIListInteractor.Callback,
         UpdateUserRequestListInteractor.Callback,
         UpdateAIResponseListInteractor.Callback {
@@ -113,7 +114,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     @Override
     public void setAIUIService(IAIUIService service) {
         aiuiService = service;
-        aiuiService.setResultDispatchListener(this);
+        aiuiService.setAIUIEventListener(this);
     }
 
     @Override
@@ -135,15 +136,14 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
         EventBus.getDefault().post(new SearchByAIEventBean(searchByAIBeanList));
     }
 
-    @Override
     public void onIatResult(String result) {
+        if (TextUtils.isEmpty(result)) return;
         Logger.debug("听写用户输入数据=====" + result);
         List<SearchByAIBean> userRequestList = new ArrayList<SearchByAIBean>();
         userRequestList.add(new SearchByAIBean(result, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER));
         EventBus.getDefault().post(new SearchByAIEventBean(userRequestList));
     }
 
-    @Override
     public void onNlpResult(String result) {
         if (TextUtils.isEmpty(result)) return;
         mData = gson.fromJson(result, NlpData.class);
@@ -182,7 +182,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
 
     }
 
-    @Override
     public void onTppResult(String result) {
         if (TextUtils.isEmpty(result))
             return;
@@ -276,4 +275,22 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     }
 
 
+    @Override
+    public void onResult(String iatResult, String nlpReslult, String tppResult) {
+        onIatResult(iatResult);
+        onNlpResult(nlpReslult);
+        onTppResult(tppResult);
+    }
+
+    @Override
+    public void onEvent(int eventType) {
+        switch (eventType){
+            case AIUIConstant.EVENT_WAKEUP:
+                //TODO AIUI 被唤醒
+                break;
+            case AIUIConstant.EVENT_SLEEP:
+                //TODO AIUI 进入休眠 ，可以更新UI
+                break;
+        }
+    }
 }

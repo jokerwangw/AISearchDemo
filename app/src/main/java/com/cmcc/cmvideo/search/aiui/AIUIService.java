@@ -38,7 +38,7 @@ public class AIUIService extends Service {
     private AIUIAgent mAIUIAgent;
     private int mCurrentState = AIUIConstant.STATE_IDLE;
     private SpeechSynthesizer mTTs;
-    private ResultDispatchListener dispatchListener;
+    private AIUIEventListener eventListener;
 
     @Override
     public void onCreate() {
@@ -104,8 +104,8 @@ public class AIUIService extends Service {
         }
 
         @Override
-        public void setResultDispatchListener(ResultDispatchListener resultDispatchListener) {
-            dispatchListener = resultDispatchListener;
+        public void setAIUIEventListener(AIUIEventListener aiuiEventListener) {
+            eventListener = aiuiEventListener;
         }
     }
 
@@ -143,8 +143,8 @@ public class AIUIService extends Service {
                                     if (TextUtils.isEmpty(iatTxt)) {
                                         return;
                                     }
-                                    if (dispatchListener != null){
-                                        dispatchListener.onIatResult(iatTxt);
+                                    if (eventListener != null){
+                                        eventListener.onResult(iatTxt,null,null);
                                     }
 
                                 } else if ("nlp".equals(sub)) {
@@ -152,15 +152,15 @@ public class AIUIService extends Service {
                                     if (resultStr.equals("{}") || resultStr.isEmpty())
                                         return;
                                     Logger.debug("NLP 【" + resultStr + "】");
-                                    if(dispatchListener!=null)
-                                        dispatchListener.onNlpResult(resultStr);
+                                    if(eventListener!=null)
+                                        eventListener.onResult(null,resultStr,null);
                                 }else {
                                     String resultStr = cntJson.optString("intent");
                                     if (resultStr.equals("{}"))
                                         return;
                                     Logger.debug("TPP 【" + cntJson.toString() + "】");
-                                    if(dispatchListener!=null)
-                                        dispatchListener.onTppResult(cntJson.toString());
+                                    if(eventListener!=null)
+                                        eventListener.onResult(null,null,cntJson.toString());
                                 }
                             }
                         }
@@ -179,6 +179,10 @@ public class AIUIService extends Service {
                     break;
                 default:
                     break;
+            }
+            //AIUI状态分发给各客户端监听
+            if (eventListener != null){
+                eventListener.onEvent(event.eventType);
             }
         }
     };
@@ -288,10 +292,9 @@ public class AIUIService extends Service {
         return params;
     }
 
-    public interface ResultDispatchListener{
-        void onIatResult(String result);
-        void onNlpResult(String result);
-        void onTppResult(String result);
+    public interface AIUIEventListener{
+        void  onResult(String iatResult,String nlpReslult,String tppResult);
+        void  onEvent(int eventType);
     }
 
     private static Gson mGson;
