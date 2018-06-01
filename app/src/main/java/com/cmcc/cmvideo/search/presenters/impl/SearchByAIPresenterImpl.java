@@ -11,6 +11,7 @@ import com.cmcc.cmvideo.search.aiui.AIUIService;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.aiui.Logger;
 import com.cmcc.cmvideo.search.aiui.bean.NlpData;
+import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.interactors.InitSearchByAIListInteractor;
 import com.cmcc.cmvideo.search.interactors.UpdateAIResponseListInteractor;
 import com.cmcc.cmvideo.search.interactors.UpdateUserRequestListInteractor;
@@ -33,6 +34,8 @@ import java.util.Map;
 
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_FROM_AI;
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_FROM_USER;
+import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_EVERYONE_IS_WATCHING;
+import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_NORMAL;
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_THE_LATEST_VIDEO;
 
@@ -117,7 +120,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     @Override
     public void setAIUIService(IAIUIService service) {
         aiuiService = service;
-        //{"client_id":"897ddadc222ec9c20651da355daee9cc","msisdn":"13764279837","user_id":"553782460"}
         Map<String,String> map = new HashMap<String,String>(){{
             put("msisdn","13764279837");
             put("user_id","553782460");
@@ -201,16 +203,44 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
                 || nlpData.data == null
                 || nlpData.data.lxresult == null)
             return;
-        if (nlpData.data.lxresult.data.detailslist != null && nlpData.data.lxresult.data.detailslist.size() > 0) {
-            aiuiService.tts("为你找到" + nlpData.data.lxresult.data.detailslist.size() + "个结果", null);
-            final List<SearchByAIBean> responseList = new ArrayList<SearchByAIBean>();
-            responseList.add(new SearchByAIBean(nlpData.answer.text, MESSAGE_TYPE_THE_LATEST_VIDEO, MESSAGE_FROM_AI));
-            EventBus.getDefault().post(new SearchByAIEventBean(responseList));
-        } else if (nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text)) {
-            aiuiService.tts(nlpData.answer.text, null);
-            final List<SearchByAIBean> responseList = new ArrayList<SearchByAIBean>();
-            responseList.add(new SearchByAIBean(nlpData.answer.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
-            EventBus.getDefault().post(new SearchByAIEventBean(responseList));
+
+        switch (nlpData.semantic.get(0).intent){
+            case AiuiConstants.QUERY_INTENT:
+                Map<String,String> map = formatSlotsToMap(nlpData.semantic.get(0).slots);
+                int messageType = MESSAGE_TYPE_NORMAL;
+                while (true){
+                    //TODO 判断意图是使用哪个卡片展示
+                    if(map.containsKey(AiuiConstants.VIDEO_CATEGORY)&&
+                            map.get(AiuiConstants.VIDEO_CATEGORY).equals("电影")){ //猜你喜欢
+                        messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
+                        break;
+                    }
+                    if(map.containsKey(AiuiConstants.VIDEO_TIME_DESCR)){ // 有时间 的表示最近好看的电影
+                        messageType = MESSAGE_TYPE_THE_LATEST_VIDEO;
+                        break;
+                    }
+                    if(map.containsKey(AiuiConstants.VIDEO_TAG)){  //带标签的表示大家都在看
+                        messageType = MESSAGE_TYPE_EVERYONE_IS_WATCHING;
+                        break;
+                    }
+                    break;
+                }
+
+                if (nlpData.data.lxresult.data.detailslist != null && nlpData.data.lxresult.data.detailslist.size() > 0) {
+                    aiuiService.tts("为你找到" + nlpData.data.lxresult.data.detailslist.size() + "个结果", null);
+                    final List<SearchByAIBean> responseList = new ArrayList<SearchByAIBean>();
+                    for(TppData.DetailsListBean detail: nlpData.data.lxresult.data.detailslist){
+                        //TODO 添加影片到列表
+                        responseList.add(new SearchByAIBean(nlpData.answer.text, messageType, MESSAGE_FROM_AI));
+                    }
+                    EventBus.getDefault().post(new SearchByAIEventBean(responseList));
+                } else if (nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text)) {
+                    aiuiService.tts(nlpData.answer.text, null);
+                    final List<SearchByAIBean> responseList = new ArrayList<SearchByAIBean>();
+                    responseList.add(new SearchByAIBean(nlpData.answer.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
+                    EventBus.getDefault().post(new SearchByAIEventBean(responseList));
+                }
+                break;
         }
     }
 
@@ -304,5 +334,15 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
                 //TODO AIUI 进入休眠 ，可以更新UI
                 break;
         }
+    }
+    //SlotsBean key-value 数据转换成Map 类型数据方便查找
+    private Map<String,String> formatSlotsToMap(List<NlpData.SlotsBean> slotsBeans){
+        Map<String,String> map = new HashMap<>();
+        if(slotsBeans == null||slotsBeans.size() ==0)
+            return map;
+        for(NlpData.SlotsBean slot:slotsBeans){
+            map.put(slot.name,slot.value);
+        }
+        return map;
     }
 }

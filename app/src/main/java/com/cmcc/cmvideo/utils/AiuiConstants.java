@@ -12,6 +12,7 @@ public class AiuiConstants {
      * 技能名(闲聊、频道、跳转充值页、展示流量、购票页、系统设置、投屏播放)
      */
     public final static String QA_SERVICE = "openQA";
+    public final static String VIDEO_SERVICE = "video";
 
     //指令控制技能名  如：开启/关闭语音助手、投屏指令
     public final static String CONTROL_MIGU= "LINGXI2018.control_migu";
@@ -28,11 +29,17 @@ public class AiuiConstants {
     //意图名
     public final static String CONTROL_INTENT = "Assistant";
     public final static String SREEN_INTENT = "Screen";
-
+    public final static String QUERY_INTENT = "QUERY";
     public final static String MEMBER_INTENT = "Member";
     public final static String INTERNET_INTENT = "InternetTraffic";
     public final static String TICKET_INTENT="Ticket";
     public final static String ACYIVITY_INTENT = "Activity";
     public final static String GCUSTOMER_INTENT= "Gcustomer";
 
+    //video 意图下各句子分词
+    public final static String VIDEO_AREA ="area";
+    public final static String VIDEO_CATEGORY ="category";
+    public final static String VIDEO_SCORE_DESCR ="scoreDescr";
+    public final static String VIDEO_TIME_DESCR ="timeDescr";
+    public final static String VIDEO_TAG ="tag";
 }
