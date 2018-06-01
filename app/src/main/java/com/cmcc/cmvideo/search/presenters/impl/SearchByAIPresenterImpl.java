@@ -183,8 +183,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
                 //业务查询与办理
                 intentQuery(intent);
                 break;
-
-
+            case AiuiConstants.VIDEO_SERVICE:
+                intentVideo(mData);
+                break;
             case AiuiConstants.CONTROL_MIGU:
                 //指令控制  如：打开语音助手/投屏播放
                 intentControl(mData, intent);
@@ -233,11 +234,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
                         //TODO 添加影片到列表
                         responseList.add(new SearchByAIBean(nlpData.answer.text, messageType, MESSAGE_FROM_AI));
                     }
-                    EventBus.getDefault().post(new SearchByAIEventBean(responseList));
-                } else if (nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text)) {
-                    aiuiService.tts(nlpData.answer.text, null);
-                    final List<SearchByAIBean> responseList = new ArrayList<SearchByAIBean>();
-                    responseList.add(new SearchByAIBean(nlpData.answer.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
                     EventBus.getDefault().post(new SearchByAIEventBean(responseList));
                 }
                 break;
@@ -314,6 +310,18 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
         List<SearchByAIBean> userRequestList = new ArrayList<SearchByAIBean>();
         userRequestList.add(new SearchByAIBean(nlpData.getAnswer().text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
         EventBus.getDefault().post(new SearchByAIEventBean(userRequestList));
+    }
+
+    /**
+     * 处理视频技能
+     */
+    private void intentVideo(NlpData nlpData) {
+        if (nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text)) {
+            aiuiService.tts(nlpData.answer.text, null);
+            final List<SearchByAIBean> responseList = new ArrayList<SearchByAIBean>();
+            responseList.add(new SearchByAIBean(nlpData.answer.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
+            EventBus.getDefault().post(new SearchByAIEventBean(responseList));
+        }
     }
 
 
