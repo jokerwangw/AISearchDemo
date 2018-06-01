@@ -19,6 +19,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,16 +54,24 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
 
     @BindView(R.id.search_by_ai_recyclerView)
     RecyclerView mSearchRecyclerView;
+    @BindView(R.id.rl_search_voice_input_ring)
+    RelativeLayout rlSearchVoiceInputRing;
+    @BindView(R.id.rl_search_voice_input)
+    RelativeLayout rlSearchVoiceInput;
     @BindView(R.id.im_search_voice_input_ring)
     ImageView imSearchVoiceInputRing;
     @BindView(R.id.bt_search_voice_input)
     Button btSearchVoiceInput;
     @BindView(R.id.tv_title)
     TextView tvTitle;
+    @BindView(R.id.tv_cancel_search)
+    TextView tvCancelSearch;
     private SearchByAIPresenterImpl mSearchByAIPresenter;
     private Context mContext;
     private SearchByAIAdapter mSearchByAIAdapter;
     private IAIUIService aiuiService;
+    private long downTime = 0;
+    private long upTime = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,7 +90,6 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                 this);
         bindService(new Intent(this, AIUIService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
         initCustomView();
-        setViewAnimation(true);
         mSearchByAIPresenter.initListSearchItem();
     }
 
@@ -95,31 +103,18 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         btSearchVoiceInput.setOnTouchListener(onTouchListener);
     }
 
-    long downTime = 0;
-    long upTime = 0;
     private View.OnTouchListener onTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    if (aiuiService != null) {
-                        downTime = System.currentTimeMillis();
-                        tvTitle.setText(getResources().getString(R.string.listening));
-                        aiuiService.startRecordAudio();
-                    }
+                    downTime = System.currentTimeMillis();
+                    startSearch();
                     break;
                 case MotionEvent.ACTION_UP:
-                    if (aiuiService != null) {
-                        upTime = System.currentTimeMillis();
-                        long clickTime = upTime - downTime;
-                        if (clickTime <= 1000) {
-                            //点击事件
-                        } else {
-                            //长按事件
-                            tvTitle.setText(getResources().getString(R.string.cmvideo));
-                            aiuiService.stopRecordAudio();
-                        }
-                    }
+                    upTime = System.currentTimeMillis();
+                    long clickTime = upTime - downTime;
+                    checkClickType(clickTime);
                     break;
             }
             return true;
@@ -139,6 +134,25 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     };
 
     /**
+     * 区分用户搜索的点击事件类型
+     *
+     * @param clickTime
+     */
+    private void checkClickType(long clickTime) {
+        if (clickTime <= 1000) {
+            //点击事件
+            closeViewAnimation();
+            tvCancelSearch.setVisibility(View.VISIBLE);
+            rlSearchVoiceInputRing.setVisibility(View.GONE);
+            rlSearchVoiceInput.setVisibility(View.GONE);
+            setViewAnimation(true);
+        } else {
+            //长按事件
+            closeSearch();
+        }
+    }
+
+    /**
      * 标题栏关闭事件
      */
     @OnClick(R.id.bt_title_close)
@@ -153,24 +167,13 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     public void clickTitleVoice() {
     }
 
-    //    /**
-    //     * 点击事件
-    //     */
-    //    @OnClick(R.id.bt_search_voice_input)
-    //    public void clickSearchInputVoice() {
-    //        setViewAnimation(true);
-    //        mSearchByAIPresenter.updateUserRequestListItem();
-    //    }
-
-    //    /**
-    //     * 长按事件
-    //     */
-    //    @OnLongClick(R.id.bt_search_voice_input)
-    //    public boolean longClickSearchInputVoice() {
-    //        setViewAnimation(false);
-    //        mSearchByAIPresenter.updateUserRequestListItem();
-    //        return true;
-    //    }
+    /**
+     * 取消搜索
+     */
+    @OnClick(R.id.tv_cancel_search)
+    public void clickCancelSearch() {
+        closeSearch();
+    }
 
     /**
      * 显示AI初始化数据
@@ -211,6 +214,33 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         }
     }
 
+
+    /**
+     * 开始搜索之后处理相关操作
+     */
+    private void startSearch() {
+        if (aiuiService != null) {
+            tvTitle.setText(getResources().getString(R.string.listening));
+            aiuiService.startRecordAudio();
+            rlSearchVoiceInputRing.setVisibility(View.VISIBLE);
+            setViewAnimation(false);
+        }
+    }
+
+    /**
+     * 关闭搜索之后处理相关操作
+     */
+    private void closeSearch() {
+        if (aiuiService != null) {
+            aiuiService.stopRecordAudio();
+        }
+        tvCancelSearch.setVisibility(View.GONE);
+        rlSearchVoiceInputRing.setVisibility(View.GONE);
+        rlSearchVoiceInput.setVisibility(View.VISIBLE);
+        tvTitle.setText(getResources().getString(R.string.cmvideo));
+        closeViewAnimation();
+    }
+
     /**
      * 给控件设置动画
      */
@@ -219,10 +249,8 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         Animation animationRotate = AnimationUtils.loadAnimation(this, R.anim.search_by_ai_ring_rotate);
         Animation animationAlpha = AnimationUtils.loadAnimation(this, R.anim.search_by_ai_voice_bt_alpha);
         if (isClick) {
-            imSearchVoiceInputRing.setVisibility(View.GONE);
             btSearchVoiceInput.startAnimation(animationAlpha);
         } else {
-            imSearchVoiceInputRing.setVisibility(View.VISIBLE);
             imSearchVoiceInputRing.startAnimation(animationRotate);
             btSearchVoiceInput.startAnimation(animationAlpha);
         }
@@ -232,8 +260,14 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
      * 关闭动画
      */
     private void closeViewAnimation() {
-        imSearchVoiceInputRing.clearAnimation();
-        btSearchVoiceInput.clearAnimation();
+        if (null != imSearchVoiceInputRing) {
+            imSearchVoiceInputRing.clearAnimation();
+            imSearchVoiceInputRing.invalidate();
+        }
+        if (null != btSearchVoiceInput) {
+            btSearchVoiceInput.clearAnimation();
+            btSearchVoiceInput.invalidate();
+        }
     }
 
     @Override

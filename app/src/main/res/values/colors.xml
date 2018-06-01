@@ -6,6 +6,9 @@
 
 
     <color name="white">#FFFFFF</color>
-
+    <color name="search_by_ai_bg_start_color">#3A3B6C</color>
+    <color name="search_by_ai_bg_end_color">#151541</color>
+    <color name="search_by_ai_bg_cancel_start_color">#FCE49B</color>
+    <color name="search_by_ai_bg_cancel_end_color">#FBBA86</color>
 
 </resources>
