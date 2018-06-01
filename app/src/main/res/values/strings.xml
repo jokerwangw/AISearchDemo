@@ -2,4 +2,5 @@
     <string name="app_name">AISearchDemo</string>
     <string name="listening">正在聆听...</string>
     <string name="cmvideo">咪咕视频</string>
+    <string name="cancel_search">取消搜索</string>
 </resources>

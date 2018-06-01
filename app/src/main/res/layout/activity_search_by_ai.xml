@@ -49,21 +49,49 @@
     <RelativeLayout
         android:id="@+id/search_input_area"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_150dp"
+        android:layout_height="@dimen/dimen_170dp"
         android:layout_alignParentBottom="true">
 
-        <ImageView
-            android:id="@+id/im_search_voice_input_ring"
-            android:layout_width="@dimen/dimen_136dp"
-            android:layout_height="@dimen/dimen_136dp"
-            android:layout_centerInParent="true"
-            android:src="@mipmap/search_by_ai_icon_ring"/>
+        <TextView
+            android:id="@+id/tv_cancel_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/search_by_ai_cancel_search_bg"
+            android:text="@string/cancel_search"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_16dp"
+            android:visibility="gone"
+            />
 
-        <Button
-            android:id="@+id/bt_search_voice_input"
-            android:layout_width="@dimen/dimen_80dp"
-            android:layout_height="@dimen/dimen_80dp"
+        <RelativeLayout
+            android:id="@+id/rl_search_voice_input_ring"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:background="@mipmap/search_by_ai_input_voice_bt"/>
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/im_search_voice_input_ring"
+                android:layout_width="@dimen/dimen_136dp"
+                android:layout_height="@dimen/dimen_136dp"
+                android:src="@mipmap/search_by_ai_icon_ring"
+                />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_search_voice_input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="visible">
+
+            <Button
+                android:id="@+id/bt_search_voice_input"
+                android:layout_width="@dimen/dimen_80dp"
+                android:layout_height="@dimen/dimen_80dp"
+                android:layout_centerInParent="true"
+                android:background="@mipmap/search_by_ai_input_voice_bt"/>
+        </RelativeLayout>
     </RelativeLayout>
 </RelativeLayout>
