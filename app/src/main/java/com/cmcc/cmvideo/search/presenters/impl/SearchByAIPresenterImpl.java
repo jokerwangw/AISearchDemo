@@ -27,11 +27,14 @@ import com.iflytek.aiui.AIUIConstant;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_FROM_AI;
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_FROM_USER;
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_NORMAL;
+import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_THE_LATEST_VIDEO;
 
 /**
  * Created by Yyw on 2018/5/21.
@@ -114,7 +117,14 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     @Override
     public void setAIUIService(IAIUIService service) {
         aiuiService = service;
+        //{"client_id":"897ddadc222ec9c20651da355daee9cc","msisdn":"13764279837","user_id":"553782460"}
+        Map<String,String> map = new HashMap<String,String>(){{
+            put("msisdn","13764279837");
+            put("user_id","553782460");
+            put("client_id","897ddadc222ec9c20651da355daee9cc");
+        }};
         aiuiService.setAIUIEventListener(this);
+        aiuiService.setUserParam(map);
     }
 
     @Override
@@ -193,7 +203,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
             return;
         if (nlpData.data.lxresult.data.detailslist != null && nlpData.data.lxresult.data.detailslist.size() > 0) {
             aiuiService.tts("为你找到" + nlpData.data.lxresult.data.detailslist.size() + "个结果", null);
-            //TODO 展示图片列表
+            final List<SearchByAIBean> responseList = new ArrayList<SearchByAIBean>();
+            responseList.add(new SearchByAIBean(nlpData.answer.text, MESSAGE_TYPE_THE_LATEST_VIDEO, MESSAGE_FROM_AI));
+            EventBus.getDefault().post(new SearchByAIEventBean(responseList));
         } else if (nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text)) {
             aiuiService.tts(nlpData.answer.text, null);
             final List<SearchByAIBean> responseList = new ArrayList<SearchByAIBean>();

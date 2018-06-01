@@ -29,7 +29,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class AIUIService extends Service {
     private static final String TAG = "AIUIService";
@@ -39,6 +42,7 @@ public class AIUIService extends Service {
     private int mCurrentState = AIUIConstant.STATE_IDLE;
     private SpeechSynthesizer mTTs;
     private AIUIEventListener eventListener;
+    private Map<String,String> userInfoMap;
 
     @Override
     public void onCreate() {
@@ -106,6 +110,27 @@ public class AIUIService extends Service {
         @Override
         public void setAIUIEventListener(AIUIEventListener aiuiEventListener) {
             eventListener = aiuiEventListener;
+        }
+
+        @Override
+        public void setUserParam(Map<String, String> map) {
+            userInfoMap = map;
+            if(userInfoMap!=null&&userInfoMap.size()>0){
+                try {
+                    JSONObject objectJson = new JSONObject();
+                    JSONObject paramJson = new JSONObject();
+                    //用户数据添加的初始化参数中
+                    Iterator<Map.Entry<String,String>> iterator = userInfoMap.entrySet().iterator();
+                    while (iterator.hasNext()){
+                        Map.Entry<String,String> item= iterator.next();
+                        paramJson.put(item.getKey(),item.getValue());
+                    }
+                    objectJson.put("userparams",paramJson);
+                    sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -270,19 +295,14 @@ public class AIUIService extends Service {
      */
     private String getAIUIParams() {
         String params = "";
-
         AssetManager assetManager = getResources().getAssets();
         try {
             InputStream ins = assetManager.open("cfg/aiui_phone.cfg");
             byte[] buffer = new byte[ins.available()];
-
             ins.read(buffer);
             ins.close();
-
             params = new String(buffer);
-
             JSONObject paramsJson = new JSONObject(params);
-
             params = paramsJson.toString();
         } catch (IOException e) {
             e.printStackTrace();
