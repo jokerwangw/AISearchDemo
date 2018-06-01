@@ -13,8 +13,12 @@ import com.cmcc.cmvideo.base.BaseRecyclerAdapter;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_FROM_AI;
+import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_APPOINTMENT;
+import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_CAN_ASK_AI;
+import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_EVERYONE_IS_WATCHING;
+import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_NORMAL;
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_OTHER;
+import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_THE_LATEST_VIDEO;
 
 /**
  * Created by Yyw on 2018/5/21.
@@ -35,8 +39,16 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
         if (null != searchByAIBean) {
             if (MESSAGE_TYPE_NORMAL == searchByAIBean.getMessageType()) {
                 return MESSAGE_TYPE_NORMAL;
-            } else if (MESSAGE_TYPE_OTHER == searchByAIBean.getMessageType()) {
-                return MESSAGE_TYPE_OTHER;
+            } else if (MESSAGE_TYPE_CAN_ASK_AI == searchByAIBean.getMessageType()) {
+                return MESSAGE_TYPE_CAN_ASK_AI;
+            }else if (MESSAGE_TYPE_APPOINTMENT == searchByAIBean.getMessageType()) {
+                return MESSAGE_TYPE_APPOINTMENT;
+            }else if (MESSAGE_TYPE_EVERYONE_IS_WATCHING == searchByAIBean.getMessageType()) {
+                return MESSAGE_TYPE_EVERYONE_IS_WATCHING;
+            }else if (MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE == searchByAIBean.getMessageType()) {
+                return MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
+            }else if (MESSAGE_TYPE_THE_LATEST_VIDEO == searchByAIBean.getMessageType()) {
+                return MESSAGE_TYPE_THE_LATEST_VIDEO;
             }
         }
         return -1;
@@ -49,7 +61,21 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             if (MESSAGE_TYPE_NORMAL == viewType) {
                 View view = layoutInflater.inflate(R.layout.item_search_by_ai_normal, null);
                 return new ItemSearchByAiNormalViewHolder(view);
-            } else if (MESSAGE_TYPE_OTHER == viewType) {
+            } else if (MESSAGE_TYPE_CAN_ASK_AI == viewType) {
+                View view = layoutInflater.inflate(R.layout.item_search_by_ai_can_ask_ai, null);
+                return new ItemSearchByAiNormalViewHolder(view);
+            }else if (MESSAGE_TYPE_APPOINTMENT == viewType) {
+                View view = layoutInflater.inflate(R.layout.item_search_by_ai_appointment, null);
+                return new ItemSearchByAiNormalViewHolder(view);
+            }else if (MESSAGE_TYPE_EVERYONE_IS_WATCHING == viewType) {
+                View view = layoutInflater.inflate(R.layout.item_search_by_ai_everyone_is_watching, null);
+                return new ItemSearchByAiNormalViewHolder(view);
+            }else if (MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE == viewType) {
+                View view = layoutInflater.inflate(R.layout.item_search_by_ai_guess_what_you_like, null);
+                return new ItemSearchByAiNormalViewHolder(view);
+            }else if (MESSAGE_TYPE_THE_LATEST_VIDEO == viewType) {
+                View view = layoutInflater.inflate(R.layout.item_search_by_ai_the_latest_video, null);
+                return new ItemSearchByAiNormalViewHolder(view);
             }
 
         }
