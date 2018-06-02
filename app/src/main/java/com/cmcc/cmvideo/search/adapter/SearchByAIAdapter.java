@@ -11,13 +11,19 @@ import android.widget.TextView;
 
 import com.cmcc.cmvideo.R;
 import com.cmcc.cmvideo.base.BaseRecyclerAdapter;
+import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
+
+import java.util.List;
 
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_FROM_AI;
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_APPOINTMENT;
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_CAN_ASK_AI;
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_EVERYONE_IS_WATCHING;
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
+import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
+import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
+import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_I_WANT_TO_SEE;
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_NORMAL;
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_THE_LATEST_VIDEO;
 
@@ -46,8 +52,14 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 return MESSAGE_TYPE_APPOINTMENT;
             } else if (MESSAGE_TYPE_EVERYONE_IS_WATCHING == searchByAIBean.getMessageType()) {
                 return MESSAGE_TYPE_EVERYONE_IS_WATCHING;
+            } else if (MESSAGE_TYPE_I_WANT_TO_SEE == searchByAIBean.getMessageType()) {
+                return MESSAGE_TYPE_I_WANT_TO_SEE;
             } else if (MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE == searchByAIBean.getMessageType()) {
                 return MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
+            } else if (MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL == searchByAIBean.getMessageType()) {
+                return MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
+            } else if (MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL == searchByAIBean.getMessageType()) {
+                return MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
             } else if (MESSAGE_TYPE_THE_LATEST_VIDEO == searchByAIBean.getMessageType()) {
                 return MESSAGE_TYPE_THE_LATEST_VIDEO;
             }
@@ -71,9 +83,18 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             } else if (MESSAGE_TYPE_EVERYONE_IS_WATCHING == viewType) {
                 View view = layoutInflater.inflate(R.layout.item_search_by_ai_everyone_is_watching, null);
                 return new ItemSearchByAIEveryoneISWatchingViewHolder(view);
+            } else if (MESSAGE_TYPE_I_WANT_TO_SEE == viewType) {
+                View view = layoutInflater.inflate(R.layout.item_search_by_ai_i_want_to_see, null);
+                return new ItemSearchByAIEveryoneIWantTOSeeViewHolder(view);
             } else if (MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE == viewType) {
                 View view = layoutInflater.inflate(R.layout.item_search_by_ai_guess_what_you_like, null);
                 return new ItemSearchByAIGuessWhatYouLikeViewHolder(view);
+            } else if (MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL == viewType) {
+                View view = layoutInflater.inflate(R.layout.item_search_by_ai_guess_what_you_like_lise_horizontal, null);
+                return new ItemSearchByAIGuessWhatYouLikeListHorizontalViewHolder(view);
+            } else if (MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL == viewType) {
+                View view = layoutInflater.inflate(R.layout.item_search_by_ai_guess_what_you_like_list_vertical, null);
+                return new ItemSearchByAIGuessWhatYouLikeListVerticalViewHolder(view);
             } else if (MESSAGE_TYPE_THE_LATEST_VIDEO == viewType) {
                 View view = layoutInflater.inflate(R.layout.item_search_by_ai_the_latest_video, null);
                 return new ItemSearchByAITheLatestVideoViewHolder(view);
@@ -88,11 +109,6 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             if (holder instanceof ItemSearchByAINormalViewHolder) {
                 ItemSearchByAINormalViewHolder itemSearchByAiNormalViewHolder = (ItemSearchByAINormalViewHolder) holder;
                 if (TextUtils.equals(searchByAIBean.getMessageFrom(), MESSAGE_FROM_AI)) {
-                    //                    if (0 == position) {
-                    //                        itemSearchByAiNormalViewHolder.imHead.setVisibility(View.VISIBLE);
-                    //                    } else {
-                    //                        itemSearchByAiNormalViewHolder.imHead.setVisibility(View.INVISIBLE);
-                    //                    }
                     itemSearchByAiNormalViewHolder.tvMessageFromAI.setVisibility(View.VISIBLE);
                     itemSearchByAiNormalViewHolder.tvMessageFromAI.setText(searchByAIBean.getMessage());
                     itemSearchByAiNormalViewHolder.tvMessageFromUser.setVisibility(View.GONE);
@@ -102,6 +118,34 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                     itemSearchByAiNormalViewHolder.tvMessageFromUser.setVisibility(View.VISIBLE);
                     itemSearchByAiNormalViewHolder.tvMessageFromUser.setText(searchByAIBean.getMessage());
                 }
+            } else if (holder instanceof ItemSearchByAICanAskAIViewHolder) {
+            } else if (holder instanceof ItemSearchByAIAppointmentViewHolder) {
+            } else if (holder instanceof ItemSearchByAIEveryoneISWatchingViewHolder) {
+                List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
+                if (null != videoList) {
+
+                }
+            } else if (holder instanceof ItemSearchByAIEveryoneIWantTOSeeViewHolder) {
+                List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
+                if (null != videoList) {
+
+                }
+            } else if (holder instanceof ItemSearchByAIGuessWhatYouLikeViewHolder) {
+                List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
+                if (null != videoList) {
+
+                }
+            } else if (holder instanceof ItemSearchByAIGuessWhatYouLikeListHorizontalViewHolder) {
+                List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
+                if (null != videoList) {
+
+                }
+            } else if (holder instanceof ItemSearchByAIGuessWhatYouLikeListVerticalViewHolder) {
+                List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
+                if (null != videoList) {
+
+                }
+            } else if (holder instanceof ItemSearchByAITheLatestVideoViewHolder) {
             }
         }
     }
@@ -153,11 +197,41 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
     }
 
     /**
+     * 类型：MESSAGE_TYPE_I_WANT_TO_SEE
+     */
+    public class ItemSearchByAIEveryoneIWantTOSeeViewHolder extends BaseViewHolder {
+
+        public ItemSearchByAIEveryoneIWantTOSeeViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+    /**
      * 类型：MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE
      */
     public class ItemSearchByAIGuessWhatYouLikeViewHolder extends BaseViewHolder {
 
         public ItemSearchByAIGuessWhatYouLikeViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+    /**
+     * 类型：MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL
+     */
+    public class ItemSearchByAIGuessWhatYouLikeListHorizontalViewHolder extends BaseViewHolder {
+
+        public ItemSearchByAIGuessWhatYouLikeListHorizontalViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+    /**
+     * 类型：MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL
+     */
+    public class ItemSearchByAIGuessWhatYouLikeListVerticalViewHolder extends BaseViewHolder {
+
+        public ItemSearchByAIGuessWhatYouLikeListVerticalViewHolder(View itemView) {
             super(itemView);
         }
     }
