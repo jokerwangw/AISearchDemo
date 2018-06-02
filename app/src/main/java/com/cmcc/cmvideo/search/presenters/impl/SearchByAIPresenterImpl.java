@@ -1,6 +1,7 @@
 package com.cmcc.cmvideo.search.presenters.impl;
 
 import android.content.Context;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ import java.util.logging.Handler;
 
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_FROM_AI;
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_FROM_USER;
+import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_CAN_ASK_AI;
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_EVERYONE_IS_WATCHING;
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_NORMAL;
@@ -59,6 +61,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     private Gson gson;
     private String intent;
     private NlpData mData = null;
+    private android.os.Handler mHandler;
 
     public SearchByAIPresenterImpl(
             Executor executor,
@@ -323,10 +326,40 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
 
     @Override
     public void onEvent(AIUIEvent event) {
+        switch (event.eventType){
+            case AIUIConstant.EVENT_WAKEUP:
+                //TODO AIUI 被唤醒
+                break;
+            case AIUIConstant.EVENT_SLEEP:
+                //TODO AIUI 进入休眠 ，可以更新UI
+                break;
+            case AIUIConstant.EVENT_ERROR:
+                if (event.arg1 == 10120) {
+                    // TODO 网络有点问题 ，超时
+                }
+                break;
+            case AIUIConstant.EVENT_START_RECORD:
+                mHandler =  new android.os.Handler(Looper.getMainLooper());
+                mHandler.postDelayed(runnable,5000);
+                break;
+            case AIUIConstant.EVENT_STOP_RECORD:
+
+                break;
+            case AIUIConstant.EVENT_VAD:
+
+                break;
+        }
         if (null != event) {
             EventBus.getDefault().post(new SearchByAIRefreshUIEventBean(event));
         }
     }
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            // TODO 显示功能引导页面
+            sendMessage("",MESSAGE_TYPE_CAN_ASK_AI,MESSAGE_FROM_AI);
+        }
+    };
 
     //SlotsBean key-value 数据转换成Map 类型数据方便查找
     private Map<String, String> formatSlotsToMap(List<NlpData.SlotsBean> slotsBeans) {
@@ -356,6 +389,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
      * @param videoList 影片内容影片数据，
      */
     private void sendMessage(String msg, int messageType, String msgFrom, List<TppData.DetailsListBean> videoList){
+        mHandler.removeCallbacks(runnable);
         List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
         messageList.add(new SearchByAIBean(msg, messageType, msgFrom,videoList));
         EventBus.getDefault().post(new SearchByAIEventBean(messageList));
