@@ -36,24 +36,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Handler;
 
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_FROM_AI;
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_FROM_USER;
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_CAN_ASK_AI;
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_EVERYONE_IS_WATCHING;
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_NORMAL;
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_THE_LATEST_VIDEO;
+import static com.cmcc.cmvideo.utils.Constants.*;
 
 /**
  * Created by Yyw on 2018/5/21.
  * Describe:
  */
 
-public class SearchByAIPresenterImpl extends AbstractPresenter implements
-        SearchByAIPresenter, AIUIService.AIUIEventListener,
-        InitSearchByAIListInteractor.Callback,
-        UpdateUserRequestListInteractor.Callback,
-        UpdateAIResponseListInteractor.Callback {
+public class SearchByAIPresenterImpl extends AbstractPresenter implements SearchByAIPresenter, AIUIService.AIUIEventListener, InitSearchByAIListInteractor.Callback, UpdateUserRequestListInteractor.Callback, UpdateAIResponseListInteractor.Callback {
     private final String TAG = "SearchByAIPresenterImpl";
     private Context mContext;
     private SearchByAIPresenter.View mView;
@@ -65,16 +55,12 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     private long startTime = 0;
     private final int TIME_OUT = 5000;
 
-    public SearchByAIPresenterImpl(
-            Executor executor,
-            MainThread mainThread,
-            SearchByAIPresenter.View view,
-            Context context) {
+    public SearchByAIPresenterImpl(Executor executor, MainThread mainThread, SearchByAIPresenter.View view, Context context) {
         super(executor, mainThread);
         mView = view;
         mContext = context;
         gson = new Gson();
-        mHandler =  new android.os.Handler(Looper.getMainLooper());
+        mHandler = new android.os.Handler(Looper.getMainLooper());
     }
 
     @Override
@@ -158,22 +144,20 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     }
 
     public void onIatResult(String result) {
-        if (TextUtils.isEmpty(result))
-            return;
+        if (TextUtils.isEmpty(result)) return;
         Logger.debug("听写用户输入数据=====" + result);
-        sendMessage(result,MESSAGE_TYPE_NORMAL,MESSAGE_FROM_USER);
+        sendMessage(result, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
     }
 
     public void onNlpResult(String result) {
-        if (TextUtils.isEmpty(result))
-            return;
+        if (TextUtils.isEmpty(result)) return;
         mData = gson.fromJson(result, NlpData.class);
         if (mData.rc == 4) {
             //播报
-            if((System.currentTimeMillis() -startTime)>TIME_OUT){
+            if ((System.currentTimeMillis() - startTime) > TIME_OUT) {
                 // 超过5秒表示 且rc=4（无法解析出语义） ，可显示推荐说法卡片
-                sendMessage("",MESSAGE_TYPE_CAN_ASK_AI,MESSAGE_FROM_AI);
-            }else {
+                sendMessage("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI);
+            } else {
                 aiuiService.tts(AiuiConstants.ERROR_MESSAGE, null);
             }
             return;
@@ -207,54 +191,69 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     }
 
     public void onTppResult(String result) {
-        if (TextUtils.isEmpty(result))
-            return;
+        if (TextUtils.isEmpty(result)) return;
         NlpData nlpData = gson.fromJson(result, NlpData.class);
         //判断是否解出了语义，并且当前技能是video
-        if (nlpData.rc == 4 || !"video".equals(nlpData.service))
-            return;
+        if (nlpData.rc == 4 || !"video".equals(nlpData.service)) return;
 
         if (nlpData.data == null && nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text)) {
             //没有影片数据且存在answer 则播报
             aiuiService.tts(nlpData.answer.text, null);
-            sendMessage(nlpData.answer.text,MESSAGE_TYPE_NORMAL,MESSAGE_FROM_AI);
+            sendMessage(nlpData.answer.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
             return;
         }
         //语义后处理没有返回数据则直接退出
-        if (nlpData.data.lxresult == null)
-            return;
+        if (nlpData.data.lxresult == null) return;
 
         switch (nlpData.semantic.get(0).intent) {
             case AiuiConstants.QUERY_INTENT:
                 Map<String, String> map = formatSlotsToMap(nlpData.semantic.get(0).slots);
                 int messageType = MESSAGE_TYPE_NORMAL;
-                while (true) {
-                    //TODO 判断意图是使用哪个卡片展示
-                    if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) &&
-                            map.get(AiuiConstants.VIDEO_CATEGORY).equals("电影")) { //猜你喜欢
-                        messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
+                if (nlpData.data.lxresult.data.detailslist != null &&
+                        nlpData.data.lxresult.data.detailslist.size() > 0) {
+                    while (true) {
+                        //TODO 判断意图是使用哪个卡片展示
+                        if (map.containsKey(AiuiConstants.VIDEO_CATEGORY)) { //猜你喜欢
+                            String category = map.get(AiuiConstants.VIDEO_CATEGORY);
+                            boolean hasSubserials = hasSubserials(nlpData);
+                            if (category.equals("电影")) {
+                                messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
+                            } else if ((category.equals("电视剧") || category.equals("纪实") || category.equals("动漫")) && hasSubserials) {
+                                messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
+                            } else if(category.equals("综艺")&& hasSubserials){
+                                messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
+                            }
+                            break;
+                        }
+                        if (map.containsKey(AiuiConstants.VIDEO_TIME_DESCR)) { // 有时间 的表示最近好看的电影
+                            messageType = MESSAGE_TYPE_THE_LATEST_VIDEO;
+                            break;
+                        }
+                        if (map.containsKey(AiuiConstants.VIDEO_TAG) || map.containsKey(AiuiConstants.VIDEO_NAME)) {  //带标签的表示大家都在看
+                            messageType = MESSAGE_TYPE_EVERYONE_IS_WATCHING;
+                            break;
+                        }
                         break;
                     }
-                    if (map.containsKey(AiuiConstants.VIDEO_TIME_DESCR)) { // 有时间 的表示最近好看的电影
-                        messageType = MESSAGE_TYPE_THE_LATEST_VIDEO;
-                        break;
-                    }
-                    if (map.containsKey(AiuiConstants.VIDEO_TAG) ||
-                            map.containsKey(AiuiConstants.VIDEO_NAME)) {  //带标签的表示大家都在看
-                        messageType = MESSAGE_TYPE_EVERYONE_IS_WATCHING;
-                        break;
-                    }
-                    break;
                 }
-
-                if (nlpData.data.lxresult.data.detailslist != null && nlpData.data.lxresult.data.detailslist.size() > 0) {
-                    aiuiService.tts("为你找到" + nlpData.data.lxresult.data.detailslist.size() + "个结果", null);
-                    sendMessage(nlpData.answer.text,messageType,MESSAGE_FROM_AI,nlpData.data.lxresult.data.detailslist);
-                }
+                sendMessage(nlpData.answer != null ? nlpData.answer.text : "", messageType, MESSAGE_FROM_AI, nlpData.data.lxresult.data.detailslist);
                 break;
         }
     }
 
+    /**
+     * 是否存在剧集数据
+     *
+     * @param nlpData
+     * @return
+     */
+    private boolean hasSubserials(NlpData nlpData) {
+        if (nlpData.data.lxresult.data.detailslist == null || nlpData.data.lxresult.data.detailslist.size() == 0)
+            return false;
+        if (nlpData.data.lxresult.data.detailslist.get(0).subserials == null || nlpData.data.lxresult.data.detailslist.get(0).subserials.size() == 0)
+            return false;
+        return true;
+    }
 
     /**
      * 处理查询指令
@@ -322,14 +321,11 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     private void intentQa(String nlpHandle) {
         NlpData nlpData = gson.fromJson(nlpHandle, NlpData.class);
         aiuiService.tts(nlpData.getAnswer().text, null);
-        sendMessage(nlpData.getAnswer().text,MESSAGE_TYPE_NORMAL,MESSAGE_FROM_AI);
+        sendMessage(nlpData.getAnswer().text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
     }
 
     @Override
     public void onResult(String iatResult, String nlpReslult, String tppResult) {
-        Logger.debug(TAG,"Result【"+iatResult+"】【"+nlpReslult+"】【"+tppResult+"】");
-        //页面有返回，移除五秒超时消息
-        //mHandler.removeCallbacks(runnable);
         onIatResult(iatResult);
         onNlpResult(nlpReslult);
         onTppResult(tppResult);
@@ -337,7 +333,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
 
     @Override
     public void onEvent(AIUIEvent event) {
-        switch (event.eventType){
+        switch (event.eventType) {
             case AIUIConstant.EVENT_WAKEUP:
                 //TODO AIUI 被唤醒
                 break;
@@ -351,16 +347,16 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
                 break;
             case AIUIConstant.EVENT_START_RECORD:
                 // 录音开始就发送延时消息，当五秒内在sendMessage()方法中都没有移除消息时就说明 5秒超时了
-                mHandler.postDelayed(runnable,TIME_OUT);
+                mHandler.postDelayed(runnable, TIME_OUT);
                 startTime = System.currentTimeMillis();
                 break;
             case AIUIConstant.EVENT_STOP_RECORD:
                 break;
             case AIUIConstant.EVENT_VAD:
-                Logger.debug(TAG,"arg【"+event.arg1+"】【"+event.arg2+"】");
+                Logger.debug(TAG, "arg【" + event.arg1 + "】【" + event.arg2 + "】");
                 //用arg1标识前后端点或者音量信息:0(前端点)、1(音量)、2(后端点)、3（前端点超时）。
                 //当arg1取值为1时，arg2为音量大小。
-                if(event.arg1 == 0) {
+                if (event.arg1 == 0) {
                     //检测到前端点表示正在录音
                     mHandler.removeCallbacks(runnable);
                 }
@@ -370,19 +366,19 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
             EventBus.getDefault().post(new SearchByAIRefreshUIEventBean(event));
         }
     }
+
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
             // TODO 显示功能引导页面
-            sendMessage("",MESSAGE_TYPE_CAN_ASK_AI,MESSAGE_FROM_AI);
+            sendMessage("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI);
         }
     };
 
     //SlotsBean key-value 数据转换成Map 类型数据方便查找
     private Map<String, String> formatSlotsToMap(List<NlpData.SlotsBean> slotsBeans) {
         Map<String, String> map = new HashMap<>();
-        if (slotsBeans == null || slotsBeans.size() == 0)
-            return map;
+        if (slotsBeans == null || slotsBeans.size() == 0) return map;
         for (NlpData.SlotsBean slot : slotsBeans) {
             map.put(slot.name, slot.value);
         }
@@ -391,23 +387,26 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
 
     /**
      * 发送消息更新UI
-     * @param msg 消息内容
+     *
+     * @param msg         消息内容
      * @param messageType 消息内容（普通闲聊内容，影片内容）
-     * @param msgFrom 消息来源，
+     * @param msgFrom     消息来源，
      */
-    private void sendMessage(String msg, int messageType, String msgFrom){
-        sendMessage(msg,messageType,msgFrom,null);
+    private void sendMessage(String msg, int messageType, String msgFrom) {
+        sendMessage(msg, messageType, msgFrom, null);
     }
+
     /**
      * 发送消息更新UI
-     * @param msg 消息内容
+     *
+     * @param msg         消息内容
      * @param messageType 消息内容（普通闲聊内容，影片内容）
-     * @param msgFrom 消息来源，
-     * @param videoList 影片内容影片数据，
+     * @param msgFrom     消息来源，
+     * @param videoList   影片内容影片数据，
      */
-    private void sendMessage(String msg, int messageType, String msgFrom, List<TppData.DetailsListBean> videoList){
+    private void sendMessage(String msg, int messageType, String msgFrom, List<TppData.DetailsListBean> videoList) {
         List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
-        messageList.add(new SearchByAIBean(msg, messageType, msgFrom,videoList));
+        messageList.add(new SearchByAIBean(msg, messageType, msgFrom, videoList));
         EventBus.getDefault().post(new SearchByAIEventBean(messageList));
     }
 }
