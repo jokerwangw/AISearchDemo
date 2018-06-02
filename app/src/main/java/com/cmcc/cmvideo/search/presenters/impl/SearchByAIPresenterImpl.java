@@ -62,6 +62,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     private String intent;
     private NlpData mData = null;
     private android.os.Handler mHandler;
+    private long startTime = 0;
+    private final int TIME_OUT = 5000;
 
     public SearchByAIPresenterImpl(
             Executor executor,
@@ -72,6 +74,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
         mView = view;
         mContext = context;
         gson = new Gson();
+        mHandler =  new android.os.Handler(Looper.getMainLooper());
     }
 
     @Override
@@ -167,7 +170,12 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
         mData = gson.fromJson(result, NlpData.class);
         if (mData.rc == 4) {
             //播报
-            aiuiService.tts(AiuiConstants.ERROR_MESSAGE, null);
+            if((System.currentTimeMillis() -startTime)>TIME_OUT){
+                // 超过5秒表示 且rc=4（无法解析出语义） ，可显示推荐说法卡片
+                sendMessage("",MESSAGE_TYPE_CAN_ASK_AI,MESSAGE_FROM_AI);
+            }else {
+                aiuiService.tts(AiuiConstants.ERROR_MESSAGE, null);
+            }
             return;
         }
         String service = mData.service;
@@ -319,6 +327,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
 
     @Override
     public void onResult(String iatResult, String nlpReslult, String tppResult) {
+        Logger.debug(TAG,"Result【"+iatResult+"】【"+nlpReslult+"】【"+tppResult+"】");
+        //页面有返回，移除五秒超时消息
+        //mHandler.removeCallbacks(runnable);
         onIatResult(iatResult);
         onNlpResult(nlpReslult);
         onTppResult(tppResult);
@@ -340,14 +351,19 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
                 break;
             case AIUIConstant.EVENT_START_RECORD:
                 // 录音开始就发送延时消息，当五秒内在sendMessage()方法中都没有移除消息时就说明 5秒超时了
-                mHandler =  new android.os.Handler(Looper.getMainLooper());
-                mHandler.postDelayed(runnable,5000);
+                mHandler.postDelayed(runnable,TIME_OUT);
+                startTime = System.currentTimeMillis();
                 break;
             case AIUIConstant.EVENT_STOP_RECORD:
-
                 break;
             case AIUIConstant.EVENT_VAD:
-
+                Logger.debug(TAG,"arg【"+event.arg1+"】【"+event.arg2+"】");
+                //用arg1标识前后端点或者音量信息:0(前端点)、1(音量)、2(后端点)、3（前端点超时）。
+                //当arg1取值为1时，arg2为音量大小。
+                if(event.arg1 == 0) {
+                    //检测到前端点表示正在录音
+                    mHandler.removeCallbacks(runnable);
+                }
                 break;
         }
         if (null != event) {
@@ -390,8 +406,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
      * @param videoList 影片内容影片数据，
      */
     private void sendMessage(String msg, int messageType, String msgFrom, List<TppData.DetailsListBean> videoList){
-        //页面有返回，移除五秒超时消息
-        mHandler.removeCallbacks(runnable);
         List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
         messageList.add(new SearchByAIBean(msg, messageType, msgFrom,videoList));
         EventBus.getDefault().post(new SearchByAIEventBean(messageList));
