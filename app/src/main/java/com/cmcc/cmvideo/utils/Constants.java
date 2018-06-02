@@ -6,7 +6,6 @@ package com.cmcc.cmvideo.utils;
  */
 
 public class Constants {
-
     public final static String MESSAGE_FROM_AI = "message_from_ai";//消息来自AI
     public final static String MESSAGE_FROM_USER = "message_from_user";//消息来自用户
 
