@@ -88,11 +88,11 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             if (holder instanceof ItemSearchByAINormalViewHolder) {
                 ItemSearchByAINormalViewHolder itemSearchByAiNormalViewHolder = (ItemSearchByAINormalViewHolder) holder;
                 if (TextUtils.equals(searchByAIBean.getMessageFrom(), MESSAGE_FROM_AI)) {
-                    if (0 == position) {
-                        itemSearchByAiNormalViewHolder.imHead.setVisibility(View.VISIBLE);
-                    } else {
-                        itemSearchByAiNormalViewHolder.imHead.setVisibility(View.INVISIBLE);
-                    }
+                    //                    if (0 == position) {
+                    //                        itemSearchByAiNormalViewHolder.imHead.setVisibility(View.VISIBLE);
+                    //                    } else {
+                    //                        itemSearchByAiNormalViewHolder.imHead.setVisibility(View.INVISIBLE);
+                    //                    }
                     itemSearchByAiNormalViewHolder.tvMessageFromAI.setVisibility(View.VISIBLE);
                     itemSearchByAiNormalViewHolder.tvMessageFromAI.setText(searchByAIBean.getMessage());
                     itemSearchByAiNormalViewHolder.tvMessageFromUser.setVisibility(View.GONE);
@@ -131,6 +131,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             super(itemView);
         }
     }
+
     /**
      * 类型：MESSAGE_TYPE_APPOINTMENT
      */
@@ -140,6 +141,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             super(itemView);
         }
     }
+
     /**
      * 类型：MESSAGE_TYPE_EVERYONE_IS_WATCHING
      */
@@ -149,6 +151,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             super(itemView);
         }
     }
+
     /**
      * 类型：MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE
      */
@@ -158,6 +161,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             super(itemView);
         }
     }
+
     /**
      * 类型：MESSAGE_TYPE_THE_LATEST_VIDEO
      */
