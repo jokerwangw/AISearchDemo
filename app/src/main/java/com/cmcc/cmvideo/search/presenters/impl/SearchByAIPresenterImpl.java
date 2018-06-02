@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Handler;
 
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_FROM_AI;
 import static com.cmcc.cmvideo.utils.Constants.MESSAGE_FROM_USER;
@@ -152,9 +153,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     public void onIatResult(String result) {
         if (TextUtils.isEmpty(result)) return;
         Logger.debug("听写用户输入数据=====" + result);
-        List<SearchByAIBean> userRequestList = new ArrayList<SearchByAIBean>();
-        userRequestList.add(new SearchByAIBean(result, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER));
-        EventBus.getDefault().post(new SearchByAIEventBean(userRequestList));
+        sendMessage(result,MESSAGE_TYPE_NORMAL,MESSAGE_FROM_USER);
     }
 
     public void onNlpResult(String result) {
@@ -204,9 +203,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
         if (nlpData.data==null&&nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text)) {
             //没有影片数据且存在answer 则播报
             aiuiService.tts(nlpData.answer.text, null);
-            final List<SearchByAIBean> responseList = new ArrayList<SearchByAIBean>();
-            responseList.add(new SearchByAIBean(nlpData.answer.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
-            EventBus.getDefault().post(new SearchByAIEventBean(responseList));
+            sendMessage(nlpData.answer.text,MESSAGE_TYPE_NORMAL,MESSAGE_FROM_AI);
             return;
         }
         //语义后处理没有返回数据则直接退出
@@ -238,9 +235,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
 
                 if (nlpData.data.lxresult.data.detailslist != null && nlpData.data.lxresult.data.detailslist.size() > 0) {
                     aiuiService.tts("为你找到" + nlpData.data.lxresult.data.detailslist.size() + "个结果", null);
-                    final List<SearchByAIBean> responseList = new ArrayList<SearchByAIBean>();
-                    responseList.add(new SearchByAIBean(nlpData.answer.text, messageType, MESSAGE_FROM_AI,nlpData.data.lxresult.data.detailslist));
-                    EventBus.getDefault().post(new SearchByAIEventBean(responseList));
+                    sendMessage(nlpData.answer.text,messageType,MESSAGE_FROM_AI,nlpData.data.lxresult.data.detailslist);
                 }
                 break;
         }
@@ -313,9 +308,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     private void intentQa(String nlpHandle) {
         NlpData nlpData = gson.fromJson(nlpHandle, NlpData.class);
         aiuiService.tts(nlpData.getAnswer().text, null);
-        List<SearchByAIBean> userRequestList = new ArrayList<SearchByAIBean>();
-        userRequestList.add(new SearchByAIBean(nlpData.getAnswer().text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
-        EventBus.getDefault().post(new SearchByAIEventBean(userRequestList));
+        sendMessage(nlpData.getAnswer().text,MESSAGE_TYPE_NORMAL,MESSAGE_FROM_AI);
     }
 
     @Override
@@ -340,13 +333,12 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
                 }
                 break;
             case AIUIConstant.EVENT_START_RECORD:
-                Logger.debug(TAG,"EVENT_START_RECORD");
                 break;
             case AIUIConstant.EVENT_STOP_RECORD:
-                Logger.debug(TAG,"EVENT_STOP_RECORD");
+
                 break;
             case AIUIConstant.EVENT_VAD:
-                Logger.debug(TAG,"EVENT_VAD");
+
                 break;
         }
     }
@@ -359,5 +351,27 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
             map.put(slot.name,slot.value);
         }
         return map;
+    }
+
+    /**
+     * 发送消息更新UI
+     * @param msg 消息内容
+     * @param messageType 消息内容（普通闲聊内容，影片内容）
+     * @param msgFrom 消息来源，
+     */
+    private void sendMessage(String msg, int messageType, String msgFrom){
+        sendMessage(msg,messageType,msgFrom,null);
+    }
+    /**
+     * 发送消息更新UI
+     * @param msg 消息内容
+     * @param messageType 消息内容（普通闲聊内容，影片内容）
+     * @param msgFrom 消息来源，
+     * @param videoList 影片内容影片数据，
+     */
+    private void sendMessage(String msg, int messageType, String msgFrom, List<TppData.DetailsListBean> videoList){
+        List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
+        messageList.add(new SearchByAIBean(msg, messageType, msgFrom,videoList));
+        EventBus.getDefault().post(new SearchByAIEventBean(messageList));
     }
 }
