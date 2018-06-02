@@ -20,6 +20,7 @@ import com.cmcc.cmvideo.search.interactors.impl.UpdateAIResponseListInteractorIm
 import com.cmcc.cmvideo.search.interactors.impl.UpdateUserRequestListInteractorImpl;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
+import com.cmcc.cmvideo.search.model.SearchByAIRefreshUIEventBean;
 import com.cmcc.cmvideo.search.presenters.SearchByAIPresenter;
 import com.cmcc.cmvideo.utils.AiuiConstants;
 import com.google.gson.Gson;
@@ -50,7 +51,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
         InitSearchByAIListInteractor.Callback,
         UpdateUserRequestListInteractor.Callback,
         UpdateAIResponseListInteractor.Callback {
-    private final String TAG="SearchByAIPresenterImpl";
+    private final String TAG = "SearchByAIPresenterImpl";
     private Context mContext;
     private SearchByAIPresenter.View mView;
     private IAIUIService aiuiService;
@@ -121,10 +122,10 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     @Override
     public void setAIUIService(IAIUIService service) {
         aiuiService = service;
-        Map<String,String> map = new HashMap<String,String>(){{
-            put("msisdn","13764279837");
-            put("user_id","553782460");
-            put("client_id","897ddadc222ec9c20651da355daee9cc");
+        Map<String, String> map = new HashMap<String, String>() {{
+            put("msisdn", "13764279837");
+            put("user_id", "553782460");
+            put("client_id", "897ddadc222ec9c20651da355daee9cc");
         }};
         aiuiService.setAIUIEventListener(this);
         aiuiService.setUserParam(map);
@@ -150,7 +151,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     }
 
     public void onIatResult(String result) {
-        if (TextUtils.isEmpty(result)) return;
+        if (TextUtils.isEmpty(result))
+            return;
         Logger.debug("听写用户输入数据=====" + result);
         List<SearchByAIBean> userRequestList = new ArrayList<SearchByAIBean>();
         userRequestList.add(new SearchByAIBean(result, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER));
@@ -158,7 +160,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     }
 
     public void onNlpResult(String result) {
-        if (TextUtils.isEmpty(result)) return;
+        if (TextUtils.isEmpty(result))
+            return;
         mData = gson.fromJson(result, NlpData.class);
         if (mData.rc == 4) {
             //播报
@@ -201,7 +204,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
         if (nlpData.rc == 4 || !"video".equals(nlpData.service))
             return;
 
-        if (nlpData.data==null&&nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text)) {
+        if (nlpData.data == null && nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text)) {
             //没有影片数据且存在answer 则播报
             aiuiService.tts(nlpData.answer.text, null);
             final List<SearchByAIBean> responseList = new ArrayList<SearchByAIBean>();
@@ -210,26 +213,26 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
             return;
         }
         //语义后处理没有返回数据则直接退出
-        if(nlpData.data.lxresult == null)
+        if (nlpData.data.lxresult == null)
             return;
 
-        switch (nlpData.semantic.get(0).intent){
+        switch (nlpData.semantic.get(0).intent) {
             case AiuiConstants.QUERY_INTENT:
-                Map<String,String> map = formatSlotsToMap(nlpData.semantic.get(0).slots);
+                Map<String, String> map = formatSlotsToMap(nlpData.semantic.get(0).slots);
                 int messageType = MESSAGE_TYPE_NORMAL;
-                while (true){
+                while (true) {
                     //TODO 判断意图是使用哪个卡片展示
-                    if(map.containsKey(AiuiConstants.VIDEO_CATEGORY)&&
-                            map.get(AiuiConstants.VIDEO_CATEGORY).equals("电影")){ //猜你喜欢
+                    if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) &&
+                            map.get(AiuiConstants.VIDEO_CATEGORY).equals("电影")) { //猜你喜欢
                         messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
                         break;
                     }
-                    if(map.containsKey(AiuiConstants.VIDEO_TIME_DESCR)){ // 有时间 的表示最近好看的电影
+                    if (map.containsKey(AiuiConstants.VIDEO_TIME_DESCR)) { // 有时间 的表示最近好看的电影
                         messageType = MESSAGE_TYPE_THE_LATEST_VIDEO;
                         break;
                     }
-                    if(map.containsKey(AiuiConstants.VIDEO_TAG)||
-                            map.containsKey(AiuiConstants.VIDEO_NAME)){  //带标签的表示大家都在看
+                    if (map.containsKey(AiuiConstants.VIDEO_TAG) ||
+                            map.containsKey(AiuiConstants.VIDEO_NAME)) {  //带标签的表示大家都在看
                         messageType = MESSAGE_TYPE_EVERYONE_IS_WATCHING;
                         break;
                     }
@@ -239,7 +242,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
                 if (nlpData.data.lxresult.data.detailslist != null && nlpData.data.lxresult.data.detailslist.size() > 0) {
                     aiuiService.tts("为你找到" + nlpData.data.lxresult.data.detailslist.size() + "个结果", null);
                     final List<SearchByAIBean> responseList = new ArrayList<SearchByAIBean>();
-                    responseList.add(new SearchByAIBean(nlpData.answer.text, messageType, MESSAGE_FROM_AI,nlpData.data.lxresult.data.detailslist));
+                    responseList.add(new SearchByAIBean(nlpData.answer.text, messageType, MESSAGE_FROM_AI, nlpData.data.lxresult.data.detailslist));
                     EventBus.getDefault().post(new SearchByAIEventBean(responseList));
                 }
                 break;
@@ -327,36 +330,18 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
 
     @Override
     public void onEvent(AIUIEvent event) {
-        switch (event.eventType){
-            case AIUIConstant.EVENT_WAKEUP:
-                //TODO AIUI 被唤醒
-                break;
-            case AIUIConstant.EVENT_SLEEP:
-                //TODO AIUI 进入休眠 ，可以更新UI
-                break;
-            case AIUIConstant.EVENT_ERROR:
-                if (event.arg1 == 10120) {
-                   // TODO 网络有点问题 ，超时
-                }
-                break;
-            case AIUIConstant.EVENT_START_RECORD:
-                Logger.debug(TAG,"EVENT_START_RECORD");
-                break;
-            case AIUIConstant.EVENT_STOP_RECORD:
-                Logger.debug(TAG,"EVENT_STOP_RECORD");
-                break;
-            case AIUIConstant.EVENT_VAD:
-                Logger.debug(TAG,"EVENT_VAD");
-                break;
+        if (null != event) {
+            EventBus.getDefault().post(new SearchByAIRefreshUIEventBean(event));
         }
     }
+
     //SlotsBean key-value 数据转换成Map 类型数据方便查找
-    private Map<String,String> formatSlotsToMap(List<NlpData.SlotsBean> slotsBeans){
-        Map<String,String> map = new HashMap<>();
-        if(slotsBeans == null||slotsBeans.size() ==0)
+    private Map<String, String> formatSlotsToMap(List<NlpData.SlotsBean> slotsBeans) {
+        Map<String, String> map = new HashMap<>();
+        if (slotsBeans == null || slotsBeans.size() == 0)
             return map;
-        for(NlpData.SlotsBean slot:slotsBeans){
-            map.put(slot.name,slot.value);
+        for (NlpData.SlotsBean slot : slotsBeans) {
+            map.put(slot.name, slot.value);
         }
         return map;
     }
