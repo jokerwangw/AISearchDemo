@@ -29,21 +29,30 @@ import com.cmcc.cmvideo.base.ThreadExecutor;
 import com.cmcc.cmvideo.search.adapter.SearchByAIAdapter;
 import com.cmcc.cmvideo.search.aiui.AIUIService;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
+import com.cmcc.cmvideo.search.aiui.Logger;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
+import com.cmcc.cmvideo.search.model.SearchByAIRefreshUIEventBean;
 import com.cmcc.cmvideo.search.presenters.SearchByAIPresenter;
 import com.cmcc.cmvideo.search.presenters.impl.SearchByAIPresenterImpl;
+import com.iflytek.aiui.AIUIConstant;
+import com.iflytek.aiui.AIUIEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
+
+import static com.cmcc.cmvideo.utils.Constants.MESSAGE_FROM_AI;
+import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_CAN_ASK_AI;
+import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_NORMAL;
 
 /**
  * Created by Yyw on 2018/5/21.
@@ -66,6 +75,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     TextView tvTitle;
     @BindView(R.id.tv_cancel_search)
     TextView tvCancelSearch;
+    private final String TAG = "SearchByAIActivity";
     private SearchByAIPresenterImpl mSearchByAIPresenter;
     private Context mContext;
     private SearchByAIAdapter mSearchByAIAdapter;
@@ -194,6 +204,47 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     public void onMessageEvent(SearchByAIEventBean event) {
         if (null != event) {
             setAdapterData(false, event.getSearchByAIBeanList());
+        }
+    }
+
+    /**
+     * 根据相关事件更新UI
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageRefreshUIEvent(SearchByAIRefreshUIEventBean event) {
+        if (null != event) {
+            AIUIEvent aiuiEvent = event.getAiuiEvent();
+            switch (aiuiEvent.eventType) {
+                case AIUIConstant.EVENT_WAKEUP:
+                    //TODO AIUI 被唤醒
+                    break;
+                case AIUIConstant.EVENT_SLEEP:
+                    //TODO AIUI 进入休眠 ，可以更新UI
+                    closeSearch();
+                    break;
+                case AIUIConstant.EVENT_ERROR:
+                    if (aiuiEvent.arg1 == 10120) {
+                        // TODO 网络有点问题 ，超时
+                        closeSearch();
+                    }
+                    break;
+                case AIUIConstant.EVENT_START_RECORD:
+                    Logger.debug(TAG, "EVENT_START_RECORD");
+                    break;
+                case AIUIConstant.EVENT_STOP_RECORD:
+                    Logger.debug(TAG, "EVENT_STOP_RECORD");
+                    break;
+                case AIUIConstant.EVENT_VAD:
+                    Logger.debug(TAG, "EVENT_VAD");
+                    //5秒内无响应
+                    //closeSearch();
+                    //List<SearchByAIBean> searchByAIBeanList = new ArrayList<SearchByAIBean>();
+                    //searchByAIBeanList.add(new SearchByAIBean("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI));
+                    //setAdapterData(false, searchByAIBeanList);
+                    break;
+            }
         }
     }
 
