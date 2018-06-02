@@ -207,7 +207,7 @@ public class AIUIService extends Service {
             }
             //AIUI状态分发给各客户端监听
             if (eventListener != null){
-                eventListener.onEvent(event.eventType);
+                eventListener.onEvent(event);
             }
         }
     };
@@ -314,7 +314,7 @@ public class AIUIService extends Service {
 
     public interface AIUIEventListener{
         void  onResult(String iatResult,String nlpReslult,String tppResult);
-        void  onEvent(int eventType);
+        void  onEvent(AIUIEvent event);
     }
 
     private static Gson mGson;

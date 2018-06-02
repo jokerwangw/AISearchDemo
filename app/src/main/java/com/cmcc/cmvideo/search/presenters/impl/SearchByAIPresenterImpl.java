@@ -24,6 +24,7 @@ import com.cmcc.cmvideo.search.presenters.SearchByAIPresenter;
 import com.cmcc.cmvideo.utils.AiuiConstants;
 import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIConstant;
+import com.iflytek.aiui.AIUIEvent;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -333,13 +334,18 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
     }
 
     @Override
-    public void onEvent(int eventType) {
-        switch (eventType){
+    public void onEvent(AIUIEvent event) {
+        switch (event.eventType){
             case AIUIConstant.EVENT_WAKEUP:
                 //TODO AIUI 被唤醒
                 break;
             case AIUIConstant.EVENT_SLEEP:
                 //TODO AIUI 进入休眠 ，可以更新UI
+                break;
+            case AIUIConstant.EVENT_ERROR:
+                if (event.arg1 == 10120) {
+                   // TODO 网络有点问题 ，超时
+                }
                 break;
         }
     }
