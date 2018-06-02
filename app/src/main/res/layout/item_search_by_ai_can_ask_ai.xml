@@ -9,8 +9,6 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dimen_20dp"
-        android:layout_marginRight="@dimen/dimen_20dp"
         android:background="@mipmap/search_by_ai_ask_ai_bg"
         android:orientation="vertical">
 

@@ -1,7 +1,224 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
 
-</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_390dp"
+        android:background="@mipmap/search_by_ai_ask_ai_bg"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dimen_35dp"
+            android:layout_marginTop="@dimen/dimen_35dp"
+            android:text="最新影讯"
+            android:textColor="@color/appointment_movie_name"
+            android:textSize="@dimen/dimen_18dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dimen_35dp"
+            android:layout_marginRight="@dimen/dimen_35dp"
+            android:layout_marginTop="@dimen/dimen_8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/dimen_10dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="美人鱼"
+                android:textColor="@color/appointment_movie_time"/>
+
+            <TextView
+                android:layout_width="@dimen/dimen_10dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="美人鱼"
+                android:textColor="@color/appointment_movie_time"/>
+
+            <TextView
+                android:layout_width="@dimen/dimen_10dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="美人鱼"
+                android:textColor="@color/appointment_movie_time"
+                android:textSize="@dimen/dimen_15dp"/>
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/search_by_ai_latest_video_header"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dimen_35dp"
+            android:layout_marginRight="@dimen/dimen_35dp"
+            android:layout_marginTop="@dimen/dimen_8dp"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="@dimen/dimen_170dp"
+                android:layout_height="@dimen/dimen_136dp"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/search_by_ai_bg"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginBottom="@dimen/dimen_8dp"
+                    android:layout_marginRight="@dimen/dimen_5dp"
+                    android:text="34344人观看"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/dimen_10dp"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="@dimen/dimen_170dp"
+                android:layout_height="@dimen/dimen_136dp"
+                android:layout_marginLeft="@dimen/dimen_8dp"
+                android:layout_marginRight="@dimen/dimen_8dp"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/search_by_ai_bg"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginBottom="@dimen/dimen_8dp"
+                    android:layout_marginRight="@dimen/dimen_5dp"
+                    android:text="34344人观看"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/dimen_10dp"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="@dimen/dimen_170dp"
+                android:layout_height="@dimen/dimen_136dp"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/search_by_ai_bg"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginBottom="@dimen/dimen_8dp"
+                    android:layout_marginRight="@dimen/dimen_5dp"
+                    android:text="34344人观看"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/dimen_10dp"/>
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dimen_35dp"
+            android:layout_marginRight="@dimen/dimen_35dp"
+            android:layout_marginTop="@dimen/dimen_5dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/dimen_10dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="美人鱼"
+                android:textColor="@color/everyone_watch_list_movie_name"/>
+
+            <TextView
+                android:layout_width="@dimen/dimen_10dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="美人鱼"
+                android:textColor="@color/everyone_watch_list_movie_name"/>
+
+            <TextView
+                android:layout_width="@dimen/dimen_10dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="美人鱼"
+                android:textColor="@color/everyone_watch_list_movie_name"
+                android:textSize="@dimen/dimen_15dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dimen_35dp"
+            android:layout_marginRight="@dimen/dimen_35dp"
+            android:layout_marginTop="@dimen/dimen_5dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/dimen_10dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@mipmap/search_by_ai_icon_has_appointment"/>
+
+            <ImageView
+                android:layout_width="@dimen/dimen_10dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@mipmap/search_by_ai_icon_not_appointment"/>
+
+            <ImageView
+                android:layout_width="@dimen/dimen_10dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@mipmap/search_by_ai_icon_not_appointment"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_1dp"
+            android:layout_marginLeft="@dimen/dimen_40dp"
+            android:layout_marginRight="@dimen/dimen_40dp"
+            android:layout_marginTop="@dimen/dimen_8dp"
+            android:background="@color/appointment_movie_time"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tv_movie_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_movie_appointment_time"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dimen_13dp"
+            android:text="查看更多>"
+            android:textColor="@color/appointment_movie_list"
+            android:textSize="@dimen/dimen_13dp"
+            />
+    </LinearLayout>
+</RelativeLayout>
