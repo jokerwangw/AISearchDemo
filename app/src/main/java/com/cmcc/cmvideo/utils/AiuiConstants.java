@@ -42,4 +42,5 @@ public class AiuiConstants {
     public final static String VIDEO_SCORE_DESCR ="scoreDescr";
     public final static String VIDEO_TIME_DESCR ="timeDescr";
     public final static String VIDEO_TAG ="tag";
+    public final static String VIDEO_NAME ="name";
 }

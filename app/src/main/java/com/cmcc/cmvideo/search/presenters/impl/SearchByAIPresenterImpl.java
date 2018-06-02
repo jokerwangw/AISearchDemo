@@ -50,7 +50,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
         InitSearchByAIListInteractor.Callback,
         UpdateUserRequestListInteractor.Callback,
         UpdateAIResponseListInteractor.Callback {
-
+    private final String TAG="SearchByAIPresenterImpl";
     private Context mContext;
     private SearchByAIPresenter.View mView;
     private IAIUIService aiuiService;
@@ -184,9 +184,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
                 //业务查询与办理
                 intentQuery(intent);
                 break;
-            case AiuiConstants.VIDEO_SERVICE:
-                intentVideo(mData);
-                break;
             case AiuiConstants.CONTROL_MIGU:
                 //指令控制  如：打开语音助手/投屏播放
                 intentControl(mData, intent);
@@ -200,10 +197,20 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
         if (TextUtils.isEmpty(result))
             return;
         NlpData nlpData = gson.fromJson(result, NlpData.class);
-        if (nlpData.rc == 4
-                || !"video".equals(nlpData.service)
-                || nlpData.data == null
-                || nlpData.data.lxresult == null)
+        //判断是否解出了语义，并且当前技能是video
+        if (nlpData.rc == 4 || !"video".equals(nlpData.service))
+            return;
+
+        if (nlpData.data==null&&nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text)) {
+            //没有影片数据且存在answer 则播报
+            aiuiService.tts(nlpData.answer.text, null);
+            final List<SearchByAIBean> responseList = new ArrayList<SearchByAIBean>();
+            responseList.add(new SearchByAIBean(nlpData.answer.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
+            EventBus.getDefault().post(new SearchByAIEventBean(responseList));
+            return;
+        }
+        //语义后处理没有返回数据则直接退出
+        if(nlpData.data.lxresult == null)
             return;
 
         switch (nlpData.semantic.get(0).intent){
@@ -221,7 +228,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
                         messageType = MESSAGE_TYPE_THE_LATEST_VIDEO;
                         break;
                     }
-                    if(map.containsKey(AiuiConstants.VIDEO_TAG)){  //带标签的表示大家都在看
+                    if(map.containsKey(AiuiConstants.VIDEO_TAG)||
+                            map.containsKey(AiuiConstants.VIDEO_NAME)){  //带标签的表示大家都在看
                         messageType = MESSAGE_TYPE_EVERYONE_IS_WATCHING;
                         break;
                     }
@@ -231,10 +239,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
                 if (nlpData.data.lxresult.data.detailslist != null && nlpData.data.lxresult.data.detailslist.size() > 0) {
                     aiuiService.tts("为你找到" + nlpData.data.lxresult.data.detailslist.size() + "个结果", null);
                     final List<SearchByAIBean> responseList = new ArrayList<SearchByAIBean>();
-                    for(TppData.DetailsListBean detail: nlpData.data.lxresult.data.detailslist){
-                        //TODO 添加影片到列表
-                        responseList.add(new SearchByAIBean(nlpData.answer.text, messageType, MESSAGE_FROM_AI));
-                    }
+                    responseList.add(new SearchByAIBean(nlpData.answer.text, messageType, MESSAGE_FROM_AI,nlpData.data.lxresult.data.detailslist));
                     EventBus.getDefault().post(new SearchByAIEventBean(responseList));
                 }
                 break;
@@ -313,19 +318,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
         EventBus.getDefault().post(new SearchByAIEventBean(userRequestList));
     }
 
-    /**
-     * 处理视频技能
-     */
-    private void intentVideo(NlpData nlpData) {
-        if (nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text)) {
-            aiuiService.tts(nlpData.answer.text, null);
-            final List<SearchByAIBean> responseList = new ArrayList<SearchByAIBean>();
-            responseList.add(new SearchByAIBean(nlpData.answer.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
-            EventBus.getDefault().post(new SearchByAIEventBean(responseList));
-        }
-    }
-
-
     @Override
     public void onResult(String iatResult, String nlpReslult, String tppResult) {
         onIatResult(iatResult);
@@ -346,6 +338,15 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
                 if (event.arg1 == 10120) {
                    // TODO 网络有点问题 ，超时
                 }
+                break;
+            case AIUIConstant.EVENT_START_RECORD:
+                Logger.debug(TAG,"EVENT_START_RECORD");
+                break;
+            case AIUIConstant.EVENT_STOP_RECORD:
+                Logger.debug(TAG,"EVENT_STOP_RECORD");
+                break;
+            case AIUIConstant.EVENT_VAD:
+                Logger.debug(TAG,"EVENT_VAD");
                 break;
         }
     }
