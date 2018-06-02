@@ -9,6 +9,7 @@
     <dimen name="dimen_18dp">18dp</dimen>
     <dimen name="dimen_20dp">20dp</dimen>
     <dimen name="dimen_25dp">25dp</dimen>
+    <dimen name="dimen_35dp">35dp</dimen>
     <dimen name="dimen_40dp">40dp</dimen>
     <dimen name="dimen_80dp">80dp</dimen>
     <dimen name="dimen_136dp">136dp</dimen>

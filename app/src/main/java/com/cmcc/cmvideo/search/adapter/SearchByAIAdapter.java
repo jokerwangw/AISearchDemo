@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.cmcc.cmvideo.R;
 import com.cmcc.cmvideo.base.BaseRecyclerAdapter;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
@@ -41,13 +42,13 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 return MESSAGE_TYPE_NORMAL;
             } else if (MESSAGE_TYPE_CAN_ASK_AI == searchByAIBean.getMessageType()) {
                 return MESSAGE_TYPE_CAN_ASK_AI;
-            }else if (MESSAGE_TYPE_APPOINTMENT == searchByAIBean.getMessageType()) {
+            } else if (MESSAGE_TYPE_APPOINTMENT == searchByAIBean.getMessageType()) {
                 return MESSAGE_TYPE_APPOINTMENT;
-            }else if (MESSAGE_TYPE_EVERYONE_IS_WATCHING == searchByAIBean.getMessageType()) {
+            } else if (MESSAGE_TYPE_EVERYONE_IS_WATCHING == searchByAIBean.getMessageType()) {
                 return MESSAGE_TYPE_EVERYONE_IS_WATCHING;
-            }else if (MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE == searchByAIBean.getMessageType()) {
+            } else if (MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE == searchByAIBean.getMessageType()) {
                 return MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
-            }else if (MESSAGE_TYPE_THE_LATEST_VIDEO == searchByAIBean.getMessageType()) {
+            } else if (MESSAGE_TYPE_THE_LATEST_VIDEO == searchByAIBean.getMessageType()) {
                 return MESSAGE_TYPE_THE_LATEST_VIDEO;
             }
         }
@@ -60,24 +61,23 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
             if (MESSAGE_TYPE_NORMAL == viewType) {
                 View view = layoutInflater.inflate(R.layout.item_search_by_ai_normal, null);
-                return new ItemSearchByAiNormalViewHolder(view);
+                return new ItemSearchByAINormalViewHolder(view);
             } else if (MESSAGE_TYPE_CAN_ASK_AI == viewType) {
                 View view = layoutInflater.inflate(R.layout.item_search_by_ai_can_ask_ai, null);
-                return new ItemSearchByAiNormalViewHolder(view);
-            }else if (MESSAGE_TYPE_APPOINTMENT == viewType) {
+                return new ItemSearchByAICanAskAIViewHolder(view);
+            } else if (MESSAGE_TYPE_APPOINTMENT == viewType) {
                 View view = layoutInflater.inflate(R.layout.item_search_by_ai_appointment, null);
-                return new ItemSearchByAiNormalViewHolder(view);
-            }else if (MESSAGE_TYPE_EVERYONE_IS_WATCHING == viewType) {
+                return new ItemSearchByAIAppointmentViewHolder(view);
+            } else if (MESSAGE_TYPE_EVERYONE_IS_WATCHING == viewType) {
                 View view = layoutInflater.inflate(R.layout.item_search_by_ai_everyone_is_watching, null);
-                return new ItemSearchByAiNormalViewHolder(view);
-            }else if (MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE == viewType) {
+                return new ItemSearchByAIEveryoneISWatchingViewHolder(view);
+            } else if (MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE == viewType) {
                 View view = layoutInflater.inflate(R.layout.item_search_by_ai_guess_what_you_like, null);
-                return new ItemSearchByAiNormalViewHolder(view);
-            }else if (MESSAGE_TYPE_THE_LATEST_VIDEO == viewType) {
+                return new ItemSearchByAIGuessWhatYouLikeViewHolder(view);
+            } else if (MESSAGE_TYPE_THE_LATEST_VIDEO == viewType) {
                 View view = layoutInflater.inflate(R.layout.item_search_by_ai_the_latest_video, null);
-                return new ItemSearchByAiNormalViewHolder(view);
+                return new ItemSearchByAITheLatestVideoViewHolder(view);
             }
-
         }
         return null;
     }
@@ -85,8 +85,8 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
     @Override
     public void onBindHoder(RecyclerView.ViewHolder holder, SearchByAIBean searchByAIBean, int position) {
         if (null != holder && null != searchByAIBean) {
-            if (holder instanceof ItemSearchByAiNormalViewHolder) {
-                ItemSearchByAiNormalViewHolder itemSearchByAiNormalViewHolder = (ItemSearchByAiNormalViewHolder) holder;
+            if (holder instanceof ItemSearchByAINormalViewHolder) {
+                ItemSearchByAINormalViewHolder itemSearchByAiNormalViewHolder = (ItemSearchByAINormalViewHolder) holder;
                 if (TextUtils.equals(searchByAIBean.getMessageFrom(), MESSAGE_FROM_AI)) {
                     if (0 == position) {
                         itemSearchByAiNormalViewHolder.imHead.setVisibility(View.VISIBLE);
@@ -106,16 +106,65 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
         }
     }
 
-    public class ItemSearchByAiNormalViewHolder extends BaseViewHolder {
+    /**
+     * 类型：MESSAGE_TYPE_NORMAL
+     */
+    public class ItemSearchByAINormalViewHolder extends BaseViewHolder {
         ImageView imHead;
         TextView tvMessageFromAI;
         TextView tvMessageFromUser;
 
-        public ItemSearchByAiNormalViewHolder(View itemView) {
+        public ItemSearchByAINormalViewHolder(View itemView) {
             super(itemView);
             imHead = (ImageView) itemView.findViewById(R.id.im_head);
             tvMessageFromAI = (TextView) itemView.findViewById(R.id.tv_message_from_ai);
             tvMessageFromUser = (TextView) itemView.findViewById(R.id.tv_message_from_user);
+        }
+    }
+
+    /**
+     * 类型：MESSAGE_TYPE_CAN_ASK_AI
+     */
+    public class ItemSearchByAICanAskAIViewHolder extends BaseViewHolder {
+
+        public ItemSearchByAICanAskAIViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+    /**
+     * 类型：MESSAGE_TYPE_APPOINTMENT
+     */
+    public class ItemSearchByAIAppointmentViewHolder extends BaseViewHolder {
+
+        public ItemSearchByAIAppointmentViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+    /**
+     * 类型：MESSAGE_TYPE_EVERYONE_IS_WATCHING
+     */
+    public class ItemSearchByAIEveryoneISWatchingViewHolder extends BaseViewHolder {
+
+        public ItemSearchByAIEveryoneISWatchingViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+    /**
+     * 类型：MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE
+     */
+    public class ItemSearchByAIGuessWhatYouLikeViewHolder extends BaseViewHolder {
+
+        public ItemSearchByAIGuessWhatYouLikeViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+    /**
+     * 类型：MESSAGE_TYPE_THE_LATEST_VIDEO
+     */
+    public class ItemSearchByAITheLatestVideoViewHolder extends BaseViewHolder {
+
+        public ItemSearchByAITheLatestVideoViewHolder(View itemView) {
+            super(itemView);
         }
     }
 }
