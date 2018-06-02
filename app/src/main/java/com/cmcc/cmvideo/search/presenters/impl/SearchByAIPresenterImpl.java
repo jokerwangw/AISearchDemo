@@ -339,6 +339,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
                 }
                 break;
             case AIUIConstant.EVENT_START_RECORD:
+                // 录音开始就发送延时消息，当五秒内在sendMessage()方法中都没有移除消息时就说明 5秒超时了
                 mHandler =  new android.os.Handler(Looper.getMainLooper());
                 mHandler.postDelayed(runnable,5000);
                 break;
@@ -389,6 +390,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements
      * @param videoList 影片内容影片数据，
      */
     private void sendMessage(String msg, int messageType, String msgFrom, List<TppData.DetailsListBean> videoList){
+        //页面有返回，移除五秒超时消息
         mHandler.removeCallbacks(runnable);
         List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
         messageList.add(new SearchByAIBean(msg, messageType, msgFrom,videoList));
