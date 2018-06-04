@@ -40,7 +40,6 @@ public class InitSearchByAIListInteractorImpl extends AbstractInteractor impleme
     public void run() {
         final List<SearchByAIBean> searchByAIBeanList = new ArrayList<SearchByAIBean>();
         searchByAIBeanList.add(new SearchByAIBean("您希望我做什么", MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
-        searchByAIBeanList.add(new SearchByAIBean("你可以像下这样问我", MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
 
         mMainThread.post(new Runnable() {
             @Override
