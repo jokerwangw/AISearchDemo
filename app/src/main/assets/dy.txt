@@ -1,88 +1,77 @@
 {
-    "rc":3,
-    "semantic":[
+    "rc": 3,
+    "semantic": [
         {
-            "slots":[
+            "slots": [
                 {
-                    "name":"category",
-                    "value":"电影"
+                    "name": "category",
+                    "value": "电影"
                 },
                 {
-                    "name":"name",
-                    "value":"西游记"
+                    "name": "name",
+                    "value": "雷神3"
                 }
             ],
-            "intent":"QUERY"
+            "intent": "QUERY"
         }
     ],
-    "dialog_stat":"dataInvalid",
-    "data":{
-        "result":[
-
-        ],
-        "lxresult":{
-            "code":"000000",
-            "codedesc":"success",
-            "data":{
-                "correct":"我想看西游记",
-                "detailslist":[
+    "dialog_stat": "dataInvalid",
+    "data": {
+        "result": [],
+        "lxresult": {
+            "code": "000000",
+            "codedesc": "success",
+            "data": {
+                "correct": "我想看雷神3",
+                "detailslist": [
                     {
-                        "area":"内地",
-                        "image":"{\"lowResolutionH\":\"/image/5500/312/622/201801301552_nsj_H32_720.webp\",\"lowResolutionV\":\"/image/5500/312/622/201801301552_nsj_V23_720.webp\",\"highResolutionV\":\"/image/5500/312/622/201801301552_nsj_V34_1080.webp\",\"highResolutionH\":\"/image/5500/312/622/201801301552_nsj_H32_1080.webp\"}",
-                        "name":"嫩食记",
-                        "language":[
-                            "无"
+                        "actor": [
+                            "克里斯·海姆斯沃斯",
+                            "泰莎·汤普森",
+                            "凯特·布兰切特",
+                            "汤姆·希德勒斯顿",
+                            "塞缪尔·杰克逊"
                         ],
-                        "subserials":[
-                            {
-                                "name":"《嫩食记》撸串必备花生毛豆",
-                                "id":"629923595"
-                            },
-                            {
-                                "name":"《嫩食记》老少皆宜薯条堆堆乐",
-                                "id":"629925095"
-                            },
-                            {
-                                "name":"《嫩食记》异国西班牙海鲜饭",
-                                "id":"629892165"
-                            },
-                            {
-                                "name":"《嫩食记》柔软的戚风蛋糕",
-                                "id":"629827552"
-                            },
-                            {
-                                "name":"《嫩食记》鸡蛋培根大饭团",
-                                "id":"629550794"
-                            }
+                        "area": "美国",
+                        "category": "电影",
+                        "detail": "《雷神3：诸神黄昏》海拉意图毁灭天宫",
+                        "director": [
+                            "塔伊加·维迪提"
                         ],
-                        "detail":"《嫩食记》推崇有仪式感的生活，爱美食更爱烘焙。嫩烤箱一开，好食自然来。",
-                        "id":"629512673",
-                        "tag":[
-                            "美食"
+                        "id": "638019585",
+                        "image": "{\"lowResolutionH\":\"/image/5500/402/545/201801312119_1_H32_720.webp\",\"lowResolutionV\":\"/image/5500/402/545/201801312119_1_V23_720.webp\",\"highResolutionV\":\"/image/5500/402/545/201801312119_1_V34_1080.webp\",\"highResolutionH\":\"/image/5500/402/545/201801312119_1_H32_1080.webp\"}",
+                        "language": [
+                            "英语"
                         ],
-                        "category":"电影"
+                        "name": "《雷神3：诸神黄昏》海拉意图毁灭天宫",
+                        "releasetime": "2017-11-03",
+                        "tag": [
+                            "奇幻",
+                            "动作",
+                            "冒险"
+                        ]
                     }
                 ]
             },
-            "service":"video"
+            "service": "video"
         },
-        "error":{
-            "code":4,
-            "message":"信源未申请或不可用"
+        "error": {
+            "code": 4,
+            "message": "信源未申请或不可用"
         }
     },
-    "answer":{
-        "text":"不好意思，没有为您找到您想看的影片,换个别的搜搜。"
+    "answer": {
+        "text": "不好意思，没有为您找到您想看的影片,换个别的搜搜。"
     },
-    "service":"video",
-    "state":{
-        "fg::video::default::default":{
-            "reserved_intent":"1",
-            "name":"1"
+    "service": "video",
+    "state": {
+        "fg::video::default::default": {
+            "reserved_intent": "1",
+            "name": "1"
         }
     },
-    "text":"我想看西游记",
-    "save_history":true,
-    "uuid":"atn00c40b6b@dx00070e68907aa10e01",
-    "sid":"cida11f0ad3@dx00a20e689078010001"
+    "text": "我想看雷神3",
+    "save_history": true,
+    "uuid": "atn00c40b6b@dx00070e68907aa10e01",
+    "sid": "cida11f0ad3@dx00a20e689078010001"
 }

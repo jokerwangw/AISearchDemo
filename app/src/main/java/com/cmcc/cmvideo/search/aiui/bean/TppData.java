@@ -33,7 +33,7 @@ public class TppData {
         //分类
         public String category;
         //导演
-        public String director;
+        public List<String> director;
         //图片 4种类型
         public String image;
         //上映时间
