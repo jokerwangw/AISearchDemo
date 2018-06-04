@@ -1,6 +1,7 @@
 package com.cmcc.cmvideo.search.presenters.impl;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -29,11 +30,16 @@ import com.iflytek.aiui.AIUIConstant;
 import com.iflytek.aiui.AIUIEvent;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.logging.Handler;
 
 import static com.cmcc.cmvideo.utils.Constants.*;
@@ -328,7 +334,20 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     public void onResult(String iatResult, String nlpReslult, String tppResult) {
         onIatResult(iatResult);
         onNlpResult(nlpReslult);
-        onTppResult(tppResult);
+        //onTppResult(tppResult);
+        if(!TextUtils.isEmpty(tppResult)) {
+
+            Random random = new Random();
+            int ran =  random.nextInt(3);
+            String fileName = "dsj.txt";
+            if(ran == 0)
+                fileName = "dsj.txt";
+            else if(ran==1)
+                fileName = "dy.txt";
+            else
+                fileName = "zy.txt";
+            onTppResult(mView.getJsonData(fileName));
+        }
     }
 
     @Override

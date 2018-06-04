@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -43,7 +44,11 @@ import com.iflytek.aiui.AIUIEvent;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -195,6 +200,26 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     @Override
     public void showInitList(List<SearchByAIBean> searchByAIBeanList) {
         setAdapterData(true, searchByAIBeanList);
+    }
+
+    @Override
+    public String getJsonData(String fileName) {
+        String params = "";
+        AssetManager assetManager = getResources().getAssets();
+        try {
+            InputStream ins = assetManager.open(fileName);
+            byte[] buffer = new byte[ins.available()];
+            ins.read(buffer);
+            ins.close();
+            params = new String(buffer);
+            JSONObject paramsJson = new JSONObject(params);
+            params = paramsJson.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return params;
     }
 
     /**

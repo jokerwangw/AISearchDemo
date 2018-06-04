@@ -16,6 +16,7 @@ import java.util.List;
 public interface SearchByAIPresenter extends BasePresenter {
     interface View extends BaseView {
         void showInitList(List<SearchByAIBean> searchByAIBeanList);
+        String getJsonData(String fileName);
     }
 
     void initListSearchItem();
