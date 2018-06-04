@@ -8,9 +8,11 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 
 import com.cmcc.cmvideo.search.aiui.bean.IatBean;
+import com.cmcc.cmvideo.search.aiui.bean.NlpData;
 import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIAgent;
 import com.iflytek.aiui.AIUIConstant;
@@ -24,6 +26,7 @@ import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.SynthesizerListener;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -183,9 +186,10 @@ public class AIUIService extends Service {
                                     String resultStr = cntJson.optString("intent");
                                     if (resultStr.equals("{}"))
                                         return;
-                                    Logger.debug("TPP 【" + cntJson.toString() + "】");
+                                    String jsonResultStr = cntJson.toString();
+                                    Logger.debug("TPP 【" + jsonResultStr + "】");
                                     if(eventListener!=null)
-                                        eventListener.onResult(null,null,cntJson.toString());
+                                        eventListener.onResult(null,null,jsonResultStr);
                                 }
                             }
                         }
@@ -201,7 +205,21 @@ public class AIUIService extends Service {
                     mCurrentState = event.arg1;
                     break;
                 case AIUIConstant.EVENT_CMD_RETURN:
-                    break;
+                    AIUIEvent event1 = event;
+                    if (event1.arg1 == AIUIConstant.CMD_SYNC) {
+                        int dtype = event.data.getInt("sync_dtype");
+                        //arg2表示结果
+                        if (0 == event.arg2) {          // 同步成功
+                            if (AIUIConstant.SYNC_DATA_SPEAKABLE == dtype) {
+                                effectDynamicEntity();
+                            }
+                        } else {
+                            if (AIUIConstant.SYNC_DATA_SCHEMA == dtype) {
+                                String sid = event.data.getString("sid");
+                                Logger.debug("数据同步出错：" + event.arg2 + "，sid=" + sid);
+                            }
+                        }
+                    }
                 default:
                     break;
             }
@@ -254,6 +272,55 @@ public class AIUIService extends Service {
 
         }
     };
+    public void effectDynamicEntity() {
+        try {
+            JSONObject params = new JSONObject();
+            JSONObject audioParams = new JSONObject();
+            audioParams.put("pers_param", "{\"uid\":\"\"}");
+            params.put("audioparams", audioParams);
+            AIUIMessage setMsg = new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, params.toString(), null);
+            mAIUIAgent.sendMessage(setMsg);
+        } catch (JSONException e) {
+        }
+    }
+    //同步所见即可说
+    public void syncSpeakableData(String data) {
+        try {
+            JSONObject syncSpeakableJson = new JSONObject();
+            // 识别用户数据
+            JSONObject iatUserDataJson = new JSONObject();
+            iatUserDataJson.put("recHotWords", "播报内容|地图显示|路径优先");
+            iatUserDataJson.put("sceneInfo", new JSONObject());
+            syncSpeakableJson.put("iat_user_data", iatUserDataJson);
+
+            // 语义理解用户数据
+            JSONObject nlpUserDataJson = new JSONObject();
+            JSONArray resArray = new JSONArray();
+            JSONObject resDataItem = new JSONObject();
+            resDataItem.put("res_name", "LINGXI2018.see_say_res");
+            //resDataItem.put("res_name", "IFLYTEK.viewCmd");
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(data);
+            resDataItem.put("data", Base64.encodeToString(
+                    stringBuilder.toString().getBytes(), Base64.NO_WRAP));
+            resArray.put(resDataItem);
+
+            nlpUserDataJson.put("res", resArray);
+            nlpUserDataJson.put("skill_name", "LINGXI2018.see_say_res");
+
+            syncSpeakableJson.put("nlp_user_data", nlpUserDataJson);
+
+            // 传入的数据一定要为utf-8编码
+            byte[] syncData = syncSpeakableJson.toString().getBytes("utf-8");
+
+            AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC,
+                    AIUIConstant.SYNC_DATA_SPEAKABLE, 0, "", syncData);
+            mAIUIAgent.sendMessage(syncAthenaMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+    }
 
     /**
      * 发送AIUI消息
