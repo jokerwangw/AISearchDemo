@@ -1,4 +1,4 @@
-package com.cmcc.cmvideo.utils;
+package com.cmcc.cmvideo.util;
 
 /**
  * Created by Yyw on 2018/5/29.

@@ -7,25 +7,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cmcc.cmvideo.R;
 import com.cmcc.cmvideo.base.BaseRecyclerAdapter;
+import com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 
 import java.util.List;
 
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_FROM_AI;
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_APPOINTMENT;
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_CAN_ASK_AI;
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_EVERYONE_IS_WATCHING;
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_I_WANT_TO_SEE;
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_NORMAL;
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_THE_LATEST_VIDEO;
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_FROM_AI;
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_APPOINTMENT;
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_CAN_ASK_AI;
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_EVERYONE_IS_WATCHING;
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_I_WANT_TO_SEE;
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_NORMAL;
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_THE_LATEST_VIDEO;
 
 /**
  * Created by Yyw on 2018/5/21.
@@ -191,8 +193,28 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
      */
     public class ItemSearchByAIEveryoneISWatchingViewHolder extends BaseViewHolder {
 
+        public MGSimpleDraweeView itemImg1;
+        public MGSimpleDraweeView itemImg2;
+        public MGSimpleDraweeView itemImg3;
+        public TextView itemWatchNum1;
+        public TextView itemWatchNum2;
+        public TextView itemWatchNum3;
+        public TextView itemName1;
+        public TextView itemName2;
+        public TextView itemName3;
+
         public ItemSearchByAIEveryoneISWatchingViewHolder(View itemView) {
             super(itemView);
+
+            itemImg1 = (MGSimpleDraweeView) itemView.findViewById(R.id.item_img1);
+            itemImg2 = (MGSimpleDraweeView) itemView.findViewById(R.id.item_img2);
+            itemImg3 = (MGSimpleDraweeView) itemView.findViewById(R.id.item_img3);
+            itemWatchNum1 = (TextView) itemView.findViewById(R.id.item_watch_num1);
+            itemWatchNum2 = (TextView) itemView.findViewById(R.id.item_watch_num2);
+            itemWatchNum3 = (TextView) itemView.findViewById(R.id.item_watch_num3);
+            itemName1 = (TextView) itemView.findViewById(R.id.item_name1);
+            itemName2 = (TextView) itemView.findViewById(R.id.item_name2);
+            itemName3 = (TextView) itemView.findViewById(R.id.item_name3);
         }
     }
 
@@ -200,9 +222,27 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
      * 类型：MESSAGE_TYPE_I_WANT_TO_SEE
      */
     public class ItemSearchByAIEveryoneIWantTOSeeViewHolder extends BaseViewHolder {
+        public MGSimpleDraweeView itemImg1;
+        public MGSimpleDraweeView itemImg2;
+        public MGSimpleDraweeView itemImg3;
+        public TextView itemWatchNum1;
+        public TextView itemWatchNum2;
+        public TextView itemWatchNum3;
+        public TextView itemName1;
+        public TextView itemName2;
+        public TextView itemName3;
 
         public ItemSearchByAIEveryoneIWantTOSeeViewHolder(View itemView) {
             super(itemView);
+            itemImg1 = (MGSimpleDraweeView) itemView.findViewById(R.id.item_img1);
+            itemImg2 = (MGSimpleDraweeView) itemView.findViewById(R.id.item_img2);
+            itemImg3 = (MGSimpleDraweeView) itemView.findViewById(R.id.item_img3);
+            itemWatchNum1 = (TextView) itemView.findViewById(R.id.item_watch_num1);
+            itemWatchNum2 = (TextView) itemView.findViewById(R.id.item_watch_num2);
+            itemWatchNum3 = (TextView) itemView.findViewById(R.id.item_watch_num3);
+            itemName1 = (TextView) itemView.findViewById(R.id.item_name1);
+            itemName2 = (TextView) itemView.findViewById(R.id.item_name2);
+            itemName3 = (TextView) itemView.findViewById(R.id.item_name3);
         }
     }
 
@@ -211,8 +251,31 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
      */
     public class ItemSearchByAIGuessWhatYouLikeViewHolder extends BaseViewHolder {
 
+        public MGSimpleDraweeView itemDetailImg;
+        public TextView itemWatchNum;
+        public TextView itemVideoName;
+        public TextView itemDirector;
+        public TextView itemActor;
+        public TextView itemCategory;
+        public TextView itemArea;
+        public TextView itemLanguage;
+        public TextView itemReleasetime;
+        public TextView tvvideodeteil;
+        public TextView itemChange;
+
         public ItemSearchByAIGuessWhatYouLikeViewHolder(View itemView) {
             super(itemView);
+            itemDetailImg = (MGSimpleDraweeView) itemView.findViewById(R.id.item_detail_img);
+            itemWatchNum = (TextView) itemView.findViewById(R.id.item_watch_num);
+            itemVideoName = (TextView) itemView.findViewById(R.id.item_video_name);
+            itemDirector = (TextView) itemView.findViewById(R.id.item_director);
+            itemActor = (TextView) itemView.findViewById(R.id.item_actor);
+            itemCategory = (TextView) itemView.findViewById(R.id.item_category);
+            itemArea = (TextView) itemView.findViewById(R.id.item_area);
+            itemLanguage = (TextView) itemView.findViewById(R.id.item_language);
+            itemReleasetime = (TextView) itemView.findViewById(R.id.item_releasetime);
+            tvvideodeteil = (TextView) itemView.findViewById(R.id.tv_video_deteil);
+            itemChange = (TextView) itemView.findViewById(R.id.item_change);
         }
     }
 
@@ -220,9 +283,33 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
      * 类型：MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL
      */
     public class ItemSearchByAIGuessWhatYouLikeListHorizontalViewHolder extends BaseViewHolder {
+        public MGSimpleDraweeView itemDetailImg;
+        public TextView itemWatchNum;
+        public TextView itemVideoName;
+        public TextView itemDirector;
+        public TextView itemActor;
+        public TextView itemCategory;
+        public TextView itemArea;
+        public TextView itemLanguage;
+        public TextView itemReleasetime;
+        public TextView tvvideodeteil;
+        public LinearLayout llVideoList;
+        public TextView itemChange;
 
         public ItemSearchByAIGuessWhatYouLikeListHorizontalViewHolder(View itemView) {
             super(itemView);
+            itemDetailImg = (MGSimpleDraweeView) itemView.findViewById(R.id.item_detail_img);
+            itemWatchNum = (TextView) itemView.findViewById(R.id.item_watch_num);
+            itemVideoName = (TextView) itemView.findViewById(R.id.item_video_name);
+            itemDirector = (TextView) itemView.findViewById(R.id.item_director);
+            itemActor = (TextView) itemView.findViewById(R.id.item_actor);
+            itemCategory = (TextView) itemView.findViewById(R.id.item_category);
+            itemArea = (TextView) itemView.findViewById(R.id.item_area);
+            itemLanguage = (TextView) itemView.findViewById(R.id.item_language);
+            itemReleasetime = (TextView) itemView.findViewById(R.id.item_releasetime);
+            tvvideodeteil = (TextView) itemView.findViewById(R.id.tv_video_deteil);
+            llVideoList = (LinearLayout) itemView.findViewById(R.id.ll_video_list);
+            itemChange = (TextView) itemView.findViewById(R.id.tv_change_list);
         }
     }
 
@@ -230,9 +317,27 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
      * 类型：MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL
      */
     public class ItemSearchByAIGuessWhatYouLikeListVerticalViewHolder extends BaseViewHolder {
+        public MGSimpleDraweeView itemDetailImg;
+        public TextView itemWatchNum;
+        public TextView itemVideoName;
+        public TextView itemCategory;
+        public TextView itemArea;
+        public TextView itemLanguage;
+        public TextView itemReleasetime;
+        public LinearLayout llVideoList;
+        public TextView itemChange;
 
         public ItemSearchByAIGuessWhatYouLikeListVerticalViewHolder(View itemView) {
             super(itemView);
+            itemDetailImg = (MGSimpleDraweeView) itemView.findViewById(R.id.item_detail_img);
+            itemWatchNum = (TextView) itemView.findViewById(R.id.item_watch_num);
+            itemVideoName = (TextView) itemView.findViewById(R.id.item_video_name);
+            itemCategory = (TextView) itemView.findViewById(R.id.item_category);
+            itemArea = (TextView) itemView.findViewById(R.id.item_area);
+            itemLanguage = (TextView) itemView.findViewById(R.id.item_language);
+            itemReleasetime = (TextView) itemView.findViewById(R.id.item_releasetime);
+            llVideoList = (LinearLayout) itemView.findViewById(R.id.ll_video_list);
+            itemChange = (TextView) itemView.findViewById(R.id.tv_change_list);
         }
     }
 

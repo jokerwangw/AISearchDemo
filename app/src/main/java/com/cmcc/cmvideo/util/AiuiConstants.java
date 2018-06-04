@@ -1,4 +1,4 @@
-package com.cmcc.cmvideo.utils;
+package com.cmcc.cmvideo.util;
 
 /**
  * @Author lhluo

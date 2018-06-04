@@ -1,10 +1,8 @@
 package com.cmcc.cmvideo.search.presenters.impl;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import com.cmcc.cmvideo.base.AbstractPresenter;
 import com.cmcc.cmvideo.base.Executor;
@@ -24,25 +22,20 @@ import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
 import com.cmcc.cmvideo.search.model.SearchByAIRefreshUIEventBean;
 import com.cmcc.cmvideo.search.presenters.SearchByAIPresenter;
-import com.cmcc.cmvideo.utils.AiuiConstants;
+import com.cmcc.cmvideo.util.AiuiConstants;
 import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIConstant;
 import com.iflytek.aiui.AIUIEvent;
 
 import org.greenrobot.eventbus.EventBus;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.logging.Handler;
 
-import static com.cmcc.cmvideo.utils.Constants.*;
+import static com.cmcc.cmvideo.util.Constants.*;
 
 /**
  * Created by Yyw on 2018/5/21.

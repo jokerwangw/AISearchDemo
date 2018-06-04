@@ -7,8 +7,8 @@ import android.text.TextUtils;
 
 import com.cmcc.cmvideo.network.NetworkManager;
 import com.cmcc.cmvideo.network.NetworkSession;
-import com.cmcc.cmvideo.utils.GlobalParam;
-import com.cmcc.cmvideo.utils.LogStatisticsUtils;
+import com.cmcc.cmvideo.util.GlobalParam;
+import com.cmcc.cmvideo.util.LogStatisticsUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;

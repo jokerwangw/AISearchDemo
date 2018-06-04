@@ -35,13 +35,15 @@
                 android:layout_width="@dimen/dimen_90dp"
                 android:layout_height="@dimen/dimen_120dp">
 
-                <ImageView
+
+                <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
+                    android:id="@+id/item_detail_img"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/search_by_ai_bg"
                     />
 
                 <TextView
+                    android:id="@+id/item_watch_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
@@ -53,12 +55,14 @@
             </RelativeLayout>
 
             <LinearLayout
+                android:id="@+id/item_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/dimen_15dp"
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/item_video_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
@@ -68,6 +72,7 @@
                     android:textSize="@dimen/dimen_15dp"/>
 
                 <TextView
+                    android:id="@+id/item_director"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dimen_8dp"
@@ -78,6 +83,7 @@
                     android:textSize="@dimen/dimen_12dp"/>
 
                 <TextView
+                    android:id="@+id/item_actor"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
@@ -87,6 +93,7 @@
                     android:textSize="@dimen/dimen_12dp"/>
 
                 <TextView
+                    android:id="@+id/item_category"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
@@ -96,6 +103,7 @@
                     android:textSize="@dimen/dimen_12dp"/>
 
                 <TextView
+                    android:id="@+id/item_area"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
@@ -105,6 +113,7 @@
                     android:textSize="@dimen/dimen_12dp"/>
 
                 <TextView
+                    android:id="@+id/item_language"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
@@ -114,6 +123,7 @@
                     android:textSize="@dimen/dimen_12dp"/>
 
                 <TextView
+                    android:id="@+id/item_releasetime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
@@ -149,7 +159,7 @@
             android:textColor="@color/guess_you_like_movie_text"/>
 
         <TextView
-            android:id="@+id/tv_movie_list"
+            android:id="@+id/item_change"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tv_video_deteil"
