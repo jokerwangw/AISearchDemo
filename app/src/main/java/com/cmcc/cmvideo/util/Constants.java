@@ -18,4 +18,6 @@ public class Constants {
     public final static int MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL = 6;//猜你喜欢_列表横向展示
     public final static int MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL = 7;//猜你喜欢_列表垂直展示
     public final static int MESSAGE_TYPE_THE_LATEST_VIDEO = 5;//最新影讯
+
+    public final static String IMG_BASE_URL = "http://wapx.cmvideo.cn:8080/publish/poms";//图片地址
 }

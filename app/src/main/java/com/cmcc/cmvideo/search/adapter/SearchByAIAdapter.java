@@ -16,8 +16,12 @@ import com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
 
+import static com.cmcc.cmvideo.util.Constants.IMG_BASE_URL;
 import static com.cmcc.cmvideo.util.Constants.MESSAGE_FROM_AI;
 import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_APPOINTMENT;
 import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_CAN_ASK_AI;
@@ -134,18 +138,224 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 }
             } else if (holder instanceof ItemSearchByAIGuessWhatYouLikeViewHolder) {
                 List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
-                if (null != videoList) {
+                if (null != videoList && videoList.size() != 0) {
+                    TppData.DetailsListBean detailsListBean = videoList.get(0);
+                    if (null == detailsListBean) {
+                        return;
+                    }
+                    ItemSearchByAIGuessWhatYouLikeViewHolder itemSearchByAIGuessWhatYouLikeViewHolder = (ItemSearchByAIGuessWhatYouLikeViewHolder) holder;
+
+                    itemSearchByAIGuessWhatYouLikeViewHolder.itemVideoName.setText(TextUtils.isEmpty(detailsListBean.name) ? "" : detailsListBean.name);
+                    itemSearchByAIGuessWhatYouLikeViewHolder.itemArea.setText(TextUtils.isEmpty(detailsListBean.area) ? "制片国家/地区:" : "制片国家/地区:" + detailsListBean.area);
+                    itemSearchByAIGuessWhatYouLikeViewHolder.itemReleasetime.setText(TextUtils.isEmpty(detailsListBean.releasetime) ? "上映日期:" : "上映日期:" + detailsListBean.releasetime);
+                    itemSearchByAIGuessWhatYouLikeViewHolder.itemVideoDeteil.setText(TextUtils.isEmpty(detailsListBean.detail) ? "" : "" + detailsListBean.detail);
+
+                    if (!TextUtils.isEmpty(detailsListBean.image)) {
+                        String image = detailsListBean.image;
+                        try {
+                            JSONObject jsonObject = new JSONObject(image);
+                            String imgUrl = jsonObject.optString("highResolutionV");
+                            if (!TextUtils.isEmpty(imgUrl)) {
+                                if (imgUrl.startsWith("http")) {
+                                    itemSearchByAIGuessWhatYouLikeViewHolder.itemDetailImg.setImageURI(imgUrl);
+                                } else {
+                                    itemSearchByAIGuessWhatYouLikeViewHolder.itemDetailImg.setImageURI(IMG_BASE_URL + imgUrl);
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if (null != detailsListBean.director) {
+                        String director = "导演:";
+                        for (String text : detailsListBean.director) {
+                            director = director + text + "/";
+                        }
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemDirector.setText(director);
+                    }
+
+                    if (null != detailsListBean.actor) {
+                        String actor = "主演:";
+                        for (String text : detailsListBean.actor) {
+                            actor = actor + text + "/";
+                        }
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemActor.setText(actor);
+                    }
+
+                    if (null != detailsListBean.tag) {
+                        String tag = "类型:";
+                        for (String text : detailsListBean.tag) {
+                            tag = tag + text + "/";
+                        }
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemCategory.setText(tag);
+                    }
+
+                    if (null != detailsListBean.language) {
+                        String language = "语言:";
+                        for (String text : detailsListBean.language) {
+                            language = language + text + "/";
+                        }
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemLanguage.setText(language);
+                    }
 
                 }
             } else if (holder instanceof ItemSearchByAIGuessWhatYouLikeListHorizontalViewHolder) {
                 List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
                 if (null != videoList) {
+                    TppData.DetailsListBean detailsListBean = videoList.get(0);
+                    if (null == detailsListBean) {
+                        return;
+                    }
+                    ItemSearchByAIGuessWhatYouLikeListHorizontalViewHolder itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder = (ItemSearchByAIGuessWhatYouLikeListHorizontalViewHolder) holder;
 
+                    itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemVideoName.setText(TextUtils.isEmpty(detailsListBean.name) ? "" : detailsListBean.name);
+                    itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemArea.setText(TextUtils.isEmpty(detailsListBean.area) ? "制片国家/地区:" : "制片国家/地区:" + detailsListBean.area);
+                    itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemReleasetime.setText(TextUtils.isEmpty(detailsListBean.releasetime) ? "上映日期:" : "上映日期:" + detailsListBean.releasetime);
+                    itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemVideoDeteil.setText(TextUtils.isEmpty(detailsListBean.detail) ? "" : "" + detailsListBean.detail);
+
+                    if (!TextUtils.isEmpty(detailsListBean.image)) {
+                        String image = detailsListBean.image;
+                        try {
+                            JSONObject jsonObject = new JSONObject(image);
+                            String imgUrl = jsonObject.optString("highResolutionV");
+                            if (!TextUtils.isEmpty(imgUrl)) {
+                                if (imgUrl.startsWith("http")) {
+                                    itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemDetailImg.setImageURI(imgUrl);
+                                } else {
+                                    itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemDetailImg.setImageURI(IMG_BASE_URL + imgUrl);
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if (null != detailsListBean.director) {
+                        String director = "导演:";
+                        for (String text : detailsListBean.director) {
+                            director = director + text + "/";
+                        }
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemDirector.setText(director);
+                    }
+
+                    if (null != detailsListBean.actor) {
+                        String actor = "主演:";
+                        for (String text : detailsListBean.actor) {
+                            actor = actor + text + "/";
+                        }
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemActor.setText(actor);
+                    }
+
+                    if (null != detailsListBean.tag) {
+                        String tag = "类型:";
+                        for (String text : detailsListBean.tag) {
+                            tag = tag + text + "/";
+                        }
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemCategory.setText(tag);
+                    }
+
+                    if (null != detailsListBean.language) {
+                        String language = "语言:";
+                        for (String text : detailsListBean.language) {
+                            language = language + text + "/";
+                        }
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemLanguage.setText(language);
+                    }
+
+                    if (null != detailsListBean.subserials) {
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.llVideoList.removeAllViews();
+                        if (detailsListBean.subserials.size() > 5) {
+                            for (int i = 0; i < 3; i++) {
+                                View root = LayoutInflater.from(holder.itemView.getContext()).inflate(R.layout.item_search_by_ai_horizontal_item, null, false);
+                                if (2 == i) {
+                                    ((TextView) root.findViewById(R.id.tv_release_num)).setText("...");
+                                } else {
+                                    int num = i + 1;
+                                    ((TextView) root.findViewById(R.id.tv_release_num)).setText("" + num);
+                                }
+                                itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.llVideoList.addView(root);
+                            }
+
+                            for (int i = detailsListBean.subserials.size() - 2; i < detailsListBean.subserials.size(); i++) {
+                                View root = LayoutInflater.from(holder.itemView.getContext()).inflate(R.layout.item_search_by_ai_horizontal_item, null, false);
+                                int num = i + 1;
+                                ((TextView) root.findViewById(R.id.tv_release_num)).setText("" + num);
+                                itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.llVideoList.addView(root);
+                            }
+                        } else {
+                            for (int i = 0; i < detailsListBean.subserials.size(); i++) {
+                                View root = LayoutInflater.from(holder.itemView.getContext()).inflate(R.layout.item_search_by_ai_horizontal_item, null, false);
+                                int num = i + 1;
+                                ((TextView) root.findViewById(R.id.tv_release_num)).setText("" + num);
+                                itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.llVideoList.addView(root);
+                            }
+                        }
+
+                    }
                 }
             } else if (holder instanceof ItemSearchByAIGuessWhatYouLikeListVerticalViewHolder) {
                 List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
                 if (null != videoList) {
+                    TppData.DetailsListBean detailsListBean = videoList.get(0);
+                    if (null == detailsListBean) {
+                        return;
+                    }
+                    ItemSearchByAIGuessWhatYouLikeListVerticalViewHolder itemSearchByAIGuessWhatYouLikeListVerticalViewHolder = (ItemSearchByAIGuessWhatYouLikeListVerticalViewHolder) holder;
 
+                    itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemVideoName.setText(TextUtils.isEmpty(detailsListBean.name) ? "" : detailsListBean.name);
+                    itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemArea.setText(TextUtils.isEmpty(detailsListBean.area) ? "制片国家/地区:" : "制片国家/地区:" + detailsListBean.area);
+                    itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemReleasetime.setText(TextUtils.isEmpty(detailsListBean.releasetime) ? "上映日期:" : "上映日期:" + detailsListBean.releasetime);
+
+                    if (!TextUtils.isEmpty(detailsListBean.image)) {
+                        String image = detailsListBean.image;
+                        try {
+                            JSONObject jsonObject = new JSONObject(image);
+                            String imgUrl = jsonObject.optString("highResolutionV");
+                            if (!TextUtils.isEmpty(imgUrl)) {
+                                if (imgUrl.startsWith("http")) {
+                                    itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemDetailImg.setImageURI(imgUrl);
+                                } else {
+                                    itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemDetailImg.setImageURI(IMG_BASE_URL + imgUrl);
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if (null != detailsListBean.tag) {
+                        String tag = "类型:";
+                        for (String text : detailsListBean.tag) {
+                            tag = tag + text + "/";
+                        }
+                        itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemCategory.setText(tag);
+                    }
+
+                    if (null != detailsListBean.language) {
+                        String language = "语言:";
+                        for (String text : detailsListBean.language) {
+                            language = language + text + "/";
+                        }
+                        itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemLanguage.setText(language);
+                    }
+
+                    if (null != detailsListBean.subserials) {
+                        itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.llVideoList.removeAllViews();
+                        int count = detailsListBean.subserials.size();
+                        if (count > 3) {
+                            count = 3;
+                        }
+                        for (int i = 0; i < count; i++) {
+                            View root = LayoutInflater.from(holder.itemView.getContext()).inflate(R.layout.item_search_by_ai_vertical_item, null, false);
+                            ((TextView) root.findViewById(R.id.tv_release_num)).setText(detailsListBean.subserials.get(i).id);
+                            ((TextView) root.findViewById(R.id.tv_release_name)).setText(detailsListBean.subserials.get(i).name);
+                            itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.llVideoList.addView(root);
+                        }
+                    }
                 }
             } else if (holder instanceof ItemSearchByAITheLatestVideoViewHolder) {
             }
@@ -260,7 +470,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
         public TextView itemArea;
         public TextView itemLanguage;
         public TextView itemReleasetime;
-        public TextView tvvideodeteil;
+        public TextView itemVideoDeteil;
         public TextView itemChange;
 
         public ItemSearchByAIGuessWhatYouLikeViewHolder(View itemView) {
@@ -274,7 +484,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             itemArea = (TextView) itemView.findViewById(R.id.item_area);
             itemLanguage = (TextView) itemView.findViewById(R.id.item_language);
             itemReleasetime = (TextView) itemView.findViewById(R.id.item_releasetime);
-            tvvideodeteil = (TextView) itemView.findViewById(R.id.tv_video_deteil);
+            itemVideoDeteil = (TextView) itemView.findViewById(R.id.tv_video_deteil);
             itemChange = (TextView) itemView.findViewById(R.id.item_change);
         }
     }
@@ -292,7 +502,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
         public TextView itemArea;
         public TextView itemLanguage;
         public TextView itemReleasetime;
-        public TextView tvvideodeteil;
+        public TextView itemVideoDeteil;
         public LinearLayout llVideoList;
         public TextView itemChange;
 
@@ -307,7 +517,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             itemArea = (TextView) itemView.findViewById(R.id.item_area);
             itemLanguage = (TextView) itemView.findViewById(R.id.item_language);
             itemReleasetime = (TextView) itemView.findViewById(R.id.item_releasetime);
-            tvvideodeteil = (TextView) itemView.findViewById(R.id.tv_video_deteil);
+            itemVideoDeteil = (TextView) itemView.findViewById(R.id.tv_video_deteil);
             llVideoList = (LinearLayout) itemView.findViewById(R.id.ll_video_list);
             itemChange = (TextView) itemView.findViewById(R.id.tv_change_list);
         }

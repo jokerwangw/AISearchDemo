@@ -7,7 +7,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_470dp"
+        android:layout_height="wrap_content"
         android:background="@mipmap/search_by_ai_ask_ai_bg"
         android:orientation="vertical">
 
@@ -34,7 +34,6 @@
             <RelativeLayout
                 android:layout_width="@dimen/dimen_90dp"
                 android:layout_height="@dimen/dimen_120dp">
-
 
                 <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
                     android:id="@+id/item_detail_img"
@@ -74,9 +73,9 @@
                     android:id="@+id/item_category"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen_10dp"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:layout_marginTop="@dimen/dimen_10dp"
                     android:text="类型: 喜剧 / 爱情 / 奇幻"
                     android:textColor="@color/guess_you_like_movie_text"
                     android:textSize="@dimen/dimen_12dp"/>
@@ -116,7 +115,7 @@
         <LinearLayout
             android:id="@+id/ll_video_list"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dimen_50dp"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/ll_detail"
             android:layout_marginLeft="@dimen/dimen_35dp"
             android:layout_marginRight="@dimen/dimen_35dp"
@@ -131,7 +130,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/ll_video_list"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/dimen_15dp"
+            android:layout_marginBottom="@dimen/dimen_55dp"
+            android:layout_marginTop="@dimen/dimen_10dp"
             android:text="换一个"
             android:textColor="@color/appointment_movie_list"
             android:textSize="@dimen/dimen_15dp"
