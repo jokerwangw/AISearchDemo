@@ -226,7 +226,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                                 messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
                             } else if ((category.equals("电视剧") || category.equals("纪实") || category.equals("动漫")) && hasSubserials) {
                                 messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
-                            } else if(category.equals("综艺")&& hasSubserials){
+                            } else if (category.equals("综艺") && hasSubserials) {
                                 messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
                             }
                             break;
@@ -326,8 +326,10 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
      */
     private void intentQa(String nlpHandle) {
         NlpData nlpData = gson.fromJson(nlpHandle, NlpData.class);
-        aiuiService.tts(nlpData.getAnswer().text, null);
-        sendMessage(nlpData.getAnswer().text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
+        if ((nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text))) {
+            aiuiService.tts(nlpData.getAnswer().text, null);
+            sendMessage(nlpData.getAnswer().text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
+        }
     }
 
     @Override
@@ -335,14 +337,14 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         onIatResult(iatResult);
         onNlpResult(nlpReslult);
         //onTppResult(tppResult);
-        if(!TextUtils.isEmpty(tppResult)) {
+        if (!TextUtils.isEmpty(tppResult)) {
 
             Random random = new Random();
-            int ran =  random.nextInt(3);
+            int ran = random.nextInt(3);
             String fileName = "dsj.txt";
-            if(ran == 0)
+            if (ran == 0)
                 fileName = "dsj.txt";
-            else if(ran==1)
+            else if (ran == 1)
                 fileName = "dy.txt";
             else
                 fileName = "zy.txt";
