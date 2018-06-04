@@ -70,6 +70,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen_8dp"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:text="导演: 周星驰"
@@ -135,6 +136,7 @@
             android:textColor="@color/guess_you_like_movie_text"/>
 
         <TextView
+            android:id="@+id/tv_video_deteil"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tv_plot_header"
@@ -150,9 +152,9 @@
             android:id="@+id/tv_movie_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/tv_video_deteil"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="@dimen/dimen_50dp"
+            android:layout_marginTop="@dimen/dimen_15dp"
             android:text="换一个"
             android:textColor="@color/appointment_movie_list"
             android:textSize="@dimen/dimen_15dp"

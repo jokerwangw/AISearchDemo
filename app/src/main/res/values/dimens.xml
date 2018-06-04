@@ -25,5 +25,6 @@
     <dimen name="dimen_200dp">200dp</dimen>
     <dimen name="dimen_390dp">390dp</dimen>
     <dimen name="dimen_400dp">400dp</dimen>
+    <dimen name="dimen_470dp">470dp</dimen>
 
 </resources>
