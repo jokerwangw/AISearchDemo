@@ -20,6 +20,8 @@ public class TppData {
         public String area;
         //片名
         public String name;
+        //演员列表
+        public List<String> actor;
         //支持语言列表
         public List<String> language;
         //影片介绍
@@ -30,8 +32,12 @@ public class TppData {
         public List<String> tag;
         //分类
         public String category;
+        //导演
+        public String director;
         //图片 4种类型
         public String image;
+        //上映时间
+        public String releasetime;
         //剧集 第一集，第二集...
         public List<SubserialsBean> subserials;
     }
