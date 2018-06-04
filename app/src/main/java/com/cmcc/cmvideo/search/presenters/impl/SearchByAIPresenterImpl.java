@@ -329,20 +329,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     public void onResult(String iatResult, String nlpReslult, String tppResult) {
         onIatResult(iatResult);
         onNlpResult(nlpReslult);
-        //onTppResult(tppResult);
-        if (!TextUtils.isEmpty(tppResult)) {
-
-            Random random = new Random();
-            int ran = random.nextInt(3);
-            String fileName = "dsj.txt";
-            if (ran == 0)
-                fileName = "dsj.txt";
-            else if (ran == 1)
-                fileName = "dy.txt";
-            else
-                fileName = "zy.txt";
-            onTppResult(mView.getJsonData(fileName));
-        }
+        onTppResult(tppResult);
     }
 
     @Override
