@@ -10,4 +10,5 @@ public interface IAIUIService {
     void stopRecordAudio();
     void setAIUIEventListener(AIUIService.AIUIEventListener resultDispatchListener);
     void setUserParam(Map<String,String> map);
+    void syncSpeakableData();
 }

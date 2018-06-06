@@ -11,6 +11,7 @@ public class NlpData {
     public String sid;
     public AnswerBean answer;
     public List<SemanticBean> semantic;
+    public List<NlpData> moreResults;
 
 
     public static class SemanticBean {

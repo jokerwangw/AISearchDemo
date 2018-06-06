@@ -32,6 +32,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -98,6 +99,7 @@ public class AIUIService extends Service {
         @Override
         public void tts(String ttsText, SynthesizerListener synthesizerListener) {
             ttsStartSpeaking(ttsText, synthesizerListener);
+            //AIUIService.this.tts(ttsText);
         }
 
         @Override
@@ -135,6 +137,11 @@ public class AIUIService extends Service {
                 }
             }
         }
+
+        @Override
+        public void syncSpeakableData() {
+            AIUIService.this.syncSpeakableData();
+        }
     }
 
 
@@ -158,6 +165,7 @@ public class AIUIService extends Service {
                             JSONObject cntJson = new JSONObject(new String(event.data.getByteArray(cnt_id), "utf-8"));
 
                             String sub = params.optString("sub");
+                            Logger.debug("SUB 【"+sub+"】 【" + cntJson.toString() + "】");
                             if ("iat".equals(sub) || "nlp".equals(sub) || "tpp".equals(sub)) {
                                 // 解析得到语义结果
 
@@ -179,7 +187,6 @@ public class AIUIService extends Service {
                                     String resultStr = cntJson.optString("intent");
                                     if (resultStr.equals("{}") || resultStr.isEmpty())
                                         return;
-                                    Logger.debug("NLP 【" + resultStr + "】");
                                     if(eventListener!=null)
                                         eventListener.onResult(null,resultStr,null);
                                 }else {
@@ -187,7 +194,6 @@ public class AIUIService extends Service {
                                     if (resultStr.equals("{}"))
                                         return;
                                     String jsonResultStr = cntJson.toString();
-                                    Logger.debug("TPP 【" + jsonResultStr + "】");
                                     if(eventListener!=null)
                                         eventListener.onResult(null,null,jsonResultStr);
                                 }
@@ -232,8 +238,29 @@ public class AIUIService extends Service {
 
     private void ttsStartSpeaking(String ttsText, SynthesizerListener listener) {
         if (mTTs != null) {
+            setTTSParam();
             mTTs.startSpeaking(ttsText, listener == null ? synthesizerListener : listener);
         }
+    }
+
+    private void tts(String ttsText){
+        if(TextUtils.isEmpty(ttsText))
+            return;
+        byte[] ttsData = new byte[0];  //转为二进制数据
+        try {
+            ttsData = ttsText.getBytes("utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        StringBuffer params = new StringBuffer();  //构建合成参数
+        params.append("vcn=xiaoyan");  //合成发音人
+        params.append(",speed=50");  //合成速度
+        params.append(",pitch=50");  //合成音调
+        params.append(",volume=50");  //合成音量
+        //开始合成
+        AIUIMessage startTts = new AIUIMessage(25,1, 0, params.toString(), ttsData);
+        mAIUIAgent.sendMessage(startTts);
     }
 
     private SynthesizerListener synthesizerListener = new SynthesizerListener() {
@@ -322,6 +349,19 @@ public class AIUIService extends Service {
         }
     }
 
+    //同步所见即可说
+    public void syncSpeakableData() {
+        try {
+            String params = "{\"viewCmd::default\":{\"activeStatus\":\"fg\",\"data\":{\"hotInfo\":{\"viewCmd\":\"下一页|陈剑\"}},\"sceneStatus\":\"default\"}}";
+            byte[] syncData = params.getBytes("utf-8");
+
+            AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC,
+                    AIUIConstant.SYNC_DATA_STATUS, 0, params,syncData);
+            mAIUIAgent.sendMessage(syncAthenaMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * 发送AIUI消息
      * @param message

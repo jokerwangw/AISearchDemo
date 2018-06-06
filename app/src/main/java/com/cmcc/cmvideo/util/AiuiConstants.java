@@ -13,7 +13,7 @@ public class AiuiConstants {
      */
     public final static String QA_SERVICE = "openQA";
     public final static String VIDEO_SERVICE = "video";
-
+    public final static String VIEWCMD_SERVICE = "viewCmd";
     //指令控制技能名  如：开启/关闭语音助手、投屏指令
     public final static String CONTROL_MIGU= "LINGXI2018.control_migu";
     public final static String QUERY_MIGU = "LINGXI2018.businessQuery";
@@ -23,6 +23,7 @@ public class AiuiConstants {
     public final static String MIGU_TV_ORDER = "LINGXI2018.MiGu_TV_Order";
     public final static String MIGU_TV = "LINGXI2018.MiGu_tv";
     public final static String MIGU_SHIXUN = "LINGXI2018.MiGu_shixun";
+    public final static String MIGU_USER_VIDEO = "LINGXI2018.user_video";
     public final static String MIGU_OPERATION_ORDER = "LINGXI2018.operation_order";
     public final static String MIGU_SCREEN="LINGXI2018.MIGU";
 
@@ -30,11 +31,13 @@ public class AiuiConstants {
     public final static String CONTROL_INTENT = "Assistant";
     public final static String SREEN_INTENT = "Screen";
     public final static String QUERY_INTENT = "QUERY";
+    public final static String HOTVIDEO_INTENT = "hotVideo";
     public final static String MEMBER_INTENT = "Member";
     public final static String INTERNET_INTENT = "InternetTraffic";
     public final static String TICKET_INTENT="Ticket";
     public final static String ACYIVITY_INTENT = "Activity";
     public final static String GCUSTOMER_INTENT= "Gcustomer";
+    public final static String VIEWCMD_INTENT= "VIEWCMD";
 
     //video 意图下各句子分词
     public final static String VIDEO_AREA ="area";
