@@ -139,8 +139,13 @@ public class AIUIService extends Service {
         }
 
         @Override
-        public void syncSpeakableData() {
-            AIUIService.this.syncSpeakableData();
+        public void clearSpeakableData() {
+            AIUIService.this.clearSpeakableData();
+        }
+
+        @Override
+        public void syncSpeakableData(String hotInfo) {
+            AIUIService.this.syncSpeakableData(hotInfo);
         }
     }
 
@@ -214,15 +219,17 @@ public class AIUIService extends Service {
                     AIUIEvent event1 = event;
                     if (event1.arg1 == AIUIConstant.CMD_SYNC) {
                         int dtype = event.data.getInt("sync_dtype");
+
                         //arg2表示结果
                         if (0 == event.arg2) {          // 同步成功
-                            if (AIUIConstant.SYNC_DATA_SPEAKABLE == dtype) {
-                                effectDynamicEntity();
-                            }
-                        } else {
-                            if (AIUIConstant.SYNC_DATA_SCHEMA == dtype) {
-                                String sid = event.data.getString("sid");
-                                Logger.debug("数据同步出错：" + event.arg2 + "，sid=" + sid);
+                            Logger.debug("sync_dtype is "+dtype);
+                            switch (dtype){
+                                case AIUIConstant.SYNC_DATA_SPEAKABLE:
+                                    effectDynamicEntity();
+                                    break;
+                                case AIUIConstant.SYNC_DATA_STATUS:
+
+                                    break;
                             }
                         }
                     }
@@ -310,49 +317,67 @@ public class AIUIService extends Service {
         } catch (JSONException e) {
         }
     }
-    //同步所见即可说
-    public void syncSpeakableData(String data) {
+//    //同步所见即可说
+//    public void syncSpeakableData(String data) {
+//        try {
+//            JSONObject syncSpeakableJson = new JSONObject();
+//            // 识别用户数据
+//            JSONObject iatUserDataJson = new JSONObject();
+//            iatUserDataJson.put("recHotWords", "查看全部|下一页");
+//            iatUserDataJson.put("sceneInfo", new JSONObject());
+//            syncSpeakableJson.put("iat_user_data", iatUserDataJson);
+//
+//            // 语义理解用户数据
+//            JSONObject nlpUserDataJson = new JSONObject();
+//            JSONArray resArray = new JSONArray();
+//            JSONObject resDataItem = new JSONObject();
+//            resDataItem.put("res_name", "LINGXI2018.see_say_res");
+//            //resDataItem.put("res_name", "IFLYTEK.viewCmd");
+//            StringBuilder stringBuilder = new StringBuilder();
+//            stringBuilder.append(data);
+//            resDataItem.put("data", Base64.encodeToString(
+//                    stringBuilder.toString().getBytes(), Base64.NO_WRAP));
+//            resArray.put(resDataItem);
+//
+//            nlpUserDataJson.put("res", resArray);
+//            nlpUserDataJson.put("skill_name", "LINGXI2018.see_say_res");
+//
+//            syncSpeakableJson.put("nlp_user_data", nlpUserDataJson);
+//
+//            // 传入的数据一定要为utf-8编码
+//            byte[] syncData = syncSpeakableJson.toString().getBytes("utf-8");
+//
+//            AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC,
+//                    AIUIConstant.SYNC_DATA_SPEAKABLE, 0, "", syncData);
+//            mAIUIAgent.sendMessage(syncAthenaMessage);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//
+//        }
+//    }
+    public void clearSpeakableData(){
         try {
-            JSONObject syncSpeakableJson = new JSONObject();
-            // 识别用户数据
-            JSONObject iatUserDataJson = new JSONObject();
-            iatUserDataJson.put("recHotWords", "播报内容|地图显示|路径优先");
-            iatUserDataJson.put("sceneInfo", new JSONObject());
-            syncSpeakableJson.put("iat_user_data", iatUserDataJson);
+            if (mAIUIAgent != null) {
+                //确保AIUI处于唤醒状态
+                if (mCurrentState != AIUIConstant.STATE_WORKING) {
+                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
+                }
+                String params = "{\"viewCmd::default\":{\"activeStatus\":\"fg\",\"data\":{\"hotInfo\":{}},\"sceneStatus\":\"\"}}";
+                byte[] syncData = params.getBytes("utf-8");
 
-            // 语义理解用户数据
-            JSONObject nlpUserDataJson = new JSONObject();
-            JSONArray resArray = new JSONArray();
-            JSONObject resDataItem = new JSONObject();
-            resDataItem.put("res_name", "LINGXI2018.see_say_res");
-            //resDataItem.put("res_name", "IFLYTEK.viewCmd");
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(data);
-            resDataItem.put("data", Base64.encodeToString(
-                    stringBuilder.toString().getBytes(), Base64.NO_WRAP));
-            resArray.put(resDataItem);
-
-            nlpUserDataJson.put("res", resArray);
-            nlpUserDataJson.put("skill_name", "LINGXI2018.see_say_res");
-
-            syncSpeakableJson.put("nlp_user_data", nlpUserDataJson);
-
-            // 传入的数据一定要为utf-8编码
-            byte[] syncData = syncSpeakableJson.toString().getBytes("utf-8");
-
-            AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC,
-                    AIUIConstant.SYNC_DATA_SPEAKABLE, 0, "", syncData);
-            mAIUIAgent.sendMessage(syncAthenaMessage);
+                AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC,
+                        AIUIConstant.SYNC_DATA_STATUS, 0, params,syncData);
+                mAIUIAgent.sendMessage(syncAthenaMessage);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-
         }
     }
-
     //同步所见即可说
-    public void syncSpeakableData() {
+    public void syncSpeakableData(String hotInfo) {
         try {
-            String params = "{\"viewCmd::default\":{\"activeStatus\":\"fg\",\"data\":{\"hotInfo\":{\"viewCmd\":\"下一页|陈剑\"}},\"sceneStatus\":\"default\"}}";
+            String params = "{\"viewCmd::default\":{\"activeStatus\":\"fg\",\"data\":{\"hotInfo\":{\"viewCmd\":\"%s\"}},\"sceneStatus\":\"default\"}}";
+            params = String.format(params,hotInfo);
             byte[] syncData = params.getBytes("utf-8");
 
             AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC,

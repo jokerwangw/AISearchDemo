@@ -53,6 +53,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private android.os.Handler mHandler;
     private long startTime = 0;
     private final int TIME_OUT = 5000;
+    private List<TppData.DetailsListBean> lastVideoList = null;
+    private int lastResponseVideoMessageType = MESSAGE_TYPE_NORMAL;
 
     public SearchByAIPresenterImpl(Executor executor, MainThread mainThread, SearchByAIPresenter.View view, Context context) {
         super(executor, mainThread);
@@ -120,6 +122,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             put("client_id", "897ddadc222ec9c20651da355daee9cc");
         }};
         aiuiService.setAIUIEventListener(this);
+        //上传用户数据
         aiuiService.setUserParam(map);
     }
 
@@ -151,6 +154,11 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     public void onNlpResult(String result) {
         if (TextUtils.isEmpty(result)) return;
         mData = gson.fromJson(result, NlpData.class);
+        String service = mData.service;
+        if(!AiuiConstants.VIEWCMD_SERVICE.equals(service)) {
+            Logger.debug("听写用户输入数据=====" + mData.text);
+            sendMessage( mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
+        }
         if (mData.rc == 4) {
             //播报
             if ((System.currentTimeMillis() - startTime) > TIME_OUT) {
@@ -161,11 +169,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             }
             return;
         }
-        String service = mData.service;
-        if(!AiuiConstants.VIEWCMD_SERVICE.equals(service)) {
-            Logger.debug("听写用户输入数据=====" + mData.text);
-            sendMessage( mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
-        }
+
         if (null != mData.semantic) {
             intent = mData.semantic.get(0).getIntent();
         }
@@ -200,16 +204,16 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         NlpData nlpData = gson.fromJson(result, NlpData.class);
         //判断是否解出了语义，并且当前技能是video
         if (nlpData.rc == 4
-                || !"video".equals(nlpData.service)
-                ||!"LINGXI2018.user_video".equals(nlpData.service))
+                || !("video".equals(nlpData.service)
+                ||"LINGXI2018.user_video".equals(nlpData.service)))
         {
             if(nlpData.moreResults ==null) {
                 return;
             }
             nlpData = nlpData.moreResults.get(0);
             if (nlpData.rc == 4
-                    || !"video".equals(nlpData.service)
-                    ||!"LINGXI2018.user_video".equals(nlpData.service)){
+                    || !("video".equals(nlpData.service)
+                    || "LINGXI2018.user_video".equals(nlpData.service))){
                 return;
             }
         }
@@ -356,9 +360,47 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         NlpData nlpData = gson.fromJson(nlpHandle, NlpData.class);
         if(AiuiConstants.VIEWCMD_INTENT.equals(nlpData.semantic.get(0).intent)){
             Map<String,String> solts = formatSlotsToMap(nlpData.semantic.get(0).slots);
-            if(solts.containsKey(AiuiConstants.VIEWCMD_INTENT)){
-                switch (solts.get(AiuiConstants.VIEWCMD_INTENT)){
+            if(solts.containsKey(AiuiConstants.VIEWCMD_SERVICE)){
+                switch (solts.get(AiuiConstants.VIEWCMD_SERVICE)){
                     case "下一页":
+                        break;
+                    case "查看更多":
+                        break;
+                    default:
+                        String[] names = solts.get(AiuiConstants.VIEWCMD_SERVICE).split("\\|");
+                        if(names ==null) {
+                            return;
+                        }
+                        if(lastVideoList==null){
+                            // names不为空，但是lastVideoList 为null
+                            // 说明最后一次lastVideo是没有的，
+                            // 这时要清理下为lastVideoList所设置的所见即可说
+                            aiuiService.clearSpeakableData();
+                            return;
+                        }
+                        List<TppData.DetailsListBean> selectedVideoList = new ArrayList<>();
+                        for(int i = 0 ;i<names.length;i++){
+                            for (TppData.DetailsListBean bean:lastVideoList){
+                                Logger.debug("name【"+names[i]+"】beanName【"+bean.name+"】");
+                                if(names[i].equals(bean.name)){
+                                    // 找到多个匹配结果
+                                    selectedVideoList.add(bean);
+                                    break;
+                                }
+                            }
+                        }
+
+                        if(selectedVideoList.size()==0) return;
+                        lastVideoList = selectedVideoList;
+                        if(selectedVideoList.size() ==1){
+                            //TODO 打开当前影片
+                            aiuiService.tts("正在为你打开,"+selectedVideoList.get(0).name,null);
+                        }else {
+                            //更新UI为筛选出的Video列表
+                            sendMessage("",lastResponseVideoMessageType,MESSAGE_FROM_AI,lastVideoList);
+                            aiuiService.tts("为你找到"+selectedVideoList.size()+"个结果",null);
+                        }
+
                         break;
                 }
             }
@@ -445,7 +487,16 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
      * @param videoList   影片内容影片数据，
      */
     private void sendMessage(String msg, int messageType, String msgFrom, List<TppData.DetailsListBean> videoList) {
-        aiuiService.syncSpeakableData();
+        if(videoList!=null&&videoList.size()>0){
+            lastResponseVideoMessageType = messageType;
+            lastVideoList = videoList;
+            //服务端返回数据就去同步所见即可说
+            String hotInfo = "查看更多|";
+            for(TppData.DetailsListBean bean:videoList){
+                hotInfo+=bean.name+"|";
+            }
+            aiuiService.syncSpeakableData(hotInfo.substring(0,hotInfo.lastIndexOf("|")));
+        }
         List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
         messageList.add(new SearchByAIBean(msg, messageType, msgFrom, videoList));
         EventBus.getDefault().post(new SearchByAIEventBean(messageList));

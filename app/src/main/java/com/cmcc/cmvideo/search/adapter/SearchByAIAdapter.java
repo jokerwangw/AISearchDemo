@@ -128,8 +128,41 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             } else if (holder instanceof ItemSearchByAIAppointmentViewHolder) {
             } else if (holder instanceof ItemSearchByAIEveryoneISWatchingViewHolder) {
                 List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
-                if (null != videoList) {
+                ItemSearchByAIEveryoneISWatchingViewHolder itemSearchByAIEveryoneISWatchingViewHolder = (ItemSearchByAIEveryoneISWatchingViewHolder) holder;
+                itemSearchByAIEveryoneISWatchingViewHolder.itemImg1.setVisibility(View.VISIBLE);
+                itemSearchByAIEveryoneISWatchingViewHolder.itemImg2.setVisibility(View.VISIBLE);
+                itemSearchByAIEveryoneISWatchingViewHolder.itemImg3.setVisibility(View.VISIBLE);
+                itemSearchByAIEveryoneISWatchingViewHolder.itemName1.setVisibility(View.VISIBLE);
+                itemSearchByAIEveryoneISWatchingViewHolder.itemName2.setVisibility(View.VISIBLE);
+                itemSearchByAIEveryoneISWatchingViewHolder.itemName3.setVisibility(View.VISIBLE);
+                itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum1.setVisibility(View.GONE);
+                itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum2.setVisibility(View.GONE);
+                itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum3.setVisibility(View.GONE);
+                if (null != videoList&&videoList.size()>=3) {
+                    itemSearchByAIEveryoneISWatchingViewHolder.itemImg1.setImageURI(getImageUrl(videoList.get(0).image));
+                    itemSearchByAIEveryoneISWatchingViewHolder.itemImg2.setImageURI(getImageUrl(videoList.get(1).image));
+                    itemSearchByAIEveryoneISWatchingViewHolder.itemImg3.setImageURI(getImageUrl(videoList.get(2).image));
+                    itemSearchByAIEveryoneISWatchingViewHolder.itemName1.setText(videoList.get(0).name);
+                    itemSearchByAIEveryoneISWatchingViewHolder.itemName2.setText(videoList.get(1).name);
+                    itemSearchByAIEveryoneISWatchingViewHolder.itemName3.setText(videoList.get(2).name);
+//                    itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum1.setText("6666");
+//                    itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum2.setText("7777");
+//                    itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum3.setText("8888");
 
+                }else if(null != videoList&&videoList.size()==2){
+                    itemSearchByAIEveryoneISWatchingViewHolder.itemImg1.setImageURI(getImageUrl(videoList.get(0).image));
+                    itemSearchByAIEveryoneISWatchingViewHolder.itemImg2.setImageURI(getImageUrl(videoList.get(1).image));
+                    itemSearchByAIEveryoneISWatchingViewHolder.itemImg3.setVisibility(View.INVISIBLE);
+                    itemSearchByAIEveryoneISWatchingViewHolder.itemName1.setText(videoList.get(0).name);
+                    itemSearchByAIEveryoneISWatchingViewHolder.itemName2.setText(videoList.get(1).name);
+                    itemSearchByAIEveryoneISWatchingViewHolder.itemName3.setVisibility(View.INVISIBLE);
+                }else if(null != videoList&&videoList.size()==1){
+                    itemSearchByAIEveryoneISWatchingViewHolder.itemImg1.setImageURI(getImageUrl(videoList.get(0).image));
+                    itemSearchByAIEveryoneISWatchingViewHolder.itemImg2.setVisibility(View.INVISIBLE);
+                    itemSearchByAIEveryoneISWatchingViewHolder.itemImg3.setVisibility(View.INVISIBLE);
+                    itemSearchByAIEveryoneISWatchingViewHolder.itemName1.setText(videoList.get(0).name);
+                    itemSearchByAIEveryoneISWatchingViewHolder.itemName2.setVisibility(View.INVISIBLE);
+                    itemSearchByAIEveryoneISWatchingViewHolder.itemName3.setVisibility(View.INVISIBLE);
                 }
             } else if (holder instanceof ItemSearchByAIEveryoneIWantTOSeeViewHolder) {
                 List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
@@ -361,7 +394,22 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             }
         }
     }
-
+    private String getImageUrl(String imageJsonObj){
+        try {
+            JSONObject jsonObject = new JSONObject(imageJsonObj);
+            String imgUrl = jsonObject.optString("highResolutionV");
+            if (!TextUtils.isEmpty(imgUrl)) {
+                if (imgUrl.startsWith("http")) {
+                    return imgUrl;
+                } else {
+                    return IMG_BASE_URL + imgUrl;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
     /**
      * 类型：MESSAGE_TYPE_NORMAL
      */
