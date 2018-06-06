@@ -393,7 +393,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             case AIUIConstant.EVENT_STOP_RECORD:
                 break;
             case AIUIConstant.EVENT_VAD:
-                Logger.debug(TAG, "arg【" + event.arg1 + "】【" + event.arg2 + "】");
+                Logger.debug("arg【" + event.arg1 + "】【" + event.arg2 + "】");
                 //用arg1标识前后端点或者音量信息:0(前端点)、1(音量)、2(后端点)、3（前端点超时）。
                 //当arg1取值为1时，arg2为音量大小。
                 if (event.arg1 == 0) {

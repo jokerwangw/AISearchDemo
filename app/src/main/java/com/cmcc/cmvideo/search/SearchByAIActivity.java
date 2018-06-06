@@ -96,6 +96,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         bindService(new Intent(this, AIUIService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
         initCustomView();
         mSearchByAIPresenter.initListSearchItem();
+
     }
 
     private void initCustomView() {
@@ -131,6 +132,8 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         public void onServiceConnected(ComponentName name, IBinder service) {
             aiuiService = (IAIUIService) service;
             mSearchByAIPresenter.setAIUIService(aiuiService);
+            aiuiService.startRecordAudio();
+
         }
 
         @Override

@@ -22,6 +22,10 @@
     <!--location 权限-->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!--监听耳机连接状态权限-->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
     <application
         android:name=".MyApplication"
         android:allowBackup="true"

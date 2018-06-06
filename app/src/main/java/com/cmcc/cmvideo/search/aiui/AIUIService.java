@@ -1,18 +1,27 @@
 package com.cmcc.cmvideo.search.aiui;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.AssetManager;
+import android.media.AudioDeviceInfo;
+import android.media.AudioManager;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.cmcc.cmvideo.search.aiui.bean.IatBean;
+import com.cmcc.cmvideo.search.aiui.bean.MicBean;
 import com.cmcc.cmvideo.search.aiui.bean.NlpData;
+import com.cmcc.cmvideo.util.PlayerManager;
 import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIAgent;
 import com.iflytek.aiui.AIUIConstant;
@@ -26,6 +35,7 @@ import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.SynthesizerListener;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,7 +56,8 @@ public class AIUIService extends Service {
     private int mCurrentState = AIUIConstant.STATE_IDLE;
     private SpeechSynthesizer mTTs;
     private AIUIEventListener eventListener;
-    private Map<String,String> userInfoMap;
+    private Map<String, String> userInfoMap;
+    private AudioManager audoManager;
 
     @Override
     public void onCreate() {
@@ -57,14 +68,17 @@ public class AIUIService extends Service {
 
     @Override
     public void onDestroy() {
-        if(mAIUIAgent!=null)
+        if (mAIUIAgent != null)
             mAIUIAgent.destroy();
-        if(mTTs!=null) {
-            if(mTTs.isSpeaking())
+        if (mTTs != null) {
+            if (mTTs.isSpeaking())
                 mTTs.stopSpeaking();
             mTTs.destroy();
         }
         SpeechUtility.getUtility().destroy();
+        if (null != mReceiver) {
+            unregisterReceiver(mReceiver);
+        }
         super.onDestroy();
     }
 
@@ -87,7 +101,13 @@ public class AIUIService extends Service {
                 }
             }
         });
+
+        //注册耳机是否插入广播
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
+        registerReceiver(mReceiver, intentFilter);
     }
+
 
     @Nullable
     @Override
@@ -120,17 +140,17 @@ public class AIUIService extends Service {
         @Override
         public void setUserParam(Map<String, String> map) {
             userInfoMap = map;
-            if(userInfoMap!=null&&userInfoMap.size()>0){
+            if (userInfoMap != null && userInfoMap.size() > 0) {
                 try {
                     JSONObject objectJson = new JSONObject();
                     JSONObject paramJson = new JSONObject();
                     //用户数据添加的初始化参数中
-                    Iterator<Map.Entry<String,String>> iterator = userInfoMap.entrySet().iterator();
-                    while (iterator.hasNext()){
-                        Map.Entry<String,String> item= iterator.next();
-                        paramJson.put(item.getKey(),item.getValue());
+                    Iterator<Map.Entry<String, String>> iterator = userInfoMap.entrySet().iterator();
+                    while (iterator.hasNext()) {
+                        Map.Entry<String, String> item = iterator.next();
+                        paramJson.put(item.getKey(), item.getValue());
                     }
-                    objectJson.put("userparams",paramJson);
+                    objectJson.put("userparams", paramJson);
                     sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -165,7 +185,7 @@ public class AIUIService extends Service {
                             JSONObject cntJson = new JSONObject(new String(event.data.getByteArray(cnt_id), "utf-8"));
 
                             String sub = params.optString("sub");
-                            Logger.debug("SUB 【"+sub+"】 【" + cntJson.toString() + "】");
+                            Logger.debug("SUB 【" + sub + "】 【" + cntJson.toString() + "】");
                             if ("iat".equals(sub) || "nlp".equals(sub) || "tpp".equals(sub)) {
                                 // 解析得到语义结果
 
@@ -179,23 +199,25 @@ public class AIUIService extends Service {
                                     if (TextUtils.isEmpty(iatTxt)) {
                                         return;
                                     }
-                                    if (eventListener != null){
-                                        eventListener.onResult(iatTxt,null,null);
+                                    if (eventListener != null) {
+                                        eventListener.onResult(iatTxt, null, null);
                                     }
 
                                 } else if ("nlp".equals(sub)) {
                                     String resultStr = cntJson.optString("intent");
                                     if (resultStr.equals("{}") || resultStr.isEmpty())
                                         return;
-                                    if(eventListener!=null)
-                                        eventListener.onResult(null,resultStr,null);
-                                }else {
+                                    Logger.debug("NLP 【" + resultStr + "】");
+                                    if (eventListener != null)
+                                        eventListener.onResult(null, resultStr, null);
+                                } else {
                                     String resultStr = cntJson.optString("intent");
                                     if (resultStr.equals("{}"))
                                         return;
                                     String jsonResultStr = cntJson.toString();
-                                    if(eventListener!=null)
-                                        eventListener.onResult(null,null,jsonResultStr);
+                                    Logger.debug("TPP 【" + jsonResultStr + "】");
+                                    if (eventListener != null)
+                                        eventListener.onResult(null, null, jsonResultStr);
                                 }
                             }
                         }
@@ -230,7 +252,7 @@ public class AIUIService extends Service {
                     break;
             }
             //AIUI状态分发给各客户端监听
-            if (eventListener != null){
+            if (eventListener != null) {
                 eventListener.onEvent(event);
             }
         }
@@ -243,8 +265,8 @@ public class AIUIService extends Service {
         }
     }
 
-    private void tts(String ttsText){
-        if(TextUtils.isEmpty(ttsText))
+    private void tts(String ttsText) {
+        if (TextUtils.isEmpty(ttsText))
             return;
         byte[] ttsData = new byte[0];  //转为二进制数据
         try {
@@ -259,7 +281,7 @@ public class AIUIService extends Service {
         params.append(",pitch=50");  //合成音调
         params.append(",volume=50");  //合成音量
         //开始合成
-        AIUIMessage startTts = new AIUIMessage(25,1, 0, params.toString(), ttsData);
+        AIUIMessage startTts = new AIUIMessage(25, 1, 0, params.toString(), ttsData);
         mAIUIAgent.sendMessage(startTts);
     }
 
@@ -299,6 +321,7 @@ public class AIUIService extends Service {
 
         }
     };
+
     public void effectDynamicEntity() {
         try {
             JSONObject params = new JSONObject();
@@ -310,6 +333,7 @@ public class AIUIService extends Service {
         } catch (JSONException e) {
         }
     }
+
     //同步所见即可说
     public void syncSpeakableData(String data) {
         try {
@@ -356,14 +380,16 @@ public class AIUIService extends Service {
             byte[] syncData = params.getBytes("utf-8");
 
             AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC,
-                    AIUIConstant.SYNC_DATA_STATUS, 0, params,syncData);
+                    AIUIConstant.SYNC_DATA_STATUS, 0, params, syncData);
             mAIUIAgent.sendMessage(syncAthenaMessage);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     /**
      * 发送AIUI消息
+     *
      * @param message
      */
     private void sendMessage(AIUIMessage message) {
@@ -419,9 +445,10 @@ public class AIUIService extends Service {
         return params;
     }
 
-    public interface AIUIEventListener{
-        void  onResult(String iatResult,String nlpReslult,String tppResult);
-        void  onEvent(AIUIEvent event);
+    public interface AIUIEventListener {
+        void onResult(String iatResult, String nlpReslult, String tppResult);
+
+        void onEvent(AIUIEvent event);
     }
 
     private static Gson mGson;
@@ -443,5 +470,29 @@ public class AIUIService extends Service {
         }
         return text;
     }
+
+    /**
+     * 检测耳机是否插入
+     */
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
+                if (intent.hasExtra("state")) {
+                    if (intent.getIntExtra("state", 0) == 0) {
+                        EventBus.getDefault().post(new MicBean(false));
+                        //切换为外放模式
+                        PlayerManager.getInstance().changeToSpeaker();
+                    } else if (intent.getIntExtra("state", 0) == 1) {
+                        EventBus.getDefault().post(new MicBean(true));
+                        //切换为耳机模式
+                        PlayerManager.getInstance().changeToHeadset();
+                    }
+                }
+            }
+        }
+    };
+
 
 }

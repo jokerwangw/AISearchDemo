@@ -7,6 +7,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.backends.okhttp.OkHttpNetworkFetcher;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.producers.NetworkFetcher;
+import com.iflytek.cloud.SpeechUtility;
 import com.orhanobut.logger.Logger;
 import com.squareup.okhttp.Dispatcher;
 import com.squareup.okhttp.OkHttpClient;
@@ -27,6 +28,7 @@ public class MyApplication extends Application {
         super.onCreate();
 
         ApplicationContext.init(this);
+        SpeechUtility.createUtility(this, String.format("engine_start=ivw,delay_init=0,appid=%s", "5aceb703"));
         // 初始化 Fresco
         initFresco();
     }
@@ -51,7 +53,7 @@ public class MyApplication extends Application {
                     .setDownsampleEnabled(true);
             // .setBitmapMemoryCacheParamsSupplier(supplier);
             Fresco.initialize(this, builder.build());
-        }catch(Exception e){
+        } catch (Exception e) {
             Logger.e("Fresco inierr", e);
         }
     }
