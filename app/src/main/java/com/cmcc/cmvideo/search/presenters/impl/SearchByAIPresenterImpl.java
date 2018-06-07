@@ -1,6 +1,7 @@
 package com.cmcc.cmvideo.search.presenters.impl;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Looper;
 import android.text.TextUtils;
 
@@ -22,6 +23,7 @@ import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
 import com.cmcc.cmvideo.search.model.SearchByAIRefreshUIEventBean;
 import com.cmcc.cmvideo.search.presenters.SearchByAIPresenter;
+import com.cmcc.cmvideo.util.AiResponse;
 import com.cmcc.cmvideo.util.AiuiConstants;
 import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIConstant;
@@ -228,16 +230,17 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         if (nlpData.data.lxresult == null
                 ||!"000000".equals(nlpData.data.lxresult.code))
             return;
-
+        AiResponse.Response responseTts = null;
+        Map<String, String> map = formatSlotsToMap(nlpData.semantic.get(0).slots);
         switch (nlpData.semantic.get(0).intent) {
             case AiuiConstants.QUERY_INTENT:
-                Map<String, String> map = formatSlotsToMap(nlpData.semantic.get(0).slots);
                 int messageType = MESSAGE_TYPE_NORMAL;
                 if (nlpData.data.lxresult.data.detailslist != null &&
                         nlpData.data.lxresult.data.detailslist.size() > 0) {
                     while (true) {
-                        //TODO 判断意图是使用哪个卡片展示
-                        if (map.containsKey(AiuiConstants.VIDEO_CATEGORY)) { //猜你喜欢
+                        // 判断意图是使用哪个卡片展示
+                        if (map.size() ==1&&map.containsKey(AiuiConstants.VIDEO_CATEGORY)) { //猜你喜欢
+                            AiResponse.Response response = AiResponse.getInstance().getGuessWhatYouLike();
                             String category = map.get(AiuiConstants.VIDEO_CATEGORY);
                             boolean hasSubserials = hasSubserials(nlpData);
                             if (category.equals("电影")) {
@@ -247,14 +250,49 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                             } else if (category.equals("综艺") && hasSubserials) {
                                 messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
                             }
+                            //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
+                            if(response.respType == AiResponse.RespType.VIDEO_TYPE&&messageType ==MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE){
+                                response.response = String.format(response.response,"电影");
+                            }
+                            //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
+                            if(response.respType == AiResponse.RespType.VIDEO_TYPE&&messageType !=MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE){
+                                response.response = String.format(response.response,"视频");
+                            }
+                            //播报电影名称的反馈语
+                            if(response.respType == AiResponse.RespType.VIDEO_NAME){
+                                response.response = String.format(response.response,nlpData.data.lxresult.data.detailslist.get(0).name);
+                            }
+                            responseTts = response;
                             break;
                         }
                         if (map.containsKey(AiuiConstants.VIDEO_TIME_DESCR)) { // 有时间 的表示最近好看的电影
+                            AiResponse.Response response = AiResponse.getInstance().getNewVideo();
                             messageType = MESSAGE_TYPE_THE_LATEST_VIDEO;
+                            if(response.respType == AiResponse.RespType.VIDEO_TYPE){
+                                //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
+                                if(map.containsKey(AiuiConstants.VIDEO_CATEGORY)&&map.get(AiuiConstants.VIDEO_CATEGORY).equals("电影")) {
+                                    response.response = String.format(response.response, "电影");
+                                }else if(map.containsKey(AiuiConstants.VIDEO_CATEGORY)){
+                                    response.response = String.format(response.response, "视频");
+                                }
+                            }else if(response.respType == AiResponse.RespType.VIDEO_NAME){
+                                response.response = String.format(response.response, nlpData.data.lxresult.data.detailslist.get(0).name);
+                            }
+                            responseTts = response;
                             break;
                         }
                         if (map.containsKey(AiuiConstants.VIDEO_TAG) || map.containsKey(AiuiConstants.VIDEO_NAME)) {  //带标签的表示大家都在看
+                            AiResponse.Response response = AiResponse.getInstance().getEveryoneSee();
                             messageType = MESSAGE_TYPE_EVERYONE_IS_WATCHING;
+                            if(response.respType == AiResponse.RespType.VIDEO_TYPE){
+                                //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
+                                if(map.containsKey(AiuiConstants.VIDEO_CATEGORY)&&map.get(AiuiConstants.VIDEO_CATEGORY).equals("电影")) {
+                                    response.response = String.format(response.response, "电影");
+                                }else{
+                                    response.response = String.format(response.response, "视频");
+                                }
+                            }
+                            responseTts = response;
                             break;
                         }
                         break;
@@ -263,12 +301,24 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 sendMessage(nlpData.answer != null ? nlpData.answer.text : "", messageType, MESSAGE_FROM_AI, nlpData.data.lxresult.data.detailslist);
                 break;
             case AiuiConstants.HOTVIDEO_INTENT:
+                AiResponse.Response response = AiResponse.getInstance().getEveryoneSee();
+                if(response.respType == AiResponse.RespType.VIDEO_TYPE){
+                    //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
+                    if(map.containsKey(AiuiConstants.VIDEO_CATEGORY)&&map.get(AiuiConstants.VIDEO_CATEGORY).equals("电影")) {
+                        response.response = String.format(response.response, "电影");
+                    }else{
+                        response.response = String.format(response.response, "视频");
+                    }
+                }
+                responseTts = response;
                 sendMessage(nlpData.answer != null ? nlpData.answer.text : "", MESSAGE_TYPE_EVERYONE_IS_WATCHING, MESSAGE_FROM_AI,
                         nlpData.data.lxresult.data.detailslist);
                 break;
         }
+        if(responseTts!=null){
+            aiuiService.tts(responseTts.response,null);
+        }
     }
-
     /**
      * 是否存在剧集数据
      *
@@ -491,7 +541,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             lastResponseVideoMessageType = messageType;
             lastVideoList = videoList;
             //服务端返回数据就去同步所见即可说
-            String hotInfo = "查看更多|";
+            String hotInfo = "查看更多|换一个";
             for(TppData.DetailsListBean bean:videoList){
                 hotInfo+=bean.name+"|";
             }
