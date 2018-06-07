@@ -12,4 +12,5 @@ public interface IAIUIService {
     void setUserParam(Map<String,String> map);
     void clearSpeakableData();
     void syncSpeakableData(String hotInfo);
+    void startIvwAudio();
 }

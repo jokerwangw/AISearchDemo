@@ -132,6 +132,8 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         public void onServiceConnected(ComponentName name, IBinder service) {
             aiuiService = (IAIUIService) service;
             mSearchByAIPresenter.setAIUIService(aiuiService);
+            //唤醒
+            aiuiService.startIvwAudio();
         }
 
         @Override

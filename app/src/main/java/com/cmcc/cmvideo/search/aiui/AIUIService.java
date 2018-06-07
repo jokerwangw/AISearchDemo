@@ -76,9 +76,9 @@ public class AIUIService extends Service {
             mTTs.destroy();
         }
         SpeechUtility.getUtility().destroy();
-//        if (null != mReceiver) {
-//            unregisterReceiver(mReceiver);
-//        }
+        if (null != mReceiver) {
+            unregisterReceiver(mReceiver);
+        }
         super.onDestroy();
     }
 
@@ -86,10 +86,11 @@ public class AIUIService extends Service {
      * SDK 初始化
      */
     private void init() {
+        SpeechUtility.createUtility(this, String.format("engine_start=ivw,delay_init=0,appid=%s","5aceb703"));
         //AIUI初始化
         mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
         //MSC初始化（登陆）
-        SpeechUtility.createUtility(this, "appid=5aceb703");
+//        SpeechUtility.createUtility(this, "appid=5aceb703");
         //TTS 初始化MSC中的TTS 功能
         mTTs = SpeechSynthesizer.createSynthesizer(this, new InitListener() {
             @Override
@@ -103,9 +104,9 @@ public class AIUIService extends Service {
         });
 
         //注册耳机是否插入广播
-//        IntentFilter intentFilter = new IntentFilter();
-//        intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
-//        registerReceiver(mReceiver, intentFilter);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
+        registerReceiver(mReceiver, intentFilter);
     }
 
 
@@ -167,13 +168,21 @@ public class AIUIService extends Service {
         public void syncSpeakableData(String hotInfo) {
             AIUIService.this.syncSpeakableData(hotInfo);
         }
+
+        @Override
+        public void startIvwAudio() {
+            //创建AIUIAgent
+            //开始录音
+            AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null);
+            mAIUIAgent.sendMessage(msg);
+        }
     }
 
 
     private AIUIListener aiuiListener = new AIUIListener() {
         @Override
         public void onEvent(AIUIEvent event) {
-            Logger.debug("event" + event.eventType);
+            Logger.debug("event" + event.eventType + "=====" + event.info);
             switch (event.eventType) {
                 case AIUIConstant.EVENT_RESULT: {
                     try {
@@ -250,8 +259,8 @@ public class AIUIService extends Service {
 
                         //arg2表示结果
                         if (0 == event.arg2) {          // 同步成功
-                            Logger.debug("sync_dtype is "+dtype);
-                            switch (dtype){
+                            Logger.debug("sync_dtype is " + dtype);
+                            switch (dtype) {
                                 case AIUIConstant.SYNC_DATA_SPEAKABLE:
                                     effectDynamicEntity();
                                     break;
@@ -346,7 +355,8 @@ public class AIUIService extends Service {
         } catch (JSONException e) {
         }
     }
-//    //同步所见即可说
+
+    //    //同步所见即可说
 //    public void syncSpeakableData(String data) {
 //        try {
 //            JSONObject syncSpeakableJson = new JSONObject();
@@ -384,7 +394,7 @@ public class AIUIService extends Service {
 //
 //        }
 //    }
-    public void clearSpeakableData(){
+    public void clearSpeakableData() {
         try {
             if (mAIUIAgent != null) {
                 //确保AIUI处于唤醒状态
@@ -395,18 +405,19 @@ public class AIUIService extends Service {
                 byte[] syncData = params.getBytes("utf-8");
 
                 AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC,
-                        AIUIConstant.SYNC_DATA_STATUS, 0, params,syncData);
+                        AIUIConstant.SYNC_DATA_STATUS, 0, params, syncData);
                 mAIUIAgent.sendMessage(syncAthenaMessage);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     //同步所见即可说
     public void syncSpeakableData(String hotInfo) {
         try {
             String params = "{\"viewCmd::default\":{\"activeStatus\":\"fg\",\"data\":{\"hotInfo\":{\"viewCmd\":\"%s\"}},\"sceneStatus\":\"default\"}}";
-            params = String.format(params,hotInfo);
+            params = String.format(params, hotInfo);
             byte[] syncData = params.getBytes("utf-8");
 
             AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC,
@@ -504,25 +515,25 @@ public class AIUIService extends Service {
     /**
      * 检测耳机是否插入
      */
-//    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            String action = intent.getAction();
-//            if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
-//                if (intent.hasExtra("state")) {
-//                    if (intent.getIntExtra("state", 0) == 0) {
-//                        EventBus.getDefault().post(new MicBean(false));
-//                        //切换为外放模式
-//                        PlayerManager.getInstance().changeToSpeaker();
-//                    } else if (intent.getIntExtra("state", 0) == 1) {
-//                        EventBus.getDefault().post(new MicBean(true));
-//                        //切换为耳机模式
-//                        PlayerManager.getInstance().changeToHeadset();
-//                    }
-//                }
-//            }
-//        }
-//    };
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
+                if (intent.hasExtra("state")) {
+                    if (intent.getIntExtra("state", 0) == 0) {
+                        EventBus.getDefault().post(new MicBean(false));
+                        //切换为外放模式
+                        PlayerManager.getInstance().changeToReceiver();
+                    } else if (intent.getIntExtra("state", 0) == 1) {
+                        EventBus.getDefault().post(new MicBean(true));
+                        //切换为耳机模式
+                        PlayerManager.getInstance().changeToHeadset();
+                    }
+                }
+            }
+        }
+    };
 
 
 }
