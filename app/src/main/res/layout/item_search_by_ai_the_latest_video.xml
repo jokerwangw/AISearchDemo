@@ -29,6 +29,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/itemTime1"
                 android:layout_width="@dimen/dimen_10dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -37,6 +38,7 @@
                 android:textColor="@color/appointment_movie_time"/>
 
             <TextView
+                android:id="@+id/itemTime2"
                 android:layout_width="@dimen/dimen_10dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -45,6 +47,7 @@
                 android:textColor="@color/appointment_movie_time"/>
 
             <TextView
+                android:id="@+id/itemTime3"
                 android:layout_width="@dimen/dimen_10dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -72,13 +75,15 @@
                 android:layout_height="@dimen/dimen_136dp"
                 android:layout_weight="1">
 
-                <ImageView
+                <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
+                    android:id="@+id/item_img1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/search_by_ai_bg"
                     />
 
                 <TextView
+                    android:id="@+id/item_watch_num1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
@@ -97,13 +102,15 @@
                 android:layout_marginRight="@dimen/dimen_8dp"
                 android:layout_weight="1">
 
-                <ImageView
+                <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
+                    android:id="@+id/item_img2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/search_by_ai_bg"
                     />
 
                 <TextView
+                    android:id="@+id/item_watch_num2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
@@ -120,13 +127,15 @@
                 android:layout_height="@dimen/dimen_136dp"
                 android:layout_weight="1">
 
-                <ImageView
+                <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
+                    android:id="@+id/item_img3"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/search_by_ai_bg"
                     />
 
                 <TextView
+                    android:id="@+id/item_watch_num3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
@@ -148,6 +157,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/item_name1"
                 android:layout_width="@dimen/dimen_10dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -156,6 +166,7 @@
                 android:textColor="@color/everyone_watch_list_movie_name"/>
 
             <TextView
+                android:id="@+id/item_name2"
                 android:layout_width="@dimen/dimen_10dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -164,6 +175,7 @@
                 android:textColor="@color/everyone_watch_list_movie_name"/>
 
             <TextView
+                android:id="@+id/item_name3"
                 android:layout_width="@dimen/dimen_10dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

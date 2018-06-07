@@ -231,9 +231,14 @@ public class AIUIService extends Service {
                     }
                 }
                 break;
+                case AIUIConstant.CMD_START_RECORD:
+                    Logger.debug("CMD_START_RECORD===========");
+                    break;
+                case AIUIConstant.EVENT_ERROR:
+                    Logger.debug("EVENT_ERROR==========="+event.arg1+"  "+event.info);
+                    break;
                 case AIUIConstant.EVENT_WAKEUP:
                     Logger.debug("EVENT_WAKEUP===========");
-
                     break;
                 case AIUIConstant.EVENT_STATE:
                     mCurrentState = event.arg1;

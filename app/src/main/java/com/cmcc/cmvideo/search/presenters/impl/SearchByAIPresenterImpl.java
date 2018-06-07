@@ -220,7 +220,14 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             }
         }
 
-        if (nlpData.data == null && nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text)) {
+        if (    (
+                    nlpData.data == null
+                    ||nlpData.data.lxresult==null
+                    ||nlpData.data.lxresult.data.detailslist.size()>0
+                )
+                &&
+                nlpData.answer != null
+                && !TextUtils.isEmpty(nlpData.answer.text)) {
             //没有影片数据且存在answer 则播报
             aiuiService.tts(nlpData.answer.text, null);
             sendMessage(nlpData.answer.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
