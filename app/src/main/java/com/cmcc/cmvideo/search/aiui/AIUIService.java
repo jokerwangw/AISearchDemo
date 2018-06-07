@@ -173,10 +173,10 @@ public class AIUIService extends Service {
     private AIUIListener aiuiListener = new AIUIListener() {
         @Override
         public void onEvent(AIUIEvent event) {
+            Logger.debug("event" + event.eventType);
             switch (event.eventType) {
                 case AIUIConstant.EVENT_RESULT: {
                     try {
-
                         JSONObject bizParamJson = new JSONObject(event.info);
                         JSONObject data = bizParamJson.getJSONArray("data").getJSONObject(0);
                         JSONObject params = data.getJSONObject("params");
@@ -232,6 +232,7 @@ public class AIUIService extends Service {
                 }
                 break;
                 case AIUIConstant.EVENT_WAKEUP:
+                    Logger.debug("EVENT_WAKEUP===========");
 
                     break;
                 case AIUIConstant.EVENT_STATE:

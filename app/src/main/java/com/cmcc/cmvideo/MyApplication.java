@@ -28,7 +28,6 @@ public class MyApplication extends Application {
         super.onCreate();
 
         ApplicationContext.init(this);
-        SpeechUtility.createUtility(this, String.format("engine_start=ivw,delay_init=0,appid=%s", "5aceb703"));
         // 初始化 Fresco
         initFresco();
     }
