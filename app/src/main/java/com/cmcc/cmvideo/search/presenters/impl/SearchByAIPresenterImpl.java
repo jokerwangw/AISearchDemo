@@ -126,6 +126,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         aiuiService.setAIUIEventListener(this);
         //上传用户数据
         aiuiService.setUserParam(map);
+        //清理所见即可说的数据
+        aiuiService.clearSpeakableData();
     }
 
     @Override
