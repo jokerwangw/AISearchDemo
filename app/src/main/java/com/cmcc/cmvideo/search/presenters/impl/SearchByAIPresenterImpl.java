@@ -57,6 +57,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private final int TIME_OUT = 5000;
     private List<TppData.DetailsListBean> lastVideoList = null;
     private int lastResponseVideoMessageType = MESSAGE_TYPE_NORMAL;
+    private int mCurrentState = AIUIConstant.STATE_IDLE;
 
     public SearchByAIPresenterImpl(Executor executor, MainThread mainThread, SearchByAIPresenter.View view, Context context) {
         super(executor, mainThread);
@@ -128,6 +129,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         aiuiService.setUserParam(map);
         //清理所见即可说的数据
         aiuiService.clearSpeakableData();
+        //唤醒
+        //aiuiService.startIvwAudio();
     }
 
     @Override
@@ -225,7 +228,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         if (    (
                     nlpData.data == null
                     ||nlpData.data.lxresult==null
-                    ||nlpData.data.lxresult.data.detailslist.size()>0
+                    ||nlpData.data.lxresult.data.detailslist.size()==0
                 )
                 &&
                 nlpData.answer != null
@@ -487,9 +490,11 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 }
                 break;
             case AIUIConstant.EVENT_START_RECORD:
-                // 录音开始就发送延时消息，当五秒内在sendMessage()方法中都没有移除消息时就说明 5秒超时了
-                mHandler.postDelayed(runnable, TIME_OUT);
-                startTime = System.currentTimeMillis();
+                if(mCurrentState==AIUIConstant.STATE_WORKING) {
+                    // 录音开始就发送延时消息，当五秒内在sendMessage()方法中都没有移除消息时就说明 5秒超时了
+                    mHandler.postDelayed(runnable, TIME_OUT);
+                    startTime = System.currentTimeMillis();
+                }
                 break;
             case AIUIConstant.EVENT_STOP_RECORD:
                 break;
@@ -501,6 +506,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     //检测到前端点表示正在录音
                     mHandler.removeCallbacks(runnable);
                 }
+                break;
+            case AIUIConstant.EVENT_STATE:
+                mCurrentState = event.arg1;
                 break;
         }
         if (null != event) {

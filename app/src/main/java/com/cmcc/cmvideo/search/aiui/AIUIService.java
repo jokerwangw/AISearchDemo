@@ -86,11 +86,11 @@ public class AIUIService extends Service {
      * SDK 初始化
      */
     private void init() {
-        SpeechUtility.createUtility(this, String.format("engine_start=ivw,delay_init=0,appid=%s","5aceb703"));
+        //SpeechUtility.createUtility(this, String.format("engine_start=ivw,delay_init=0,appid=%s","5aceb703"));
         //AIUI初始化
         mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
         //MSC初始化（登陆）
-//        SpeechUtility.createUtility(this, "appid=5aceb703");
+        SpeechUtility.createUtility(this, "appid=5aceb703");
         //TTS 初始化MSC中的TTS 功能
         mTTs = SpeechSynthesizer.createSynthesizer(this, new InitListener() {
             @Override
@@ -104,9 +104,9 @@ public class AIUIService extends Service {
         });
 
         //注册耳机是否插入广播
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
-        registerReceiver(mReceiver, intentFilter);
+//        IntentFilter intentFilter = new IntentFilter();
+//        intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
+//        registerReceiver(mReceiver, intentFilter);
     }
 
 
@@ -182,7 +182,6 @@ public class AIUIService extends Service {
     private AIUIListener aiuiListener = new AIUIListener() {
         @Override
         public void onEvent(AIUIEvent event) {
-            Logger.debug("event" + event.eventType + "=====" + event.info);
             switch (event.eventType) {
                 case AIUIConstant.EVENT_RESULT: {
                     try {
@@ -248,6 +247,9 @@ public class AIUIService extends Service {
                     break;
                 case AIUIConstant.EVENT_WAKEUP:
                     Logger.debug("EVENT_WAKEUP===========");
+                    break;
+                case AIUIConstant.EVENT_SLEEP:
+                    Logger.debug("EVENT_SLEEP===========");
                     break;
                 case AIUIConstant.EVENT_STATE:
                     mCurrentState = event.arg1;

@@ -132,8 +132,6 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         public void onServiceConnected(ComponentName name, IBinder service) {
             aiuiService = (IAIUIService) service;
             mSearchByAIPresenter.setAIUIService(aiuiService);
-            //唤醒
-            aiuiService.startIvwAudio();
         }
 
         @Override
@@ -249,13 +247,10 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                     }
                     break;
                 case AIUIConstant.EVENT_START_RECORD:
-                    Logger.debug(TAG, "EVENT_START_RECORD");
                     break;
                 case AIUIConstant.EVENT_STOP_RECORD:
-                    Logger.debug(TAG, "EVENT_STOP_RECORD");
                     break;
                 case AIUIConstant.EVENT_VAD:
-                    Logger.debug(TAG, "EVENT_VAD");
                     //5秒内无响应
                     //closeSearch();
                     //List<SearchByAIBean> searchByAIBeanList = new ArrayList<SearchByAIBean>();
