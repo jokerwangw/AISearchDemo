@@ -9,6 +9,7 @@ import com.cmcc.cmvideo.base.AbstractPresenter;
 import com.cmcc.cmvideo.base.Executor;
 import com.cmcc.cmvideo.base.MainThread;
 import com.cmcc.cmvideo.search.aiui.AIUIService;
+import com.cmcc.cmvideo.search.aiui.FuncAdapter;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.aiui.Logger;
 import com.cmcc.cmvideo.search.aiui.bean.NlpData;
@@ -129,8 +130,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         aiuiService.setUserParam(map);
         //清理所见即可说的数据
         aiuiService.clearSpeakableData();
-        //唤醒
-        //aiuiService.startIvwAudio();
     }
 
     @Override
@@ -489,6 +488,32 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     // TODO 网络有点问题 ，超时
                 }
                 break;
+            case AIUIConstant.EVENT_TTS: {
+                switch (event.arg1) {
+                    case AIUIConstant.TTS_SPEAK_BEGIN:
+                        // 停止后台音频播放
+                        mView.requestAudioFocus();
+                        Logger.debug("开始播报");
+                        break;
+                    case AIUIConstant.TTS_SPEAK_PROGRESS:
+                        Logger.debug(" 播报进度为" + event.data.getInt("percent"));     // 播放进度
+                        break;
+                    case AIUIConstant.TTS_SPEAK_PAUSED:
+                        Logger.debug("暂停播报");
+                        break;
+                    case AIUIConstant.TTS_SPEAK_RESUMED:
+                        Logger.debug("恢复播报");
+                        break;
+                    case AIUIConstant.TTS_SPEAK_COMPLETED:
+                        // 开启后台音频播放
+                        mView.abandonAudioFocus();
+                        Logger.debug("播报完成");
+                        break;
+
+                    default:
+                        break;
+                }
+            } break;
             case AIUIConstant.EVENT_START_RECORD:
                 if(mCurrentState==AIUIConstant.STATE_WORKING) {
                     // 录音开始就发送延时消息，当五秒内在sendMessage()方法中都没有移除消息时就说明 5秒超时了

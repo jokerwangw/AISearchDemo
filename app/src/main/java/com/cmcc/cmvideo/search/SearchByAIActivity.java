@@ -25,6 +25,7 @@ import com.cmcc.cmvideo.base.MainThreadImpl;
 import com.cmcc.cmvideo.base.ThreadExecutor;
 import com.cmcc.cmvideo.search.adapter.SearchByAIAdapter;
 import com.cmcc.cmvideo.search.aiui.AIUIService;
+import com.cmcc.cmvideo.search.aiui.FuncAdapter;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.aiui.Logger;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
@@ -140,6 +141,21 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     };
 
     /**
+     * 获取音频播放焦点
+     */
+    @Override
+    public void requestAudioFocus() {
+        FuncAdapter.Lock(this,null);
+    }
+    /**
+     * 释放音频播放焦点
+     */
+    @Override
+    public void abandonAudioFocus() {
+        FuncAdapter.UnLock(this,null);
+    }
+
+    /**
      * 区分用户搜索的点击事件类型
      *
      * @param clickTime
@@ -189,26 +205,6 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     @Override
     public void showInitList(List<SearchByAIBean> searchByAIBeanList) {
         setAdapterData(true, searchByAIBeanList);
-    }
-
-    @Override
-    public String getJsonData(String fileName) {
-        String params = "";
-        AssetManager assetManager = getResources().getAssets();
-        try {
-            InputStream ins = assetManager.open(fileName);
-            byte[] buffer = new byte[ins.available()];
-            ins.read(buffer);
-            ins.close();
-            params = new String(buffer);
-            JSONObject paramsJson = new JSONObject(params);
-            params = paramsJson.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return params;
     }
 
     /**
