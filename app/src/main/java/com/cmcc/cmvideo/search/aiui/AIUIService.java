@@ -76,9 +76,9 @@ public class AIUIService extends Service {
             mTTs.destroy();
         }
         SpeechUtility.getUtility().destroy();
-        if (null != mReceiver) {
-            unregisterReceiver(mReceiver);
-        }
+//        if (null != mReceiver) {
+//            unregisterReceiver(mReceiver);
+//        }
         super.onDestroy();
     }
 
@@ -103,9 +103,9 @@ public class AIUIService extends Service {
         });
 
         //注册耳机是否插入广播
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
-        registerReceiver(mReceiver, intentFilter);
+//        IntentFilter intentFilter = new IntentFilter();
+//        intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
+//        registerReceiver(mReceiver, intentFilter);
     }
 
 
@@ -499,25 +499,25 @@ public class AIUIService extends Service {
     /**
      * 检测耳机是否插入
      */
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
-                if (intent.hasExtra("state")) {
-                    if (intent.getIntExtra("state", 0) == 0) {
-                        EventBus.getDefault().post(new MicBean(false));
-                        //切换为外放模式
-                        PlayerManager.getInstance().changeToSpeaker();
-                    } else if (intent.getIntExtra("state", 0) == 1) {
-                        EventBus.getDefault().post(new MicBean(true));
-                        //切换为耳机模式
-                        PlayerManager.getInstance().changeToHeadset();
-                    }
-                }
-            }
-        }
-    };
+//    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            String action = intent.getAction();
+//            if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
+//                if (intent.hasExtra("state")) {
+//                    if (intent.getIntExtra("state", 0) == 0) {
+//                        EventBus.getDefault().post(new MicBean(false));
+//                        //切换为外放模式
+//                        PlayerManager.getInstance().changeToSpeaker();
+//                    } else if (intent.getIntExtra("state", 0) == 1) {
+//                        EventBus.getDefault().post(new MicBean(true));
+//                        //切换为耳机模式
+//                        PlayerManager.getInstance().changeToHeadset();
+//                    }
+//                }
+//            }
+//        }
+//    };
 
 
 }
