@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.cmcc.cmvideo.base.AbstractPresenter;
 import com.cmcc.cmvideo.base.Executor;
@@ -223,24 +224,20 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 return;
             }
         }
-
-        if (    (
+        //语义后处理没有返回数据则直接退出
+        if (
                     nlpData.data == null
                     ||nlpData.data.lxresult==null
-                    ||nlpData.data.lxresult.data.detailslist.size()==0
-                )
-                &&
-                nlpData.answer != null
-                && !TextUtils.isEmpty(nlpData.answer.text)) {
-            //没有影片数据且存在answer 则播报
-            aiuiService.tts(nlpData.answer.text, null);
-            sendMessage(nlpData.answer.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
+                    ||nlpData.data.lxresult.data.detailslist.size()==0) {
+            if(nlpData.answer != null
+                    && !TextUtils.isEmpty(nlpData.answer.text)) {
+                //没有影片数据且存在answer 则播报
+                aiuiService.tts(nlpData.answer.text, null);
+                sendMessage(nlpData.answer.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
+            }
             return;
         }
-        //语义后处理没有返回数据则直接退出
-        if (nlpData.data.lxresult == null
-                ||!"000000".equals(nlpData.data.lxresult.code))
-            return;
+
         AiResponse.Response responseTts = null;
         Map<String, String> map = formatSlotsToMap(nlpData.semantic.get(0).slots);
         switch (nlpData.semantic.get(0).intent) {
@@ -292,7 +289,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                             responseTts = response;
                             break;
                         }
-                        if (map.containsKey(AiuiConstants.VIDEO_TAG) || map.containsKey(AiuiConstants.VIDEO_NAME)) {  //带标签的表示大家都在看
+                        if (map.containsKey(AiuiConstants.VIDEO_TAG)
+                                || map.containsKey(AiuiConstants.VIDEO_NAME)
+                                || map.containsKey(AiuiConstants.VIDEO_ARTIST)) {  //带标签的表示大家都在看
                             AiResponse.Response response = AiResponse.getInstance().getEveryoneSee();
                             messageType = MESSAGE_TYPE_EVERYONE_IS_WATCHING;
                             if(response.respType == AiResponse.RespType.VIDEO_TYPE){
@@ -308,6 +307,11 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         }
                         break;
                     }
+                }
+                if(messageType == MESSAGE_TYPE_NORMAL
+                        &&nlpData.answer != null
+                        &&!TextUtils.isEmpty(nlpData.answer.text)){
+                    aiuiService.tts(nlpData.answer.text, null);
                 }
                 sendMessage(nlpData.answer != null ? nlpData.answer.text : "", messageType, MESSAGE_FROM_AI, nlpData.data.lxresult.data.detailslist);
                 break;
@@ -587,7 +591,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             for(TppData.DetailsListBean bean:videoList){
                 hotInfo+=bean.name+"|";
             }
-            aiuiService.syncSpeakableData(hotInfo.substring(0,hotInfo.lastIndexOf("|")));
+            hotInfo = hotInfo.substring(0,hotInfo.lastIndexOf("|"));
+            Logger.debug("所见即可说同步数据【"+hotInfo+"】");
+            aiuiService.syncSpeakableData(hotInfo);
         }
         List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
         messageList.add(new SearchByAIBean(msg, messageType, msgFrom, videoList));
