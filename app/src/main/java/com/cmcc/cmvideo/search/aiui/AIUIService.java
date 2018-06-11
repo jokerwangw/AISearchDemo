@@ -146,9 +146,9 @@ public class AIUIService extends Service {
                     isIvwModel  = false;
                 }
             }, 500);
-            if (SpeechUtility.getUtility() != null) {
-                SpeechUtility.getUtility().destroy();
-            }
+//            if (SpeechUtility.getUtility() != null) {
+//                SpeechUtility.getUtility().destroy();
+//            }
             SpeechUtility.createUtility(this, "appid=5aceb703");
             Logger.debug("已启动标准模式");
         } catch (JSONException e) {
@@ -461,14 +461,14 @@ public class AIUIService extends Service {
             if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
                 if (intent.hasExtra("state")) {
                     if (intent.getIntExtra("state", 0) == 0) {
-                        //EventBus.getDefault().post(new MicBean(false));
+                        EventBus.getDefault().post(new MicBean(false));
                         //切换为外放模式
                         //PlayerManager.getInstance().changeToReceiver();
-                        if(isIvwModel){
+                        if (isIvwModel) {
                             standardMode();
                         }
                     } else if (intent.getIntExtra("state", 0) == 1) {
-                        //EventBus.getDefault().post(new MicBean(true));
+                        EventBus.getDefault().post(new MicBean(true));
                         //切换为耳机模式
                         //PlayerManager.getInstance().changeToHeadset();
                         if(!isIvwModel){

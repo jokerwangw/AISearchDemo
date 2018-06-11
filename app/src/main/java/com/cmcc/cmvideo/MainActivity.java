@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        EventBus.getDefault().register(this);
     }
 
     @OnClick(R.id.turn_to_ai_search)
@@ -32,18 +31,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMicEvent(MicBean event) {
-        if (event.isConnect()) {
-            if (BuildConfig.DEBUG) Log.d("MainActivity", "耳机接入");
-        } else {
-            if (BuildConfig.DEBUG) Log.d("MainActivity", "耳机未接入");
-        }
-    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
     }
 }

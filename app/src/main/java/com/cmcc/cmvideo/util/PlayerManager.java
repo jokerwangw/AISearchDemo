@@ -1,7 +1,10 @@
 package com.cmcc.cmvideo.util;
 
 import android.content.Context;
+import android.media.AudioFormat;
 import android.media.AudioManager;
+import android.media.AudioRecord;
+import android.media.MediaRecorder;
 import android.os.Build;
 import android.util.Log;
 
@@ -60,6 +63,38 @@ public class PlayerManager {
         } else {
             audioManager.setMode(AudioManager.MODE_IN_CALL);
         }
+    }
+
+
+    /**
+     * 检测麦克风是否被占用
+     * @return
+     */
+    public static boolean validateMicAvailability(){
+        Boolean available = true;
+        AudioRecord recorder =
+                new AudioRecord(MediaRecorder.AudioSource.MIC, 44100,
+                        AudioFormat.CHANNEL_IN_MONO,
+                        AudioFormat.ENCODING_DEFAULT, 44100);
+        try{
+            if(recorder.getRecordingState() != AudioRecord.RECORDSTATE_STOPPED ){
+                available = false;
+
+            }
+
+            recorder.startRecording();
+            if(recorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING){
+                recorder.stop();
+                available = false;
+
+            }
+            recorder.stop();
+        } finally{
+            recorder.release();
+            recorder = null;
+        }
+
+        return available;
     }
 
 }

@@ -15,8 +15,9 @@ public class AiuiConstants {
     public final static String VIDEO_SERVICE = "video";
     public final static String VIEWCMD_SERVICE = "viewCmd";
     //指令控制技能名  如：开启/关闭语音助手、投屏指令
-    public final static String CONTROL_MIGU= "LINGXI2018.control_migu";
+    public final static String CONTROL_MIGU = "LINGXI2018.control_migu";
     public final static String QUERY_MIGU = "LINGXI2018.businessQuery";
+    public final static String VIDEO_CMD = "cmd";
 
 
     public final static String CHANNEL_SERVICE = "tvchannel";
@@ -25,7 +26,7 @@ public class AiuiConstants {
     public final static String MIGU_SHIXUN = "LINGXI2018.MiGu_shixun";
     public final static String MIGU_USER_VIDEO = "LINGXI2018.user_video";
     public final static String MIGU_OPERATION_ORDER = "LINGXI2018.operation_order";
-    public final static String MIGU_SCREEN="LINGXI2018.MIGU";
+    public final static String MIGU_SCREEN = "LINGXI2018.MIGU";
 
     //意图名
     public final static String CONTROL_INTENT = "Assistant";
@@ -34,17 +35,25 @@ public class AiuiConstants {
     public final static String HOTVIDEO_INTENT = "hotVideo";
     public final static String MEMBER_INTENT = "Member";
     public final static String INTERNET_INTENT = "InternetTraffic";
-    public final static String TICKET_INTENT="Ticket";
+    public final static String TICKET_INTENT = "Ticket";
     public final static String ACYIVITY_INTENT = "Activity";
-    public final static String GCUSTOMER_INTENT= "Gcustomer";
-    public final static String VIEWCMD_INTENT= "VIEWCMD";
+    public final static String GCUSTOMER_INTENT = "Gcustomer";
+    public final static String VIEWCMD_INTENT = "VIEWCMD";
+    //视频播放控制
+    public final static String VIDEO_CMD_INTENT = "INSTRUCTION";
+    public final static String VIDEO_INSTYPE = "insType";
+    public final static String VIDEO_PAUSE = "pause";
+    public final static String VIDEO_PLAY = "play";
+    public final static String VIDEO_PREVIOUS = "previousEpisode";
+    public final static String VIDEO_NEXT = "nextEpisode";
+
 
     //video 意图下各句子分词
-    public final static String VIDEO_AREA ="area";
-    public final static String VIDEO_CATEGORY ="category";
-    public final static String VIDEO_SCORE_DESCR ="scoreDescr";
-    public final static String VIDEO_TIME_DESCR ="timeDescr";
-    public final static String VIDEO_TAG ="tag";
-    public final static String VIDEO_NAME ="name";
-    public final static String VIDEO_ARTIST ="artist";
+    public final static String VIDEO_AREA = "area";
+    public final static String VIDEO_CATEGORY = "category";
+    public final static String VIDEO_SCORE_DESCR = "scoreDescr";
+    public final static String VIDEO_TIME_DESCR = "timeDescr";
+    public final static String VIDEO_TAG = "tag";
+    public final static String VIDEO_NAME = "name";
+    public final static String VIDEO_ARTIST = "artist";
 }
