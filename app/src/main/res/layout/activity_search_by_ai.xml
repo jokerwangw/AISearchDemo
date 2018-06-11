@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:voiceView="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/search_by_ai_bg">
@@ -51,6 +52,45 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimen_150dp"
         android:layout_alignParentBottom="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_80dp"
+            android:layout_centerVertical="true">
+
+            <View
+                android:id="@+id/view_left"
+                android:layout_width="@dimen/dimen_10dp"
+                android:layout_height="@dimen/dimen_3dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/dimen_20dp"
+                android:background="@color/appointment_movie_list"/>
+
+            <com.cmcc.cmvideo.weight.VoiceLineView
+                android:id="@+id/voicLine"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toLeftOf="@+id/view_right"
+                android:layout_toRightOf="@+id/view_left"
+                voiceView:fineness="three"
+                voiceView:lineSpeed="90"
+                voiceView:maxVolume="200"
+                voiceView:middleLineHeight="1dp"
+                voiceView:rectSpace="2dp"
+                voiceView:rectWidth="5dp"
+                voiceView:sensibility="four"
+                voiceView:viewMode="line"
+                voiceView:voiceLine="@color/search_by_ai_bg_cancel_end_color"/>
+
+            <View
+                android:id="@+id/view_right"
+                android:layout_width="@dimen/dimen_10dp"
+                android:layout_height="@dimen/dimen_3dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/dimen_20dp"
+                android:background="@color/appointment_movie_list"/>
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/tv_cancel_search"
