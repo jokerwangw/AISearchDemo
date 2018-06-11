@@ -44,12 +44,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/search_input_area"
-        android:layout_marginTop="60dp"/>
+        android:layout_marginTop="@dimen/dimen_60dp"/>
 
     <RelativeLayout
         android:id="@+id/search_input_area"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_170dp"
+        android:layout_height="@dimen/dimen_150dp"
         android:layout_alignParentBottom="true">
 
         <TextView

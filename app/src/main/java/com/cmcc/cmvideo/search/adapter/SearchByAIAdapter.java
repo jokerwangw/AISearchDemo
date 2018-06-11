@@ -1,6 +1,7 @@
 package com.cmcc.cmvideo.search.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import com.cmcc.cmvideo.R;
 import com.cmcc.cmvideo.base.BaseRecyclerAdapter;
 import com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView;
+import com.cmcc.cmvideo.search.LookMoreActivity;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 
@@ -91,7 +93,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 return new ItemSearchByAIEveryoneISWatchingViewHolder(view);
             } else if (MESSAGE_TYPE_I_WANT_TO_SEE == viewType) {
                 View view = layoutInflater.inflate(R.layout.item_search_by_ai_i_want_to_see, null);
-                return new ItemSearchByAIEveryoneIWantTOSeeViewHolder(view);
+                return new ItemSearchByAIIWantTOSeeViewHolder(view);
             } else if (MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE == viewType) {
                 View view = layoutInflater.inflate(R.layout.item_search_by_ai_guess_what_you_like, null);
                 return new ItemSearchByAIGuessWhatYouLikeViewHolder(view);
@@ -138,25 +140,25 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum1.setVisibility(View.GONE);
                 itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum2.setVisibility(View.GONE);
                 itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum3.setVisibility(View.GONE);
-                if (null != videoList&&videoList.size()>=3) {
+                if (null != videoList && videoList.size() >= 3) {
                     itemSearchByAIEveryoneISWatchingViewHolder.itemImg1.setImageURI(getImageUrl(videoList.get(0).image));
                     itemSearchByAIEveryoneISWatchingViewHolder.itemImg2.setImageURI(getImageUrl(videoList.get(1).image));
                     itemSearchByAIEveryoneISWatchingViewHolder.itemImg3.setImageURI(getImageUrl(videoList.get(2).image));
                     itemSearchByAIEveryoneISWatchingViewHolder.itemName1.setText(videoList.get(0).name);
                     itemSearchByAIEveryoneISWatchingViewHolder.itemName2.setText(videoList.get(1).name);
                     itemSearchByAIEveryoneISWatchingViewHolder.itemName3.setText(videoList.get(2).name);
-//                    itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum1.setText("6666");
-//                    itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum2.setText("7777");
-//                    itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum3.setText("8888");
+                    //                    itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum1.setText("6666");
+                    //                    itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum2.setText("7777");
+                    //                    itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum3.setText("8888");
 
-                }else if(null != videoList&&videoList.size()==2){
+                } else if (null != videoList && videoList.size() == 2) {
                     itemSearchByAIEveryoneISWatchingViewHolder.itemImg1.setImageURI(getImageUrl(videoList.get(0).image));
                     itemSearchByAIEveryoneISWatchingViewHolder.itemImg2.setImageURI(getImageUrl(videoList.get(1).image));
                     itemSearchByAIEveryoneISWatchingViewHolder.itemImg3.setVisibility(View.INVISIBLE);
                     itemSearchByAIEveryoneISWatchingViewHolder.itemName1.setText(videoList.get(0).name);
                     itemSearchByAIEveryoneISWatchingViewHolder.itemName2.setText(videoList.get(1).name);
                     itemSearchByAIEveryoneISWatchingViewHolder.itemName3.setVisibility(View.INVISIBLE);
-                }else if(null != videoList&&videoList.size()==1){
+                } else if (null != videoList && videoList.size() == 1) {
                     itemSearchByAIEveryoneISWatchingViewHolder.itemImg1.setImageURI(getImageUrl(videoList.get(0).image));
                     itemSearchByAIEveryoneISWatchingViewHolder.itemImg2.setVisibility(View.INVISIBLE);
                     itemSearchByAIEveryoneISWatchingViewHolder.itemImg3.setVisibility(View.INVISIBLE);
@@ -164,7 +166,14 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                     itemSearchByAIEveryoneISWatchingViewHolder.itemName2.setVisibility(View.INVISIBLE);
                     itemSearchByAIEveryoneISWatchingViewHolder.itemName3.setVisibility(View.INVISIBLE);
                 }
-            } else if (holder instanceof ItemSearchByAIEveryoneIWantTOSeeViewHolder) {
+
+                itemSearchByAIEveryoneISWatchingViewHolder.tvMovieList.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mContext.startActivity(new Intent(mContext, LookMoreActivity.class));
+                    }
+                });
+            } else if (holder instanceof ItemSearchByAIIWantTOSeeViewHolder) {
                 List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
                 if (null != videoList) {
 
@@ -206,6 +215,9 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         for (String text : detailsListBean.director) {
                             director = director + text + "/";
                         }
+                        if (director.contains("/")) {
+                            director = director.substring(0, director.lastIndexOf("/"));
+                        }
                         itemSearchByAIGuessWhatYouLikeViewHolder.itemDirector.setText(director);
                     }
 
@@ -213,6 +225,9 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         String actor = "主演:";
                         for (String text : detailsListBean.actor) {
                             actor = actor + text + "/";
+                        }
+                        if (actor.contains("/")) {
+                            actor = actor.substring(0, actor.lastIndexOf("/"));
                         }
                         itemSearchByAIGuessWhatYouLikeViewHolder.itemActor.setText(actor);
                     }
@@ -222,6 +237,9 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         for (String text : detailsListBean.tag) {
                             tag = tag + text + "/";
                         }
+                        if (tag.contains("/")) {
+                            tag = tag.substring(0, tag.lastIndexOf("/"));
+                        }
                         itemSearchByAIGuessWhatYouLikeViewHolder.itemCategory.setText(tag);
                     }
 
@@ -229,6 +247,9 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         String language = "语言:";
                         for (String text : detailsListBean.language) {
                             language = language + text + "/";
+                        }
+                        if (language.contains("/")) {
+                            language = language.substring(0, language.lastIndexOf("/"));
                         }
                         itemSearchByAIGuessWhatYouLikeViewHolder.itemLanguage.setText(language);
                     }
@@ -271,6 +292,9 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         for (String text : detailsListBean.director) {
                             director = director + text + "/";
                         }
+                        if (director.contains("/")) {
+                            director = director.substring(0, director.lastIndexOf("/"));
+                        }
                         itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemDirector.setText(director);
                     }
 
@@ -278,6 +302,9 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         String actor = "主演:";
                         for (String text : detailsListBean.actor) {
                             actor = actor + text + "/";
+                        }
+                        if (actor.contains("/")) {
+                            actor = actor.substring(0, actor.lastIndexOf("/"));
                         }
                         itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemActor.setText(actor);
                     }
@@ -287,6 +314,9 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         for (String text : detailsListBean.tag) {
                             tag = tag + text + "/";
                         }
+                        if (tag.contains("/")) {
+                            tag = tag.substring(0, tag.lastIndexOf("/"));
+                        }
                         itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemCategory.setText(tag);
                     }
 
@@ -294,6 +324,9 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         String language = "语言:";
                         for (String text : detailsListBean.language) {
                             language = language + text + "/";
+                        }
+                        if (language.contains("/")) {
+                            language = language.substring(0, language.lastIndexOf("/"));
                         }
                         itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemLanguage.setText(language);
                     }
@@ -365,6 +398,9 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         for (String text : detailsListBean.tag) {
                             tag = tag + text + "/";
                         }
+                        if (tag.contains("/")) {
+                            tag = tag.substring(0, tag.lastIndexOf("/"));
+                        }
                         itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemCategory.setText(tag);
                     }
 
@@ -372,6 +408,9 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         String language = "语言:";
                         for (String text : detailsListBean.language) {
                             language = language + text + "/";
+                        }
+                        if (language.contains("/")) {
+                            language = language.substring(0, language.lastIndexOf("/"));
                         }
                         itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemLanguage.setText(language);
                     }
@@ -396,25 +435,25 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 itemSearchByAITheLatestVideoViewHolder.itemWatchNum1.setVisibility(View.GONE);
                 itemSearchByAITheLatestVideoViewHolder.itemWatchNum2.setVisibility(View.GONE);
                 itemSearchByAITheLatestVideoViewHolder.itemWatchNum3.setVisibility(View.GONE);
-                if (null != videoList&&videoList.size()>=3) {
+                if (null != videoList && videoList.size() >= 3) {
                     itemSearchByAITheLatestVideoViewHolder.itemImg1.setImageURI(getImageUrl(videoList.get(0).image));
                     itemSearchByAITheLatestVideoViewHolder.itemImg2.setImageURI(getImageUrl(videoList.get(1).image));
                     itemSearchByAITheLatestVideoViewHolder.itemImg3.setImageURI(getImageUrl(videoList.get(2).image));
                     itemSearchByAITheLatestVideoViewHolder.itemName1.setText(videoList.get(0).name);
                     itemSearchByAITheLatestVideoViewHolder.itemName2.setText(videoList.get(1).name);
                     itemSearchByAITheLatestVideoViewHolder.itemName3.setText(videoList.get(2).name);
-//                    itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum1.setText("6666");
-//                    itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum2.setText("7777");
-//                    itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum3.setText("8888");
+                    //                    itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum1.setText("6666");
+                    //                    itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum2.setText("7777");
+                    //                    itemSearchByAIEveryoneISWatchingViewHolder.itemWatchNum3.setText("8888");
 
-                }else if(null != videoList&&videoList.size()==2){
+                } else if (null != videoList && videoList.size() == 2) {
                     itemSearchByAITheLatestVideoViewHolder.itemImg1.setImageURI(getImageUrl(videoList.get(0).image));
                     itemSearchByAITheLatestVideoViewHolder.itemImg2.setImageURI(getImageUrl(videoList.get(1).image));
                     itemSearchByAITheLatestVideoViewHolder.itemImg3.setVisibility(View.INVISIBLE);
                     itemSearchByAITheLatestVideoViewHolder.itemName1.setText(videoList.get(0).name);
                     itemSearchByAITheLatestVideoViewHolder.itemName2.setText(videoList.get(1).name);
                     itemSearchByAITheLatestVideoViewHolder.itemName3.setVisibility(View.INVISIBLE);
-                }else if(null != videoList&&videoList.size()==1){
+                } else if (null != videoList && videoList.size() == 1) {
                     itemSearchByAITheLatestVideoViewHolder.itemImg1.setImageURI(getImageUrl(videoList.get(0).image));
                     itemSearchByAITheLatestVideoViewHolder.itemImg2.setVisibility(View.INVISIBLE);
                     itemSearchByAITheLatestVideoViewHolder.itemImg3.setVisibility(View.INVISIBLE);
@@ -425,7 +464,8 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             }
         }
     }
-    private String getImageUrl(String imageJsonObj){
+
+    private String getImageUrl(String imageJsonObj) {
         try {
             JSONObject jsonObject = new JSONObject(imageJsonObj);
             String imgUrl = jsonObject.optString("highResolutionV");
@@ -441,6 +481,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
         }
         return "";
     }
+
     /**
      * 类型：MESSAGE_TYPE_NORMAL
      */
@@ -491,6 +532,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
         public TextView itemName1;
         public TextView itemName2;
         public TextView itemName3;
+        public TextView tvMovieList;
 
         public ItemSearchByAIEveryoneISWatchingViewHolder(View itemView) {
             super(itemView);
@@ -504,13 +546,14 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             itemName1 = (TextView) itemView.findViewById(R.id.item_name1);
             itemName2 = (TextView) itemView.findViewById(R.id.item_name2);
             itemName3 = (TextView) itemView.findViewById(R.id.item_name3);
+            tvMovieList = (TextView) itemView.findViewById(R.id.tv_movie_list);
         }
     }
 
     /**
      * 类型：MESSAGE_TYPE_I_WANT_TO_SEE
      */
-    public class ItemSearchByAIEveryoneIWantTOSeeViewHolder extends BaseViewHolder {
+    public class ItemSearchByAIIWantTOSeeViewHolder extends BaseViewHolder {
         public MGSimpleDraweeView itemImg1;
         public MGSimpleDraweeView itemImg2;
         public MGSimpleDraweeView itemImg3;
@@ -521,7 +564,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
         public TextView itemName2;
         public TextView itemName3;
 
-        public ItemSearchByAIEveryoneIWantTOSeeViewHolder(View itemView) {
+        public ItemSearchByAIIWantTOSeeViewHolder(View itemView) {
             super(itemView);
             itemImg1 = (MGSimpleDraweeView) itemView.findViewById(R.id.item_img1);
             itemImg2 = (MGSimpleDraweeView) itemView.findViewById(R.id.item_img2);
@@ -646,6 +689,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
         public TextView itemName1;
         public TextView itemName2;
         public TextView itemName3;
+
         public ItemSearchByAITheLatestVideoViewHolder(View itemView) {
             super(itemView);
             itemTime1 = (TextView) itemView.findViewById(R.id.itemTime1);

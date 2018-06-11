@@ -113,28 +113,36 @@
 
             <TextView
                 android:id="@+id/item_name1"
-                android:layout_width="@dimen/dimen_10dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:ellipsize="end"
+                android:gravity="center_horizontal"
+                android:maxLines="1"
                 android:text="美人鱼"
-                android:textColor="@color/everyone_watch_list_movie_name"/>
+                android:textColor="@color/everyone_watch_list_movie_name"
+                android:textSize="@dimen/dimen_15dp"/>
 
             <TextView
                 android:id="@+id/item_name2"
-                android:layout_width="@dimen/dimen_10dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:ellipsize="end"
+                android:gravity="center_horizontal"
+                android:maxLines="1"
                 android:text="美人鱼"
-                android:textColor="@color/everyone_watch_list_movie_name"/>
+                android:textColor="@color/everyone_watch_list_movie_name"
+                android:textSize="@dimen/dimen_15dp"/>
 
             <TextView
                 android:id="@+id/item_name3"
-                android:layout_width="@dimen/dimen_10dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:ellipsize="end"
+                android:gravity="center_horizontal"
+                android:maxLines="1"
                 android:text="美人鱼"
                 android:textColor="@color/everyone_watch_list_movie_name"
                 android:textSize="@dimen/dimen_15dp"/>

@@ -88,7 +88,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         initData();
     }
 
-    protected void initData() {
+    private void initData() {
         mSearchByAIPresenter = new SearchByAIPresenterImpl(
                 ThreadExecutor.getInstance(),
                 MainThreadImpl.getInstance(),

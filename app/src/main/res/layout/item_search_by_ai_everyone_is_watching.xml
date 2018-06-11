@@ -25,12 +25,12 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dimen_35dp"
             android:layout_marginRight="@dimen/dimen_35dp"
-            android:layout_marginTop="@dimen/dimen_5dp"
+            android:layout_marginTop="@dimen/dimen_13dp"
             android:orientation="horizontal">
 
             <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_136dp"
+                android:layout_height="@dimen/dimen_120dp"
                 android:layout_weight="1">
 
                 <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
@@ -54,7 +54,7 @@
 
             <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_136dp"
+                android:layout_height="@dimen/dimen_120dp"
                 android:layout_marginLeft="@dimen/dimen_8dp"
                 android:layout_marginRight="@dimen/dimen_8dp"
                 android:layout_weight="1">
@@ -80,7 +80,7 @@
 
             <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_136dp"
+                android:layout_height="@dimen/dimen_120dp"
                 android:layout_weight="1">
 
                 <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
@@ -113,28 +113,34 @@
 
             <TextView
                 android:id="@+id/item_name1"
-                android:layout_width="@dimen/dimen_10dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:ellipsize="end"
+                android:gravity="center_horizontal"
+                android:maxLines="1"
                 android:text="美人鱼"
                 android:textColor="@color/everyone_watch_list_movie_name"/>
 
             <TextView
                 android:id="@+id/item_name2"
-                android:layout_width="@dimen/dimen_10dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:ellipsize="end"
+                android:gravity="center_horizontal"
+                android:maxLines="1"
                 android:text="美人鱼"
                 android:textColor="@color/everyone_watch_list_movie_name"/>
 
             <TextView
                 android:id="@+id/item_name3"
-                android:layout_width="@dimen/dimen_10dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:ellipsize="end"
+                android:gravity="center_horizontal"
+                android:maxLines="1"
                 android:text="美人鱼"
                 android:textColor="@color/everyone_watch_list_movie_name"
                 android:textSize="@dimen/dimen_15dp"/>
@@ -146,7 +152,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/tv_movie_appointment_time"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/dimen_20dp"
+            android:layout_marginTop="@dimen/dimen_25dp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="查看更多>"
             android:textColor="@color/appointment_movie_list"
             android:textSize="@dimen/dimen_13dp"
