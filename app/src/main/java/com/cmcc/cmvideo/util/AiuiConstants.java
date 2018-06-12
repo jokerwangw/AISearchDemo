@@ -52,6 +52,17 @@ public class AiuiConstants {
     public final static String VIDEO_CHANNEL_INTENT = "channel_query";
     public final static String VIDEO_VERITY_INTENT = "variety_query";
 
+    //直播类别normalValue
+    public final static String CCTV = "央视";
+    public final static String START_TV = "卫视";
+    public final static String FILMS = "影视";
+    public final static String CHILDREN = "少儿";
+    public final static String NEWS = "新闻";
+    public final static String DOCUMENTARY = "纪录片";
+    public final static String TURN_TV = "轮播台";
+    public final static String AREA_TV = "地方台";
+    public final static String FEATURE_TV = "特色台";
+    public final static String SPORTS_TV = "体育";
 
 
     //video 意图下各句子分词
