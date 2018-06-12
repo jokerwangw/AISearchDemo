@@ -132,7 +132,10 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             } else if (holder instanceof ItemSearchByAIAppointmentViewHolder) {
             } else if (holder instanceof ItemSearchByAIEveryoneISWatchingViewHolder) {
                 final List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
-                ItemSearchByAIEveryoneISWatchingViewHolder itemSearchByAIEveryoneISWatchingViewHolder = (ItemSearchByAIEveryoneISWatchingViewHolder) holder;
+                final ItemSearchByAIEveryoneISWatchingViewHolder itemSearchByAIEveryoneISWatchingViewHolder = (ItemSearchByAIEveryoneISWatchingViewHolder) holder;
+                if(!TextUtils.isEmpty(searchByAIBean.getMessage())) {
+                    itemSearchByAIEveryoneISWatchingViewHolder.title.setText(searchByAIBean.getMessage());
+                }
                 itemSearchByAIEveryoneISWatchingViewHolder.itemImg1.setVisibility(View.VISIBLE);
                 itemSearchByAIEveryoneISWatchingViewHolder.itemImg2.setVisibility(View.VISIBLE);
                 itemSearchByAIEveryoneISWatchingViewHolder.itemImg3.setVisibility(View.VISIBLE);
@@ -179,6 +182,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                             videos.addAll(videoList);
                             bundle.putSerializable(LookMoreActivity.KEY_MORE_DATE, videos);
                             intent.putExtra(LookMoreActivity.KEY_MORE_DATE_BUNDLE,bundle);
+                            intent.putExtra(LookMoreActivity.KEY_TITLE,itemSearchByAIEveryoneISWatchingViewHolder.title.getText());
                             mContext.startActivity(intent);
                         }
                     }
@@ -543,6 +547,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
         public TextView itemName2;
         public TextView itemName3;
         public TextView tvMovieList;
+        public TextView title;
 
         public ItemSearchByAIEveryoneISWatchingViewHolder(View itemView) {
             super(itemView);
@@ -557,6 +562,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             itemName2 = (TextView) itemView.findViewById(R.id.item_name2);
             itemName3 = (TextView) itemView.findViewById(R.id.item_name3);
             tvMovieList = (TextView) itemView.findViewById(R.id.tv_movie_list);
+            title = (TextView) itemView.findViewById(R.id.title);
         }
     }
 

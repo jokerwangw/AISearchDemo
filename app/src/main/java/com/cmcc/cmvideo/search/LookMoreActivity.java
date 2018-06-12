@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.TextView;
 
 import com.cmcc.cmvideo.R;
 import com.cmcc.cmvideo.base.MainThreadImpl;
@@ -31,9 +32,12 @@ import butterknife.OnClick;
 
 public class LookMoreActivity extends AppCompatActivity implements LookMorePresenter.View {
     public static final String KEY_MORE_DATE = "more_data";
-    public static final String KEY_MORE_DATE_BUNDLE = "more_data";
+    public static final String KEY_TITLE="more_data_title";
+    public static final String KEY_MORE_DATE_BUNDLE = "more_data_bundle";
     @BindView(R.id.look_more_recyclerView)
     RecyclerView mLookMoreRecyclerView;
+    @BindView(R.id.tv_title)
+    TextView titleTv;
     private Context mContext;
     private LookMorePresenterImpl lookMorePresenter;
     private LookMoreAdapter mLookMoreAdapter;
@@ -63,6 +67,7 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         mLookMoreRecyclerView.setHasFixedSize(true);
         mLookMoreRecyclerView.setLayoutManager(gridLayoutManager);
         mLookMoreRecyclerView.setAdapter(mLookMoreAdapter);
+        titleTv.setText(getIntent().getStringExtra(KEY_TITLE));
     }
 
     @Override

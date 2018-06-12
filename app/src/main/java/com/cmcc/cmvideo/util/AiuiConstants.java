@@ -56,4 +56,5 @@ public class AiuiConstants {
     public final static String VIDEO_TAG = "tag";
     public final static String VIDEO_NAME = "name";
     public final static String VIDEO_ARTIST = "artist";
+    public final static String VIDEO_TIME = "datetime.dateOrig";
 }
