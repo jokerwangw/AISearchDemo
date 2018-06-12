@@ -13,8 +13,12 @@ import com.cmcc.cmvideo.base.MainThreadImpl;
 import com.cmcc.cmvideo.base.ThreadExecutor;
 import com.cmcc.cmvideo.search.adapter.LookMoreAdapter;
 import com.cmcc.cmvideo.search.adapter.SearchByAIAdapter;
+import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.presenters.LookMorePresenter;
 import com.cmcc.cmvideo.search.presenters.impl.LookMorePresenterImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,6 +30,8 @@ import butterknife.OnClick;
  */
 
 public class LookMoreActivity extends AppCompatActivity implements LookMorePresenter.View {
+    public static final String KEY_MORE_DATE ="more_data";
+    public static final String KEY_MORE_DATE_BUNDLE ="more_data";
     @BindView(R.id.look_more_recyclerView)
     RecyclerView mLookMoreRecyclerView;
     private Context mContext;
@@ -85,6 +91,11 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
     }
 
     private void setAdapterData() {
-
+        Bundle bundle = getIntent().getBundleExtra(KEY_MORE_DATE_BUNDLE);
+        if(bundle==null) return;
+        List<TppData.DetailsListBean> detailsListBeanArrayList = (ArrayList<TppData.DetailsListBean>)bundle.getSerializable(KEY_MORE_DATE);
+        if (null != detailsListBeanArrayList && null != mLookMoreAdapter) {
+            mLookMoreAdapter.bindData(detailsListBeanArrayList,true);
+        }
     }
 }

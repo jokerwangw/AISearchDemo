@@ -1,5 +1,6 @@
 package com.cmcc.cmvideo.search.aiui.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class TppData {
@@ -15,7 +16,7 @@ public class TppData {
         public List<DetailsListBean> detailslist;
 
     }
-    public static class DetailsListBean{
+    public static class DetailsListBean implements Serializable{
         //区域
         public String area;
         //片名
@@ -41,7 +42,7 @@ public class TppData {
         //剧集 第一集，第二集...
         public List<SubserialsBean> subserials;
     }
-    public static class SubserialsBean{
+    public static class SubserialsBean implements Serializable{
         //第一集名称
         public String name;
         //影片ID

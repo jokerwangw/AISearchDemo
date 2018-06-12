@@ -1,8 +1,11 @@
 package com.cmcc.cmvideo.search.presenters.impl;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -10,6 +13,7 @@ import com.cmcc.cmvideo.BuildConfig;
 import com.cmcc.cmvideo.base.AbstractPresenter;
 import com.cmcc.cmvideo.base.Executor;
 import com.cmcc.cmvideo.base.MainThread;
+import com.cmcc.cmvideo.search.LookMoreActivity;
 import com.cmcc.cmvideo.search.aiui.AIUIService;
 import com.cmcc.cmvideo.search.aiui.FuncAdapter;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
@@ -502,6 +506,15 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     case "下一页":
                         break;
                     case "查看更多":
+                        if(lastVideoList !=null&&lastVideoList.size()>3) {
+                            Intent intent = new Intent(mContext, LookMoreActivity.class);
+                            Bundle bundle = new Bundle();
+                            ArrayList<TppData.DetailsListBean> videoList = new ArrayList<>();
+                            videoList.addAll(lastVideoList);
+                            bundle.putSerializable(LookMoreActivity.KEY_MORE_DATE, videoList);
+                            intent.putExtra(LookMoreActivity.KEY_MORE_DATE_BUNDLE,bundle);
+                            mContext.startActivity(intent);
+                        }
                         break;
                     default:
                         String[] names = solts.get(AiuiConstants.VIEWCMD_SERVICE).split("\\|");
