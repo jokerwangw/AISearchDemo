@@ -8,9 +8,12 @@ public interface IAIUIService {
     void tts(String ttsText, SynthesizerListener synthesizerListener);
     void startRecordAudio();
     void stopRecordAudio();
-    void setAIUIEventListener(AIUIService.AIUIEventListener resultDispatchListener);
+    void addAIUIEventListener(AIUIService.AIUIEventListener resultDispatchListener);
+    void removeAIUIEventListener(AIUIService.AIUIEventListener resultDispatchListener);
     void setUserParam(Map<String,String> map);
     void clearSpeakableData();
     void syncSpeakableData(String hotInfo);
     void startIvwAudio();
+    void getLookMorePage(String lookMoreText,int pageIndex,int pageSize);
+    boolean isLookMorePageData();
 }

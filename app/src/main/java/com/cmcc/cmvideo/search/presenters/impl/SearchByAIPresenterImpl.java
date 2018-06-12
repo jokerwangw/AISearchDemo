@@ -71,6 +71,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private List<TppData.DetailsListBean> lastVideoList = null;
     private int lastResponseVideoMessageType = MESSAGE_TYPE_NORMAL;
     private String lastResponseVideoTitle ="";
+    private String lastRequestVideoText = "";
     private int mCurrentState = AIUIConstant.STATE_IDLE;
     //是否是在投屏状态或者插入耳机状态
     private boolean isAvailableVideo = false;
@@ -100,6 +101,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     @Override
     public void destroy() {
         EventBus.getDefault().unregister(this);
+        aiuiService.removeAIUIEventListener(this);
     }
 
     @Override
@@ -144,7 +146,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             put("user_id", "553782460");
             put("client_id", "897ddadc222ec9c20651da355daee9cc");
         }};
-        aiuiService.setAIUIEventListener(this);
+        aiuiService.addAIUIEventListener(this);
         //上传用户数据
         aiuiService.setUserParam(map);
         //清理所见即可说的数据
@@ -306,7 +308,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     }
 
     public void onTppResult(String result) {
-        if (TextUtils.isEmpty(result)) return;
+        if (TextUtils.isEmpty(result))
+            return;
         NlpData nlpData = gson.fromJson(result, NlpData.class);
         //判断是否解出了语义，并且当前技能是video
         if (nlpData.rc == 4
@@ -337,8 +340,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         }
 
         AiResponse.Response responseTts = null;
-
         Map<String, String> map = formatSlotsToMap(nlpData.semantic.get(0).slots);
+        lastRequestVideoText = nlpData.text;
         lastResponseVideoTitle = makeCardTitle(map);
         String msg=nlpData.answer != null ? nlpData.answer.text : "";
         switch (nlpData.semantic.get(0).intent) {
@@ -444,7 +447,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private String makeCardTitle(Map<String, String> map)
     {
         String cardTitle ="";
-        if(map==null||!map.containsKey(AiuiConstants.VIDEO_CATEGORY))
+        if(map==null)
             return cardTitle;
         if(map.containsKey(AiuiConstants.VIDEO_NAME)){
            return map.get(AiuiConstants.VIDEO_NAME);
@@ -562,16 +565,10 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     case "下一页":
                         break;
                     case "查看更多":
-                        if(lastVideoList !=null) {
-                            Intent intent = new Intent(mContext, LookMoreActivity.class);
-                            Bundle bundle = new Bundle();
-                            ArrayList<TppData.DetailsListBean> videoList = new ArrayList<>();
-                            videoList.addAll(lastVideoList);
-                            bundle.putSerializable(LookMoreActivity.KEY_MORE_DATE, videoList);
-                            intent.putExtra(LookMoreActivity.KEY_MORE_DATE_BUNDLE,bundle);
-                            intent.putExtra(LookMoreActivity.KEY_TITLE,lastResponseVideoTitle);
-                            mContext.startActivity(intent);
-                        }
+                        Intent intent = new Intent(mContext, LookMoreActivity.class);
+                        intent.putExtra(LookMoreActivity.KEY_MORE_DATE_SPEECH_TEXT,lastRequestVideoText);
+                        intent.putExtra(LookMoreActivity.KEY_TITLE,lastResponseVideoTitle);
+                        mContext.startActivity(intent);
                         break;
                     default:
                         String[] names = solts.get(AiuiConstants.VIEWCMD_SERVICE).split("\\|");
@@ -617,8 +614,10 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     @Override
     public void onResult(String iatResult, String nlpReslult, String tppResult) {
         //onIatResult(iatResult);
-        onNlpResult(nlpReslult);
-        onTppResult(tppResult);
+        if(!aiuiService.isLookMorePageData()) {
+            onNlpResult(nlpReslult);
+            onTppResult(tppResult);
+        }
     }
 
     @Override
@@ -740,7 +739,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             aiuiService.syncSpeakableData(hotInfo);
         }
         List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
-        messageList.add(new SearchByAIBean(msg, messageType, msgFrom, videoList));
+        SearchByAIBean searchByAIBean = new SearchByAIBean(msg, messageType, msgFrom, videoList);
+        searchByAIBean.setSpeechText(lastRequestVideoText);
+        messageList.add(searchByAIBean);
         EventBus.getDefault().post(new SearchByAIEventBean(messageList));
     }
 }

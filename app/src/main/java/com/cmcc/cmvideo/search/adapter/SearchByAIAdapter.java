@@ -114,7 +114,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
     }
 
     @Override
-    public void onBindHoder(RecyclerView.ViewHolder holder, SearchByAIBean searchByAIBean, int position) {
+    public void onBindHoder(final RecyclerView.ViewHolder holder,final SearchByAIBean searchByAIBean,final int position) {
         if (null != holder && null != searchByAIBean) {
             if (holder instanceof ItemSearchByAINormalViewHolder) {
                 ItemSearchByAINormalViewHolder itemSearchByAiNormalViewHolder = (ItemSearchByAINormalViewHolder) holder;
@@ -175,16 +175,10 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 itemSearchByAIEveryoneISWatchingViewHolder.tvMovieList.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(videoList !=null) {
-                            Intent intent = new Intent(mContext, LookMoreActivity.class);
-                            Bundle bundle = new Bundle();
-                            ArrayList<TppData.DetailsListBean> videos = new ArrayList<>();
-                            videos.addAll(videoList);
-                            bundle.putSerializable(LookMoreActivity.KEY_MORE_DATE, videos);
-                            intent.putExtra(LookMoreActivity.KEY_MORE_DATE_BUNDLE,bundle);
-                            intent.putExtra(LookMoreActivity.KEY_TITLE,itemSearchByAIEveryoneISWatchingViewHolder.title.getText());
-                            mContext.startActivity(intent);
-                        }
+                    Intent intent = new Intent(mContext, LookMoreActivity.class);
+                    intent.putExtra(LookMoreActivity.KEY_MORE_DATE_SPEECH_TEXT,searchByAIBean.getSpeechText());
+                    intent.putExtra(LookMoreActivity.KEY_TITLE,itemSearchByAIEveryoneISWatchingViewHolder.title.getText());
+                    mContext.startActivity(intent);
                     }
                 });
             } else if (holder instanceof ItemSearchByAIIWantTOSeeViewHolder) {

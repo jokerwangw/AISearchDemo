@@ -56,15 +56,19 @@ public class AIUIService extends Service {
     private AIUIServiceImpl aiuiService;
     private AIUIAgent mAIUIAgent;
     private int mCurrentState = AIUIConstant.STATE_IDLE;
-    private AIUIEventListener eventListener;
+    private AIUIEventListenerManager eventListenerManager;
     private Map<String, String> userInfoMap;
     private AudioManager audoManager;
     private boolean isIvwModel =false;
+    private boolean hasSetLookMorePageSize = false;
+    private boolean hasSyncData = false;
+    private boolean hasClearData = false;
 
     @Override
     public void onCreate() {
         super.onCreate();
         aiuiService = new AIUIServiceImpl();
+        eventListenerManager = new AIUIEventListenerManager();
         init();
     }
 
@@ -170,19 +174,30 @@ public class AIUIService extends Service {
 
         @Override
         public void startRecordAudio() {
-            if(!isIvwModel)
+            if(!isIvwModel) {
+                if(hasSetLookMorePageSize) {
+                    setPageInfo("1", "3");
+                    hasSetLookMorePageSize = false;
+                }
                 sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
+            }
         }
 
         @Override
         public void stopRecordAudio() {
-            if(!isIvwModel)
+            if(!isIvwModel) {
                 sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
+            }
         }
 
         @Override
-        public void setAIUIEventListener(AIUIEventListener aiuiEventListener) {
-            eventListener = aiuiEventListener;
+        public void addAIUIEventListener(AIUIEventListener aiuiEventListener) {
+            eventListenerManager.addAIUIEventListener(aiuiEventListener);
+        }
+
+        @Override
+        public void removeAIUIEventListener(AIUIEventListener aiuiEventListener) {
+            eventListenerManager.removeAIUIEventListener(aiuiEventListener);
         }
 
         @Override
@@ -223,6 +238,38 @@ public class AIUIService extends Service {
             AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null);
             mAIUIAgent.sendMessage(msg);
         }
+        private String lookMoreText;
+        private int pageIndex;
+        private int pageSize;
+        @Override
+        public void getLookMorePage(final String lookMoreText,final int pageIndex,final int pageSize) {
+            this.lookMoreText = lookMoreText;
+            this.pageIndex = pageIndex;
+            this.pageSize = pageSize;
+            hasSetLookMorePageSize = true;
+            if(hasSyncData) {
+                //如果有同步所见即可说数据先要清除数据，避免lookMoreText中带了上一次查找的内容而干扰结果返回
+                //同时由于clearSpeakableData 是异步的，所以在清楚数据后的getPage在EVENT_CMD_RETURN事件（即清除成功返回）中执行
+                AIUIService.this.clearSpeakableData();
+                hasSyncData = false;
+                hasClearData = true;
+            }else {
+                getPage();
+            }
+        }
+
+        @Override
+        public boolean isLookMorePageData() {
+            return hasSetLookMorePageSize;
+        }
+
+        public void getPage(){
+            setPageInfo(pageIndex+"",pageSize+"");
+            String params = "data_type=text";
+            byte[] textData = lookMoreText.getBytes();
+            AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, params, textData);
+            sendMessage(msg);
+        }
     }
 
 
@@ -258,23 +305,19 @@ public class AIUIService extends Service {
                                     if (TextUtils.isEmpty(iatTxt)) {
                                         return;
                                     }
-                                    if (eventListener != null) {
-                                        eventListener.onResult(iatTxt, null, null);
-                                    }
+                                    eventListenerManager.onResult(iatTxt, null, null);
 
                                 } else if ("nlp".equals(sub)) {
                                     String resultStr = cntJson.optString("intent");
                                     if (resultStr.equals("{}") || resultStr.isEmpty()) return;
                                     Logger.debug("NLP 【" + resultStr + "】");
-                                    if (eventListener != null)
-                                        eventListener.onResult(null, resultStr, null);
+                                    eventListenerManager.onResult(null, resultStr, null);
                                 } else {
                                     String resultStr = cntJson.optString("intent");
                                     if (resultStr.equals("{}")) return;
                                     String jsonResultStr = cntJson.toString();
                                     Logger.debug("TPP 【" + jsonResultStr + "】");
-                                    if (eventListener != null)
-                                        eventListener.onResult(null, null, jsonResultStr);
+                                    eventListenerManager.onResult(null, null, jsonResultStr);
                                 }
                             }
                         }
@@ -310,7 +353,11 @@ public class AIUIService extends Service {
                                     effectDynamicEntity();
                                     break;
                                 case AIUIConstant.SYNC_DATA_STATUS:
-
+                                    if(hasClearData){
+                                        Logger.debug("清除所见即可说数据成功");
+                                        aiuiService.getPage();
+                                        hasClearData = false;
+                                    }
                                     break;
                             }
                         }
@@ -319,9 +366,7 @@ public class AIUIService extends Service {
                     break;
             }
             //AIUI状态分发给各客户端监听
-            if (eventListener != null) {
-                eventListener.onEvent(event);
-            }
+            eventListenerManager.onEvent(event);
         }
     };
 
@@ -343,7 +388,20 @@ public class AIUIService extends Service {
         Logger.debug("合成参数【"+params.toString()+"】");
         sendMessage(new AIUIMessage(AIUIConstant.CMD_TTS, AIUIConstant.START, 0, params.toString(), ttsData));
     }
-
+    //设置页码
+    private void setPageInfo(String pageIndex,String pageSize){
+        try {
+            JSONObject objectJson = new JSONObject();
+            JSONObject paramJson = new JSONObject();
+            paramJson.put("pageindex",pageIndex);
+            paramJson.put("pagesize",pageSize);
+            objectJson.put("userparams", paramJson);
+            sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+    //生效动态实体
     public void effectDynamicEntity() {
         try {
             JSONObject params = new JSONObject();
@@ -380,9 +438,9 @@ public class AIUIService extends Service {
             String params = "{\"viewCmd::default\":{\"activeStatus\":\"fg\",\"data\":{\"hotInfo\":{\"viewCmd\":\"%s\"}},\"sceneStatus\":\"default\"}}";
             params = String.format(params, hotInfo);
             byte[] syncData = params.getBytes("utf-8");
-
             AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC, AIUIConstant.SYNC_DATA_STATUS, 0, params, syncData);
             mAIUIAgent.sendMessage(syncAthenaMessage);
+            hasSyncData = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -479,6 +537,4 @@ public class AIUIService extends Service {
             }
         }
     };
-
-
 }
