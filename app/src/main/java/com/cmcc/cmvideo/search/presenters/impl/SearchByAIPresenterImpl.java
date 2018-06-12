@@ -226,9 +226,33 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     intentVideoControl(mData, intent);
                 }
                 break;
+            case AiuiConstants.VIDEO_ON_SERVICE:
+                intentOnLive(mData, intent);
+                break;
+
 
         }
 
+    }
+
+    private void intentOnLive(NlpData mData, String intent) {
+        switch (intent) {
+            case AiuiConstants.VIDEO_CHANNEL_INTENT:
+                //频道查询 如：我要看CCTV5体育 / 湖南卫视
+                Logger.debug("VIDEO_CHANNEL_INTENT=================="
+                        + mData.text
+                        + mData.semantic.get(0).getSlots().get(0).normValue
+                        + mData.semantic.get(0).getSlots().get(0).value);
+                break;
+            case AiuiConstants.VIDEO_VERITY_INTENT:
+                //多样直播视频查询 如：我要看直播 、体育直播
+                Logger.debug("VIDEO_VERITY_INTENT===================="
+                        + mData.text
+                        + mData.semantic.get(0).getSlots().get(0).normValue
+                        + mData.semantic.get(0).getSlots().get(0).value);
+                break;
+
+        }
     }
 
 

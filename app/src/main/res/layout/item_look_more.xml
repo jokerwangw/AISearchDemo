@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -11,11 +10,13 @@
         android:layout_marginRight="@dimen/dimen_3dp"
         >
 
+        android:layout_height="@dimen/dimen_120dp">
+
+
         <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
             android:id="@+id/item_img"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
+            android:layout_height="match_parent" />
 
         <TextView
             android:id="@+id/item_watch_num"
@@ -27,7 +28,7 @@
             android:layout_marginRight="@dimen/dimen_5dp"
             android:text="34344人观看"
             android:textColor="@color/white"
-            android:textSize="@dimen/dimen_10dp"/>
+            android:textSize="@dimen/dimen_10dp" />
     </RelativeLayout>
 
     <TextView
@@ -41,5 +42,5 @@
         android:gravity="center_horizontal"
         android:maxLines="1"
         android:text="美人鱼"
-        android:textColor="@color/everyone_watch_list_movie_name"/>
+        android:textColor="@color/everyone_watch_list_movie_name" />
 </LinearLayout>

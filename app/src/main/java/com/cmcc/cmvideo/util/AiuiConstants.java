@@ -47,6 +47,12 @@ public class AiuiConstants {
     public final static String VIDEO_PREVIOUS = "previousEpisode";
     public final static String VIDEO_NEXT = "nextEpisode";
 
+    //自定义直播技能
+    public final static String VIDEO_ON_SERVICE = "LINGXI2018.onlive";
+    public final static String VIDEO_CHANNEL_INTENT = "channel_query";
+    public final static String VIDEO_VERITY_INTENT = "variety_query";
+
+
 
     //video 意图下各句子分词
     public final static String VIDEO_AREA = "area";
