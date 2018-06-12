@@ -252,6 +252,10 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                     //List<SearchByAIBean> searchByAIBeanList = new ArrayList<SearchByAIBean>();
                     //searchByAIBeanList.add(new SearchByAIBean("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI));
                     //setAdapterData(false, searchByAIBeanList);
+                    if(aiuiEvent.arg1 ==1){
+                        //VAD事件当检测到输入音频的前端点后，会抛出该事件，用arg1标识前后端点或者音量信息:0(前端点)、1(音量)、2(后端点)、3（前端点超时）。
+                        //当arg1取值为1时，arg2为音量大小。
+                    }
                     break;
             }
         }

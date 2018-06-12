@@ -175,9 +175,9 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         if(videoList !=null) {
                             Intent intent = new Intent(mContext, LookMoreActivity.class);
                             Bundle bundle = new Bundle();
-                            ArrayList<TppData.DetailsListBean> videoList = new ArrayList<>();
-                            videoList.addAll(videoList);
-                            bundle.putSerializable(LookMoreActivity.KEY_MORE_DATE, videoList);
+                            ArrayList<TppData.DetailsListBean> videos = new ArrayList<>();
+                            videos.addAll(videoList);
+                            bundle.putSerializable(LookMoreActivity.KEY_MORE_DATE, videos);
                             intent.putExtra(LookMoreActivity.KEY_MORE_DATE_BUNDLE,bundle);
                             mContext.startActivity(intent);
                         }
