@@ -2,6 +2,7 @@ package com.cmcc.cmvideo.search.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.cmcc.cmvideo.util.Constants.IMG_BASE_URL;
@@ -129,7 +131,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             } else if (holder instanceof ItemSearchByAICanAskAIViewHolder) {
             } else if (holder instanceof ItemSearchByAIAppointmentViewHolder) {
             } else if (holder instanceof ItemSearchByAIEveryoneISWatchingViewHolder) {
-                List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
+                final List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
                 ItemSearchByAIEveryoneISWatchingViewHolder itemSearchByAIEveryoneISWatchingViewHolder = (ItemSearchByAIEveryoneISWatchingViewHolder) holder;
                 itemSearchByAIEveryoneISWatchingViewHolder.itemImg1.setVisibility(View.VISIBLE);
                 itemSearchByAIEveryoneISWatchingViewHolder.itemImg2.setVisibility(View.VISIBLE);
@@ -170,7 +172,15 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 itemSearchByAIEveryoneISWatchingViewHolder.tvMovieList.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mContext.startActivity(new Intent(mContext, LookMoreActivity.class));
+                        if(videoList !=null) {
+                            Intent intent = new Intent(mContext, LookMoreActivity.class);
+                            Bundle bundle = new Bundle();
+                            ArrayList<TppData.DetailsListBean> videoList = new ArrayList<>();
+                            videoList.addAll(videoList);
+                            bundle.putSerializable(LookMoreActivity.KEY_MORE_DATE, videoList);
+                            intent.putExtra(LookMoreActivity.KEY_MORE_DATE_BUNDLE,bundle);
+                            mContext.startActivity(intent);
+                        }
                     }
                 });
             } else if (holder instanceof ItemSearchByAIIWantTOSeeViewHolder) {

@@ -506,7 +506,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     case "下一页":
                         break;
                     case "查看更多":
-                        if(lastVideoList !=null&&lastVideoList.size()>3) {
+                        if(lastVideoList !=null) {
                             Intent intent = new Intent(mContext, LookMoreActivity.class);
                             Bundle bundle = new Bundle();
                             ArrayList<TppData.DetailsListBean> videoList = new ArrayList<>();
