@@ -24,10 +24,9 @@
             android:layout_marginLeft="@dimen/dimen_8dp"
             android:layout_marginRight="@dimen/dimen_20dp"
             android:layout_toRightOf="@+id/im_head"
-            android:background="@drawable/search_by_ai_normal_ai_text_bg"
+            android:background="@drawable/search_by_ai_normal_msg_bg"
             android:gravity="center_vertical"
             android:padding="@dimen/dimen_8dp"
-            android:text="一般的布局"
             android:textColor="@color/white"
             android:textSize="@dimen/dimen_16dp"/>
 
@@ -39,7 +38,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/dimen_40dp"
             android:layout_marginRight="@dimen/dimen_20dp"
-            android:background="@drawable/search_by_ai_normal_user_text_bg"
+            android:background="@drawable/search_by_ai_user_normal_msg_bg"
             android:gravity="center_vertical"
             android:padding="@dimen/dimen_8dp"
             android:textColor="@color/white"

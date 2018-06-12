@@ -2,6 +2,7 @@
     <dimen name="turn_to_ai_search_marginB">200dp</dimen>
 
     <dimen name="dimen_1dp">1dp</dimen>
+    <dimen name="dimen_2dp">2dp</dimen>
     <dimen name="dimen_3dp">3dp</dimen>
     <dimen name="dimen_5dp">5dp</dimen>
     <dimen name="dimen_8dp">8dp</dimen>

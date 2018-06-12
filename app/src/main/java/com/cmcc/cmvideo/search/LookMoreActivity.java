@@ -30,8 +30,8 @@ import butterknife.OnClick;
  */
 
 public class LookMoreActivity extends AppCompatActivity implements LookMorePresenter.View {
-    public static final String KEY_MORE_DATE ="more_data";
-    public static final String KEY_MORE_DATE_BUNDLE ="more_data";
+    public static final String KEY_MORE_DATE = "more_data";
+    public static final String KEY_MORE_DATE_BUNDLE = "more_data";
     @BindView(R.id.look_more_recyclerView)
     RecyclerView mLookMoreRecyclerView;
     private Context mContext;
@@ -54,12 +54,12 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
                 this,
                 this);
         initCustomView();
-        lookMorePresenter.initListItem();
+        lookMorePresenter.initListItem(getIntent().getBundleExtra(KEY_MORE_DATE_BUNDLE));
     }
 
     private void initCustomView() {
         mLookMoreAdapter = new LookMoreAdapter(mContext);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, 3,GridLayoutManager.HORIZONTAL,true);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, 3);
         mLookMoreRecyclerView.setHasFixedSize(true);
         mLookMoreRecyclerView.setLayoutManager(gridLayoutManager);
         mLookMoreRecyclerView.setAdapter(mLookMoreAdapter);
@@ -86,16 +86,10 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
      * 显示数据
      */
     @Override
-    public void showInitList() {
-        setAdapterData();
-    }
-
-    private void setAdapterData() {
-        Bundle bundle = getIntent().getBundleExtra(KEY_MORE_DATE_BUNDLE);
-        if(bundle==null) return;
-        List<TppData.DetailsListBean> detailsListBeanArrayList = (ArrayList<TppData.DetailsListBean>)bundle.getSerializable(KEY_MORE_DATE);
+    public void showInitList(List<TppData.DetailsListBean> detailsListBeanArrayList) {
         if (null != detailsListBeanArrayList && null != mLookMoreAdapter) {
-            mLookMoreAdapter.bindData(detailsListBeanArrayList,true);
+            mLookMoreAdapter.bindData(detailsListBeanArrayList, true);
         }
     }
+
 }

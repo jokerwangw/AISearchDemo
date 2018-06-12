@@ -33,6 +33,7 @@ import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
 import com.cmcc.cmvideo.search.model.SearchByAIRefreshUIEventBean;
 import com.cmcc.cmvideo.search.presenters.SearchByAIPresenter;
 import com.cmcc.cmvideo.search.presenters.impl.SearchByAIPresenterImpl;
+import com.cmcc.cmvideo.weight.VoiceLineView;
 import com.iflytek.aiui.AIUIConstant;
 import com.iflytek.aiui.AIUIEvent;
 
@@ -71,6 +72,8 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     TextView tvTitle;
     @BindView(R.id.tv_cancel_search)
     TextView tvCancelSearch;
+    @BindView(R.id.voicLine)
+    VoiceLineView mVoiceLineView;
     private final String TAG = "SearchByAIActivity";
     private SearchByAIPresenterImpl mSearchByAIPresenter;
     private Context mContext;
@@ -145,14 +148,15 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
      */
     @Override
     public void requestAudioFocus() {
-        FuncAdapter.Lock(this,null);
+        FuncAdapter.Lock(this, null);
     }
+
     /**
      * 释放音频播放焦点
      */
     @Override
     public void abandonAudioFocus() {
-        FuncAdapter.UnLock(this,null);
+        FuncAdapter.UnLock(this, null);
     }
 
     /**
@@ -247,14 +251,10 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                 case AIUIConstant.EVENT_STOP_RECORD:
                     break;
                 case AIUIConstant.EVENT_VAD:
-                    //5秒内无响应
-                    //closeSearch();
-                    //List<SearchByAIBean> searchByAIBeanList = new ArrayList<SearchByAIBean>();
-                    //searchByAIBeanList.add(new SearchByAIBean("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI));
-                    //setAdapterData(false, searchByAIBeanList);
-                    if(aiuiEvent.arg1 ==1){
+                    if (aiuiEvent.arg1 == 1) {
                         //VAD事件当检测到输入音频的前端点后，会抛出该事件，用arg1标识前后端点或者音量信息:0(前端点)、1(音量)、2(后端点)、3（前端点超时）。
                         //当arg1取值为1时，arg2为音量大小。
+                        updateVoiceAnimation(aiuiEvent.arg2);
                     }
                     break;
             }
@@ -332,6 +332,15 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
             btSearchVoiceInput.clearAnimation();
             btSearchVoiceInput.invalidate();
         }
+    }
+
+    /**
+     * 更新VoiceLineView
+     *
+     * @param arg2
+     */
+    private void updateVoiceAnimation(int arg2) {
+
     }
 
     @Override

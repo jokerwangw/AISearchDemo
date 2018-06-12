@@ -33,11 +33,11 @@ public class LookMoreAdapter extends BaseRecyclerAdapter<TppData.DetailsListBean
     }
 
     @Override
-    public void onBindHoder(RecyclerView.ViewHolder holder, TppData.DetailsListBean o, int position) {
+    public void onBindHoder(RecyclerView.ViewHolder holder, TppData.DetailsListBean detailsListBean, int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder)holder;
         itemViewHolder.itemWatchNum.setVisibility(View.GONE);
-        itemViewHolder.itemName.setText(o.name);
-        itemViewHolder.itemImg.setImageURI(getImageUrl(o.image));
+        itemViewHolder.itemName.setText(detailsListBean.name);
+        itemViewHolder.itemImg.setImageURI(getImageUrl(detailsListBean.image));
     }
 
     @Override

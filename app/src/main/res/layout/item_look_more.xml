@@ -7,7 +7,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_120dp"
+        android:layout_height="@dimen/dimen_136dp"
+        android:layout_marginRight="@dimen/dimen_3dp"
         >
 
         <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
@@ -33,7 +34,9 @@
         android:id="@+id/item_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dimen_5dp"
+        android:layout_marginBottom="@dimen/dimen_15dp"
+        android:layout_marginRight="@dimen/dimen_3dp"
+        android:layout_marginTop="@dimen/dimen_8dp"
         android:ellipsize="end"
         android:gravity="center_horizontal"
         android:maxLines="1"
