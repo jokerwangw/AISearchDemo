@@ -24,7 +24,6 @@ import java.util.List;
 public class VoiceLineView extends View {
     private final int LINE = 0;
     private final int RECT = 1;
-
     private int middleLineColor = Color.BLACK;
     private int voiceLineColor = Color.BLACK;
     private float middleLineHeight = 4;
@@ -35,13 +34,9 @@ public class VoiceLineView extends View {
      * 灵敏度
      */
     private int sensibility = 4;
-
     private float maxVolume = 100;
-
-
     private float translateX = 0;
     private boolean isSet = false;
-
     /**
      * 振幅
      */
@@ -49,21 +44,18 @@ public class VoiceLineView extends View {
     /**
      * 音量
      */
-    private float volume = 10;
+    private float volume = 0;
     private int fineness = 1;
-    private float targetVolume = 1;
-
+    private float targetVolume = 0;
 
     private long speedY = 50;
     private float rectWidth = 25;
     private float rectSpace = 5;
     private float rectInitHeight = 4;
     private List<Rect> rectList;
-
     private long lastTime = 0;
     private int lineSpeed = 90;
-
-    List<Path> paths = null;
+    private List<Path> paths = null;
 
     public VoiceLineView(Context context) {
         super(context);

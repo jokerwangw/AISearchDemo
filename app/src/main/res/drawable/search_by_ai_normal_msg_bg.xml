@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <gradient
+    <!--<gradient
         android:angle="0"
         android:endColor="@color/search_by_ai_bg_end_color"
         android:startColor="@color/search_by_ai_bg_start_color"
-        />
+        />-->
+    <solid
+        android:color="@color/search_by_ai_bg_end_color"/>
     <corners
         android:bottomLeftRadius="0dp"
         android:bottomRightRadius="@dimen/dimen_35dp"
-        android:topLeftRadius="@dimen/dimen_35dp"
+        android:topLeftRadius="@dimen/dimen_25dp"
         android:topRightRadius="@dimen/dimen_35dp"/>
     <padding
         android:bottom="@dimen/dimen_5dp"

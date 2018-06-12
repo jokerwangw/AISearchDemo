@@ -9,7 +9,7 @@
         android:bottomLeftRadius="@dimen/dimen_35dp"
         android:bottomRightRadius="0dp"
         android:topLeftRadius="@dimen/dimen_35dp"
-        android:topRightRadius="@dimen/dimen_35dp"/>
+        android:topRightRadius="@dimen/dimen_25dp"/>
     <padding
         android:bottom="@dimen/dimen_5dp"
         android:left="@dimen/dimen_15dp"

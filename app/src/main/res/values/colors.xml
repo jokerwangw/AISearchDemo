@@ -20,4 +20,6 @@
     <color name="guess_you_like_movie_name">#333333</color>
     <color name="guess_you_like_movie_text">#666666</color>
 
+    <color name="look_more_header">#EFEFEF</color>
+
 </resources>

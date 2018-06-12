@@ -119,9 +119,10 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             if (holder instanceof ItemSearchByAINormalViewHolder) {
                 ItemSearchByAINormalViewHolder itemSearchByAiNormalViewHolder = (ItemSearchByAINormalViewHolder) holder;
                 if (TextUtils.equals(searchByAIBean.getMessageFrom(), MESSAGE_FROM_AI)) {
+                    itemSearchByAiNormalViewHolder.imHead.setVisibility(View.VISIBLE);
                     itemSearchByAiNormalViewHolder.tvMessageFromAI.setVisibility(View.VISIBLE);
-                    itemSearchByAiNormalViewHolder.tvMessageFromAI.setText(searchByAIBean.getMessage());
                     itemSearchByAiNormalViewHolder.tvMessageFromUser.setVisibility(View.GONE);
+                    itemSearchByAiNormalViewHolder.tvMessageFromAI.setText(searchByAIBean.getMessage());
                 } else {
                     itemSearchByAiNormalViewHolder.imHead.setVisibility(View.INVISIBLE);
                     itemSearchByAiNormalViewHolder.tvMessageFromAI.setVisibility(View.GONE);

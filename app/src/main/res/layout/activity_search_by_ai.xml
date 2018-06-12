@@ -75,11 +75,12 @@
                 voiceView:fineness="three"
                 voiceView:lineSpeed="90"
                 voiceView:maxVolume="200"
-                voiceView:middleLineHeight="1dp"
+                voiceView:middleLineHeight="0dp"
                 voiceView:rectSpace="2dp"
                 voiceView:rectWidth="5dp"
                 voiceView:sensibility="four"
                 voiceView:viewMode="line"
+                voiceView:middleLine="@color/search_by_ai_bg_cancel_end_color"
                 voiceView:voiceLine="@color/search_by_ai_bg_cancel_end_color"/>
 
             <View

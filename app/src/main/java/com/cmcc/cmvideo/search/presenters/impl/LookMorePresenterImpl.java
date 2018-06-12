@@ -19,11 +19,11 @@ import com.iflytek.aiui.AIUIEvent;
  * Describe:
  */
 
-public class LookMorePresenterImpl extends AbstractPresenter implements  AIUIService.AIUIEventListener, LookMorePresenter {
+public class LookMorePresenterImpl extends AbstractPresenter implements AIUIService.AIUIEventListener, LookMorePresenter {
     private LookMorePresenter.View mView;
     private Context mContext;
     private IAIUIService aiuiService;
-    private String speechText ="";
+    private String speechText = "";
     private Gson gson;
 
     public LookMorePresenterImpl(Executor executor, MainThread mainThread, LookMorePresenter.View view, Context context) {
@@ -58,8 +58,8 @@ public class LookMorePresenterImpl extends AbstractPresenter implements  AIUISer
     public void setAIUIService(IAIUIService service) {
         aiuiService = service;
         aiuiService.addAIUIEventListener(this);
-        if(!TextUtils.isEmpty(speechText)) {
-            aiuiService.getLookMorePage(speechText,1,Integer.MAX_VALUE);
+        if (!TextUtils.isEmpty(speechText)) {
+            aiuiService.getLookMorePage(speechText, 1, Integer.MAX_VALUE);
         }
     }
 
@@ -77,8 +77,9 @@ public class LookMorePresenterImpl extends AbstractPresenter implements  AIUISer
     public void onEvent(AIUIEvent event) {
 
     }
+
     public void onTppResult(String result) {
-        if (TextUtils.isEmpty(result)||!aiuiService.isLookMorePageData())
+        if (TextUtils.isEmpty(result) || !aiuiService.isLookMorePageData())
             return;
         NlpData nlpData = gson.fromJson(result, NlpData.class);
         //判断是否解出了语义，并且当前技能是video
