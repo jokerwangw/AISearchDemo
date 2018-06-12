@@ -59,7 +59,7 @@ public class AIUIService extends Service {
     private AIUIEventListenerManager eventListenerManager;
     private Map<String, String> userInfoMap;
     private AudioManager audoManager;
-    private boolean isIvwModel =false;
+    private boolean isIvwModel = false;
     private boolean hasSetLookMorePageSize = false;
     private boolean hasSyncData = false;
     private boolean hasClearData = false;
@@ -103,7 +103,7 @@ public class AIUIService extends Service {
                 SpeechUtility.getUtility().destroy();
             }
             SpeechUtility.createUtility(AIUIService.this, String.format("engine_start=ivw,delay_init=0,appid=%s", "5aceb703"));
-            if(mAIUIAgent ==null)
+            if (mAIUIAgent == null)
                 mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
             JSONObject objectJson = new JSONObject();
             JSONObject paramJson = new JSONObject();
@@ -122,7 +122,7 @@ public class AIUIService extends Service {
                     sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
                     tts("小咪为你服务");
 
-                    isIvwModel  = true;
+                    isIvwModel = true;
                 }
             }, 500);
 
@@ -134,7 +134,7 @@ public class AIUIService extends Service {
 
     private void standardMode() {
         try {
-            if(mAIUIAgent ==null)
+            if (mAIUIAgent == null)
                 mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
             JSONObject objectJson = new JSONObject();
             JSONObject paramJson = new JSONObject();
@@ -147,12 +147,9 @@ public class AIUIService extends Service {
                 public void run() {
                     //延时启动保障完全停止后 能够重新启动
                     mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START, 0, 0, "", null));
-                    isIvwModel  = false;
+                    isIvwModel = false;
                 }
             }, 500);
-//            if (SpeechUtility.getUtility() != null) {
-//                SpeechUtility.getUtility().destroy();
-//            }
             SpeechUtility.createUtility(this, "appid=5aceb703");
             Logger.debug("已启动标准模式");
         } catch (JSONException e) {
@@ -231,13 +228,6 @@ public class AIUIService extends Service {
             AIUIService.this.syncSpeakableData(hotInfo);
         }
 
-        @Override
-        public void startIvwAudio() {
-            //创建AIUIAgent
-            //开始录音
-            AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null);
-            mAIUIAgent.sendMessage(msg);
-        }
         private String lookMoreText;
         private int pageIndex;
         private int pageSize;
@@ -385,7 +375,7 @@ public class AIUIService extends Service {
         params.append(",pitch=30");  //合成音调
         params.append(",volume=100");  //合成音量
         //开始合成
-        Logger.debug("合成参数【"+params.toString()+"】");
+        Logger.debug("合成参数【" + params.toString() + "】");
         sendMessage(new AIUIMessage(AIUIConstant.CMD_TTS, AIUIConstant.START, 0, params.toString(), ttsData));
     }
     //设置页码
@@ -413,6 +403,7 @@ public class AIUIService extends Service {
         } catch (JSONException e) {
         }
     }
+
     //清除所见即可说
     public void clearSpeakableData() {
         try {
@@ -529,7 +520,7 @@ public class AIUIService extends Service {
                         EventBus.getDefault().post(new MicBean(true));
                         //切换为耳机模式
                         //PlayerManager.getInstance().changeToHeadset();
-                        if(!isIvwModel){
+                        if (!isIvwModel) {
                             ivwMode();
                         }
                     }
