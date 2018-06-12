@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
+
 import com.cmcc.cmvideo.R;
 import com.cmcc.cmvideo.base.MainThreadImpl;
 import com.cmcc.cmvideo.base.ThreadExecutor;
@@ -20,6 +21,7 @@ import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.presenters.LookMorePresenter;
 import com.cmcc.cmvideo.search.presenters.impl.LookMorePresenterImpl;
+
 import java.util.List;
 
 import butterknife.BindView;
@@ -33,7 +35,7 @@ import butterknife.OnClick;
 
 public class LookMoreActivity extends AppCompatActivity implements LookMorePresenter.View {
     public static final String KEY_MORE_DATE_SPEECH_TEXT = "more_data_speech_text";
-    public static final String KEY_TITLE="more_data_title";
+    public static final String KEY_TITLE = "more_data_title";
     @BindView(R.id.look_more_recyclerView)
     RecyclerView mLookMoreRecyclerView;
     @BindView(R.id.tv_title)
@@ -83,6 +85,7 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         public void onServiceDisconnected(ComponentName name) {
         }
     };
+
     @Override
     public void showProgress() {
     }
@@ -105,6 +108,7 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         super.onDestroy();
         unbindService(connection);
     }
+
     /**
      * 显示数据
      */

@@ -11,13 +11,14 @@
         android:layout_height="wrap_content"
         android:background="@color/look_more_header">
 
-        <Button
+        <ImageView
             android:id="@+id/bt_back"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/dimen_50dp"
-            android:background="@null"
+            android:layout_width="@dimen/dimen_35dp"
+            android:layout_height="@dimen/dimen_35dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dimen_10dp"
+            android:background="@mipmap/search_by_ai_look_more_back"
             android:gravity="center"
-            android:text="返回"
             android:textSize="@dimen/dimen_15dp"
             />
 

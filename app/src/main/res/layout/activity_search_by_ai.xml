@@ -47,6 +47,17 @@
         android:layout_above="@+id/search_input_area"
         android:layout_marginTop="@dimen/dimen_60dp"/>
 
+    <ImageView
+        android:id="@+id/im_release_finger"
+        android:layout_width="@dimen/dimen_40dp"
+        android:layout_height="@dimen/dimen_50dp"
+        android:layout_above="@+id/search_input_area"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/dimen_8dp"
+        android:src="@mipmap/im_release_finger"
+        android:visibility="gone"
+        />
+
     <RelativeLayout
         android:id="@+id/search_input_area"
         android:layout_width="match_parent"
@@ -75,12 +86,12 @@
                 voiceView:fineness="three"
                 voiceView:lineSpeed="90"
                 voiceView:maxVolume="200"
+                voiceView:middleLine="@color/search_by_ai_bg_cancel_end_color"
                 voiceView:middleLineHeight="0dp"
                 voiceView:rectSpace="2dp"
                 voiceView:rectWidth="5dp"
                 voiceView:sensibility="four"
                 voiceView:viewMode="line"
-                voiceView:middleLine="@color/search_by_ai_bg_cancel_end_color"
                 voiceView:voiceLine="@color/search_by_ai_bg_cancel_end_color"/>
 
             <View
@@ -102,6 +113,30 @@
             android:text="@string/cancel_search"
             android:textColor="@color/white"
             android:textSize="@dimen/dimen_16dp"
+            android:visibility="gone"
+            />
+
+        <TextView
+            android:id="@+id/tv_slide_cancel_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:drawableLeft="@mipmap/search_by_ai_slide_cancel"
+            android:drawablePadding="@dimen/dimen_8dp"
+            android:text="@string/slide_cancel_search"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_14dp"
+            android:visibility="gone"
+            />
+
+        <TextView
+            android:id="@+id/tv_release_finger_cancel_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="@string/release_finger_cancel_search"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_14dp"
             android:visibility="gone"
             />
 

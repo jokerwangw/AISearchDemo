@@ -75,6 +75,12 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     TextView tvCancelSearch;
     @BindView(R.id.voicLine)
     VoiceLineView mVoiceLineView;
+    @BindView(R.id.im_release_finger)
+    ImageView imReleaseFinger;
+    @BindView(R.id.tv_slide_cancel_search)
+    TextView tvSlideCancelSearch;
+    @BindView(R.id.tv_release_finger_cancel_search)
+    TextView tvReleaseFingerCancelSearch;
     private final String TAG = "SearchByAIActivity";
     private SearchByAIPresenterImpl mSearchByAIPresenter;
     private Context mContext;
@@ -82,6 +88,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private IAIUIService aiuiService;
     private long downTime = 0;
     private long upTime = 0;
+    private float downY = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -119,13 +126,19 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
+                    downY = event.getY();
                     downTime = System.currentTimeMillis();
                     startSearch();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    fingerStartMove(downY, event.getY());
                     break;
                 case MotionEvent.ACTION_UP:
                     upTime = System.currentTimeMillis();
                     long clickTime = upTime - downTime;
                     checkClickType(clickTime);
+                    break;
+                default:
                     break;
             }
             return true;
@@ -171,11 +184,31 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
             closeViewAnimation();
             tvCancelSearch.setVisibility(View.VISIBLE);
             rlSearchVoiceInputRing.setVisibility(View.GONE);
+            tvSlideCancelSearch.setVisibility(View.GONE);
             rlSearchVoiceInput.setVisibility(View.GONE);
             setViewAnimation(true);
         } else {
             //长按事件
             closeSearch();
+        }
+    }
+
+    /**
+     * 长按状态下手指滑动得操作
+     *
+     * @param downY
+     * @param moveY
+     */
+    private void fingerStartMove(float downY, float moveY) {
+        float moveValue = downY - moveY;
+        if (moveValue >= 50) {
+            tvSlideCancelSearch.setVisibility(View.GONE);
+            imReleaseFinger.setVisibility(View.VISIBLE);
+            tvReleaseFingerCancelSearch.setVisibility(View.VISIBLE);
+        } else {
+            tvSlideCancelSearch.setVisibility(View.VISIBLE);
+            imReleaseFinger.setVisibility(View.GONE);
+            tvReleaseFingerCancelSearch.setVisibility(View.GONE);
         }
     }
 
@@ -279,15 +312,15 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         }
     }
 
-
     /**
      * 开始搜索之后处理相关操作
      */
     private void startSearch() {
         if (aiuiService != null) {
-            tvTitle.setText(getResources().getString(R.string.listening));
             aiuiService.startRecordAudio();
+            tvTitle.setText(getResources().getString(R.string.listening));
             rlSearchVoiceInputRing.setVisibility(View.VISIBLE);
+            tvSlideCancelSearch.setVisibility(View.VISIBLE);
             setViewAnimation(false);
         }
     }
@@ -301,6 +334,9 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         }
         tvCancelSearch.setVisibility(View.GONE);
         rlSearchVoiceInputRing.setVisibility(View.GONE);
+        tvSlideCancelSearch.setVisibility(View.GONE);
+        imReleaseFinger.setVisibility(View.GONE);
+        tvReleaseFingerCancelSearch.setVisibility(View.GONE);
         rlSearchVoiceInput.setVisibility(View.VISIBLE);
         tvTitle.setText(getResources().getString(R.string.cmvideo));
         closeViewAnimation();
