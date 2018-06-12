@@ -279,12 +279,10 @@ public class AIUIService extends Service {
                             if (cnt_id.isEmpty()) {
                                 return;
                             }
-                            JSONObject cntJson = new JSONObject(new String(event.data.getByteArray(cnt_id), "utf-8"));
-
                             String sub = params.optString("sub");
                             if ("iat".equals(sub) || "nlp".equals(sub) || "tpp".equals(sub)) {
                                 // 解析得到语义结果
-
+                                JSONObject cntJson = new JSONObject(new String(event.data.getByteArray(cnt_id), "utf-8"));
                                 if ("iat".equals(sub)) {
                                     String iat = cntJson.optString("text");
                                     if (iat.equals("{}") || iat.isEmpty()) {
