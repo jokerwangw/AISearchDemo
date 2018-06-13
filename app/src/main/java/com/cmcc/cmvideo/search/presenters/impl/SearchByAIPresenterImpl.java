@@ -174,13 +174,15 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     }
 
     public void onIatResult(String result) {
-        if (TextUtils.isEmpty(result)) return;
+        if (TextUtils.isEmpty(result))
+            return;
         Logger.debug("听写用户输入数据=====" + result);
         sendMessage(result, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
     }
 
     public void onNlpResult(String result) {
-        if (TextUtils.isEmpty(result)) return;
+        if (TextUtils.isEmpty(result))
+            return;
         mData = gson.fromJson(result, NlpData.class);
         String service = mData.service;
         if (!AiuiConstants.VIEWCMD_SERVICE.equals(service)) {
@@ -316,10 +318,12 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     public void onMicEvent(MicBean event) {
         if (event.isConnect()) {
             isAvailableVideo = true;
-            if (BuildConfig.DEBUG) Log.d("aiui_log", "耳机接入");
+            if (BuildConfig.DEBUG)
+                Log.d("aiui_log", "耳机接入");
         } else {
             isAvailableVideo = false;
-            if (BuildConfig.DEBUG) Log.d("aiui_log", "耳机未接入");
+            if (BuildConfig.DEBUG)
+                Log.d("aiui_log", "耳机未接入");
         }
     }
 
@@ -431,22 +435,22 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                             responseTts = response;
                             break;
                         }
-//                        if (map.containsKey(AiuiConstants.VIDEO_TIME_DESCR)) { // 有时间 的表示最近好看的电影
-//                            AiResponse.Response response = AiResponse.getInstance().getNewVideo();
-//                            messageType = MESSAGE_TYPE_THE_LATEST_VIDEO;
-//                            if (response.respType == AiResponse.RespType.VIDEO_TYPE) {
-//                                //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
-//                                if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && map.get(AiuiConstants.VIDEO_CATEGORY).equals("电影")) {
-//                                    response.response = String.format(response.response, "电影");
-//                                } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY)) {
-//                                    response.response = String.format(response.response, "视频");
-//                                }
-//                            } else if (response.respType == AiResponse.RespType.VIDEO_NAME) {
-//                                response.response = String.format(response.response, nlpData.data.lxresult.data.detailslist.get(0).name);
-//                            }
-//                            responseTts = response;
-//                            break;
-//                        }
+                        //                        if (map.containsKey(AiuiConstants.VIDEO_TIME_DESCR)) { // 有时间 的表示最近好看的电影
+                        //                            AiResponse.Response response = AiResponse.getInstance().getNewVideo();
+                        //                            messageType = MESSAGE_TYPE_THE_LATEST_VIDEO;
+                        //                            if (response.respType == AiResponse.RespType.VIDEO_TYPE) {
+                        //                                //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
+                        //                                if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && map.get(AiuiConstants.VIDEO_CATEGORY).equals("电影")) {
+                        //                                    response.response = String.format(response.response, "电影");
+                        //                                } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY)) {
+                        //                                    response.response = String.format(response.response, "视频");
+                        //                                }
+                        //                            } else if (response.respType == AiResponse.RespType.VIDEO_NAME) {
+                        //                                response.response = String.format(response.response, nlpData.data.lxresult.data.detailslist.get(0).name);
+                        //                            }
+                        //                            responseTts = response;
+                        //                            break;
+                        //                        }
                         AiResponse.Response response = AiResponse.getInstance().getEveryoneSee();
                         messageType = MESSAGE_TYPE_EVERYONE_IS_WATCHING;
                         if (response.respType == AiResponse.RespType.VIDEO_TYPE) {
@@ -650,7 +654,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                             }
                         }
 
-                        if (selectedVideoList.size() == 0) return;
+                        if (selectedVideoList.size() == 0)
+                            return;
                         if (selectedVideoList.size() == 1) {
                             //TODO 打开当前影片
                             aiuiService.tts("正在为你打开," + selectedVideoList.get(0).name, null);
@@ -751,6 +756,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             sendMessage("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI);
         }
     };
+
     //取消录音
     @Override
     public void cancelRecordAudio() {
@@ -761,7 +767,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     //SlotsBean key-value 数据转换成Map 类型数据方便查找
     private Map<String, String> formatSlotsToMap(List<NlpData.SlotsBean> slotsBeans) {
         Map<String, String> map = new HashMap<>();
-        if (slotsBeans == null || slotsBeans.size() == 0) return map;
+        if (slotsBeans == null || slotsBeans.size() == 0)
+            return map;
         for (NlpData.SlotsBean slot : slotsBeans) {
             map.put(slot.name, slot.value);
         }

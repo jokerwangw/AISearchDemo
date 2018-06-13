@@ -89,7 +89,6 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private long downTime = 0;
     private long upTime = 0;
     private float downY = 0;
-    private boolean cancelRecord =false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -127,7 +126,6 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    cancelRecord = false;
                     downY = event.getY();
                     downTime = System.currentTimeMillis();
                     startSearch();
@@ -138,7 +136,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                 case MotionEvent.ACTION_UP:
                     upTime = System.currentTimeMillis();
                     long clickTime = upTime - downTime;
-                    checkClickType(clickTime);
+                    checkClickType(clickTime, downY - event.getY());
                     break;
                 default:
                     break;
@@ -180,9 +178,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
      *
      * @param clickTime
      */
-    private void checkClickType(long clickTime) {
-        if(cancelRecord)
-            return;
+    private void checkClickType(long clickTime, float moveValue) {
         if (clickTime <= 1000) {
             //点击事件
             closeViewAnimation();
@@ -193,7 +189,12 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
             setViewAnimation(true);
         } else {
             //长按事件
+            if (moveValue >= 50) {
+                mSearchByAIPresenter.cancelRecordAudio();
+            }
+            //长按事件
             closeSearch();
+
         }
     }
 
@@ -206,13 +207,10 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private void fingerStartMove(float downY, float moveY) {
         float moveValue = downY - moveY;
         if (moveValue >= 50) {
-            cancelRecord = true;
-            mSearchByAIPresenter.cancelRecordAudio();
             tvSlideCancelSearch.setVisibility(View.GONE);
             imReleaseFinger.setVisibility(View.VISIBLE);
             tvReleaseFingerCancelSearch.setVisibility(View.VISIBLE);
         } else {
-            cancelRecord = false;
             tvSlideCancelSearch.setVisibility(View.VISIBLE);
             imReleaseFinger.setVisibility(View.GONE);
             tvReleaseFingerCancelSearch.setVisibility(View.GONE);
