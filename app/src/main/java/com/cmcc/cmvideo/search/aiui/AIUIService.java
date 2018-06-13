@@ -63,6 +63,7 @@ public class AIUIService extends Service {
     private boolean hasSetLookMorePageSize = false;
     private boolean hasSyncData = false;
     private boolean hasClearData = false;
+    private boolean hasCancelRecordAudio =false;
 
     @Override
     public void onCreate() {
@@ -172,6 +173,7 @@ public class AIUIService extends Service {
         @Override
         public void startRecordAudio() {
             if(!isIvwModel) {
+                hasCancelRecordAudio = false;
                 if(hasSetLookMorePageSize) {
                     setPageInfo("1", "3");
                     hasSetLookMorePageSize = false;
@@ -253,6 +255,11 @@ public class AIUIService extends Service {
             return hasSetLookMorePageSize;
         }
 
+        @Override
+        public void cancelRecordAudio() {
+            hasCancelRecordAudio = true;
+        }
+
         public void getPage(){
             setPageInfo(pageIndex+"",pageSize+"");
             String params = "data_type=text";
@@ -268,6 +275,7 @@ public class AIUIService extends Service {
         public void onEvent(AIUIEvent event) {
             switch (event.eventType) {
                 case AIUIConstant.EVENT_RESULT: {
+                    if(hasCancelRecordAudio) return;
                     try {
                         JSONObject bizParamJson = new JSONObject(event.info);
                         JSONObject data = bizParamJson.getJSONArray("data").getJSONObject(0);

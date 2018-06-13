@@ -89,6 +89,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private long downTime = 0;
     private long upTime = 0;
     private float downY = 0;
+    private boolean cancelRecord =false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -126,6 +127,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
+                    cancelRecord = false;
                     downY = event.getY();
                     downTime = System.currentTimeMillis();
                     startSearch();
@@ -179,6 +181,8 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
      * @param clickTime
      */
     private void checkClickType(long clickTime) {
+        if(cancelRecord)
+            return;
         if (clickTime <= 1000) {
             //点击事件
             closeViewAnimation();

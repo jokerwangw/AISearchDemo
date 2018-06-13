@@ -27,4 +27,6 @@ public interface SearchByAIPresenter extends BasePresenter {
     void updateAIResponseListItem(String order);
 
     void setAIUIService(IAIUIService service);
+
+    void cancelRecordAudio();
 }

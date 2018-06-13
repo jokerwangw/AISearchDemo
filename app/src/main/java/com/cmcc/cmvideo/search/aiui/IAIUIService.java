@@ -16,7 +16,7 @@ public interface IAIUIService {
     void setUserParam(Map<String, String> map);
 
     void clearSpeakableData();
-
+    void cancelRecordAudio();
     void syncSpeakableData(String hotInfo);
     void getLookMorePage(String lookMoreText,int pageIndex,int pageSize);
     boolean isLookMorePageData();

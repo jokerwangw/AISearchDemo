@@ -751,6 +751,12 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             sendMessage("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI);
         }
     };
+    //取消录音
+    @Override
+    public void cancelRecordAudio() {
+        aiuiService.cancelRecordAudio();
+        mHandler.removeCallbacks(runnable);
+    }
 
     //SlotsBean key-value 数据转换成Map 类型数据方便查找
     private Map<String, String> formatSlotsToMap(List<NlpData.SlotsBean> slotsBeans) {
