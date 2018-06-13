@@ -755,6 +755,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     @Override
     public void cancelRecordAudio() {
         aiuiService.cancelRecordAudio();
+        aiuiService.stopRecordAudio();
         mHandler.removeCallbacks(runnable);
     }
 
