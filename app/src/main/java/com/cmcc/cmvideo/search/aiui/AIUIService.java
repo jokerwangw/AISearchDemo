@@ -258,6 +258,7 @@ public class AIUIService extends Service {
         @Override
         public void cancelRecordAudio() {
             hasCancelRecordAudio = true;
+            stopRecordAudio();
         }
 
         public void getPage(){
