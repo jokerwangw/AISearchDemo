@@ -206,10 +206,13 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private void fingerStartMove(float downY, float moveY) {
         float moveValue = downY - moveY;
         if (moveValue >= 50) {
+            cancelRecord = true;
+            mSearchByAIPresenter.cancelRecordAudio();
             tvSlideCancelSearch.setVisibility(View.GONE);
             imReleaseFinger.setVisibility(View.VISIBLE);
             tvReleaseFingerCancelSearch.setVisibility(View.VISIBLE);
         } else {
+            cancelRecord = false;
             tvSlideCancelSearch.setVisibility(View.VISIBLE);
             imReleaseFinger.setVisibility(View.GONE);
             tvReleaseFingerCancelSearch.setVisibility(View.GONE);
