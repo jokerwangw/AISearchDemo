@@ -270,7 +270,6 @@ public class AIUIService extends Service {
                         JSONObject data = bizParamJson.getJSONArray("data").getJSONObject(0);
                         JSONObject params = data.getJSONObject("params");
                         JSONObject content = data.getJSONArray("content").getJSONObject(0);
-
                         if (content.has("cnt_id")) {
                             String cnt_id = content.getString("cnt_id");
                             if (cnt_id.isEmpty()) {

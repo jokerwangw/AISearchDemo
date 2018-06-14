@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.cmcc.cmvideo.R;
 import com.cmcc.cmvideo.base.BaseRecyclerAdapter;
 import com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView;
+import com.cmcc.cmvideo.search.JsonViewActivity;
 import com.cmcc.cmvideo.search.LookMoreActivity;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
@@ -127,6 +128,14 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                     itemSearchByAiNormalViewHolder.imHead.setVisibility(View.INVISIBLE);
                     itemSearchByAiNormalViewHolder.tvMessageFromAI.setVisibility(View.GONE);
                     itemSearchByAiNormalViewHolder.tvMessageFromUser.setVisibility(View.VISIBLE);
+                    itemSearchByAiNormalViewHolder.tvMessageFromUser.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(mContext, JsonViewActivity.class);
+                            intent.putExtra(JsonViewActivity.KEY_JSON_SOURCE,searchByAIBean.getSource());
+                            mContext.startActivity(intent);
+                        }
+                    });
                     itemSearchByAiNormalViewHolder.tvMessageFromUser.setText(searchByAIBean.getMessage());
                 }
             } else if (holder instanceof ItemSearchByAICanAskAIViewHolder) {

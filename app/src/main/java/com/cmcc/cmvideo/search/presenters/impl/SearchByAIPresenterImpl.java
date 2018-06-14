@@ -181,11 +181,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         if (TextUtils.isEmpty(result))
             return;
         mData = gson.fromJson(result, NlpData.class);
-        String service = mData.service;
-        if (!AiuiConstants.VIEWCMD_SERVICE.equals(service)) {
-            Logger.debug("听写用户输入数据=====" + mData.text);
-            sendMessage(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
-        }
         if (mData.rc == 4) {
             //播报
             if ((System.currentTimeMillis() - startTime) > TIME_OUT) {
@@ -216,7 +211,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         if (null != mData.semantic) {
             intent = mData.semantic.get(0).getIntent();
         }
-
+        String service = mData.service;
         switch (service) {
             case AiuiConstants.QA_SERVICE:
                 //闲聊
@@ -486,7 +481,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 if (nlpData.data.lxresult.data.detailslist != null && nlpData.data.lxresult.data.detailslist.size() > 0) {
                     msg = lastResponseVideoTitle;
                 }
-                sendMessage(msg, messageType, MESSAGE_FROM_AI, nlpData.data.lxresult.data.detailslist);
+                sendMessage(msg, messageType, MESSAGE_FROM_AI, nlpData.data.lxresult.data.detailslist,null);
                 break;
             case AiuiConstants.HOTVIDEO_INTENT:
                 AiResponse.Response response = AiResponse.getInstance().getEveryoneSee();
@@ -502,7 +497,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 if (nlpData.data.lxresult.data.detailslist != null && nlpData.data.lxresult.data.detailslist.size() > 0) {
                     msg = lastResponseVideoTitle;
                 }
-                sendMessage(msg, MESSAGE_TYPE_EVERYONE_IS_WATCHING, MESSAGE_FROM_AI, nlpData.data.lxresult.data.detailslist);
+                sendMessage(msg, MESSAGE_TYPE_EVERYONE_IS_WATCHING, MESSAGE_FROM_AI, nlpData.data.lxresult.data.detailslist,null);
                 break;
         }
         if (responseTts != null) {
@@ -675,7 +670,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         } else {
                             //更新UI为筛选出的Video列表
                             lastVideoList = selectedVideoList;
-                            sendMessage("", lastResponseVideoMessageType, MESSAGE_FROM_AI, lastVideoList);
+                            sendMessage("", lastResponseVideoMessageType, MESSAGE_FROM_AI, lastVideoList,null);
                             aiuiService.tts("为你找到" + selectedVideoList.size() + "个结果", null);
                         }
 
@@ -684,11 +679,26 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             }
         }
     }
-
+    private String nlp = "";
     @Override
     public void onResult(String iatResult, String nlpReslult, String tppResult) {
         //onIatResult(iatResult);
         if (!aiuiService.isLookMorePageData()) {
+            String source ="";
+            if(!TextUtils.isEmpty(nlpReslult)) {
+                NlpData nlpData = gson.fromJson(nlpReslult, NlpData.class);
+                if((nlpData.rc!=4&&!AiuiConstants.VIEWCMD_SERVICE.equals(nlpData.service))||(nlpData.rc==4&&"video".equals(nlpData.service))){
+                    sendMessage(nlpData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER,nlpReslult);
+                }
+            }
+            if(!TextUtils.isEmpty(tppResult)) {
+                NlpData nlpData = gson.fromJson(tppResult, NlpData.class);
+                if(nlpData.rc!=4
+                        &&"video".equals(nlpData.service)
+                        &&!AiuiConstants.VIEWCMD_SERVICE.equals(nlpData.service)){
+                    sendMessage(nlpData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER,tppResult);
+                }
+            }
             onNlpResult(nlpReslult);
             onTppResult(tppResult);
         }
@@ -787,7 +797,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         }
         return map;
     }
-
     /**
      * 发送消息更新UI
      *
@@ -796,7 +805,17 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
      * @param msgFrom     消息来源，
      */
     private void sendMessage(String msg, int messageType, String msgFrom) {
-        sendMessage(msg, messageType, msgFrom, null);
+        sendMessage(msg, messageType, msgFrom, null,null);
+    }
+    /**
+     * 发送消息更新UI
+     *
+     * @param msg         消息内容
+     * @param messageType 消息内容（普通闲聊内容，影片内容）
+     * @param msgFrom     消息来源，
+     */
+    private void sendMessage(String msg, int messageType, String msgFrom,String soruce) {
+        sendMessage(msg, messageType, msgFrom, null,soruce);
     }
 
     /**
@@ -807,7 +826,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
      * @param msgFrom     消息来源，
      * @param videoList   影片内容影片数据，
      */
-    private void sendMessage(String msg, int messageType, String msgFrom, List<TppData.DetailsListBean> videoList) {
+    private void sendMessage(String msg, int messageType, String msgFrom, List<TppData.DetailsListBean> videoList,String soruce) {
         if (videoList != null && videoList.size() > 0) {
             lastResponseVideoMessageType = messageType;
             lastVideoList = videoList;
@@ -823,6 +842,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
         SearchByAIBean searchByAIBean = new SearchByAIBean(msg, messageType, msgFrom, videoList);
         searchByAIBean.setSpeechText(lastRequestVideoText);
+        searchByAIBean.setSource(soruce);
         messageList.add(searchByAIBean);
         EventBus.getDefault().post(new SearchByAIEventBean(messageList));
     }

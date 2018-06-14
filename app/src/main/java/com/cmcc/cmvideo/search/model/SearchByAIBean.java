@@ -11,6 +11,7 @@ import java.util.List;
 
 public class SearchByAIBean {
     private String message;
+    private String source;
     private String speechText;
     private int messageType;
     private String messageFrom;
@@ -43,6 +44,14 @@ public class SearchByAIBean {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 
     public int getMessageType() {
