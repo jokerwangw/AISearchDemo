@@ -6,46 +6,33 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.AssetManager;
-import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.os.Binder;
-import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Base64;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.cmcc.cmvideo.search.aiui.bean.IatBean;
 import com.cmcc.cmvideo.search.aiui.bean.MicBean;
-import com.cmcc.cmvideo.search.aiui.bean.NlpData;
-import com.cmcc.cmvideo.util.PlayerManager;
+import com.cmcc.cmvideo.util.LogUtil;
 import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIAgent;
 import com.iflytek.aiui.AIUIConstant;
 import com.iflytek.aiui.AIUIEvent;
 import com.iflytek.aiui.AIUIListener;
 import com.iflytek.aiui.AIUIMessage;
-import com.iflytek.cloud.InitListener;
-import com.iflytek.cloud.SpeechConstant;
-import com.iflytek.cloud.SpeechError;
-import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.SynthesizerListener;
 
 import org.greenrobot.eventbus.EventBus;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +50,7 @@ public class AIUIService extends Service {
     private boolean hasSetLookMorePageSize = false;
     private boolean hasSyncData = false;
     private boolean hasClearData = false;
-    private boolean hasCancelRecordAudio =false;
+    private boolean hasCancelRecordAudio = false;
 
     @Override
     public void onCreate() {
@@ -172,9 +159,10 @@ public class AIUIService extends Service {
 
         @Override
         public void startRecordAudio() {
-            if(!isIvwModel) {
+            if (!isIvwModel) {
                 hasCancelRecordAudio = false;
-                if(hasSetLookMorePageSize) {
+                if (hasSetLookMorePageSize) {
+
                     setPageInfo("1", "3");
                     hasSetLookMorePageSize = false;
                 }
@@ -184,7 +172,7 @@ public class AIUIService extends Service {
 
         @Override
         public void stopRecordAudio() {
-            if(!isIvwModel) {
+            if (!isIvwModel) {
                 sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
             }
         }
@@ -233,19 +221,20 @@ public class AIUIService extends Service {
         private String lookMoreText;
         private int pageIndex;
         private int pageSize;
+
         @Override
-        public void getLookMorePage(final String lookMoreText,final int pageIndex,final int pageSize) {
+        public void getLookMorePage(final String lookMoreText, final int pageIndex, final int pageSize) {
             this.lookMoreText = lookMoreText;
             this.pageIndex = pageIndex;
             this.pageSize = pageSize;
             hasSetLookMorePageSize = true;
-            if(hasSyncData) {
+            if (hasSyncData) {
                 //如果有同步所见即可说数据先要清除数据，避免lookMoreText中带了上一次查找的内容而干扰结果返回
                 //同时由于clearSpeakableData 是异步的，所以在清楚数据后的getPage在EVENT_CMD_RETURN事件（即清除成功返回）中执行
                 AIUIService.this.clearSpeakableData();
                 hasSyncData = false;
                 hasClearData = true;
-            }else {
+            } else {
                 getPage();
             }
         }
@@ -261,8 +250,8 @@ public class AIUIService extends Service {
             stopRecordAudio();
         }
 
-        public void getPage(){
-            setPageInfo(pageIndex+"",pageSize+"");
+        public void getPage() {
+            setPageInfo(pageIndex + "", pageSize + "");
             String params = "data_type=text";
             byte[] textData = lookMoreText.getBytes();
             AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, params, textData);
@@ -276,7 +265,7 @@ public class AIUIService extends Service {
         public void onEvent(AIUIEvent event) {
             switch (event.eventType) {
                 case AIUIConstant.EVENT_RESULT: {
-                    if(hasCancelRecordAudio) return;
+                    if (hasCancelRecordAudio) return;
                     try {
                         JSONObject bizParamJson = new JSONObject(event.info);
                         JSONObject data = bizParamJson.getJSONArray("data").getJSONObject(0);
@@ -313,6 +302,7 @@ public class AIUIService extends Service {
                                     String resultStr = cntJson.optString("intent");
                                     if (resultStr.equals("{}")) return;
                                     String jsonResultStr = cntJson.toString();
+                                    LogUtil.e("TPP===", resultStr);
                                     Logger.debug("TPP 【" + jsonResultStr + "】");
                                     eventListenerManager.onResult(null, null, jsonResultStr);
                                 }
@@ -350,7 +340,7 @@ public class AIUIService extends Service {
                                     effectDynamicEntity();
                                     break;
                                 case AIUIConstant.SYNC_DATA_STATUS:
-                                    if(hasClearData){
+                                    if (hasClearData) {
                                         Logger.debug("清除所见即可说数据成功");
                                         aiuiService.getPage();
                                         hasClearData = false;
@@ -385,19 +375,21 @@ public class AIUIService extends Service {
         Logger.debug("合成参数【" + params.toString() + "】");
         sendMessage(new AIUIMessage(AIUIConstant.CMD_TTS, AIUIConstant.START, 0, params.toString(), ttsData));
     }
+
     //设置页码
-    private void setPageInfo(String pageIndex,String pageSize){
+    private void setPageInfo(String pageIndex, String pageSize) {
         try {
             JSONObject objectJson = new JSONObject();
             JSONObject paramJson = new JSONObject();
-            paramJson.put("pageindex",pageIndex);
-            paramJson.put("pagesize",pageSize);
+            paramJson.put("pageindex", pageIndex);
+            paramJson.put("pagesize", pageSize);
             objectJson.put("userparams", paramJson);
             sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
+
     //生效动态实体
     public void effectDynamicEntity() {
         try {

@@ -2,10 +2,7 @@ package com.cmcc.cmvideo.search.presenters.impl;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.os.Bundle;
 import android.os.Looper;
-import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -15,7 +12,6 @@ import com.cmcc.cmvideo.base.Executor;
 import com.cmcc.cmvideo.base.MainThread;
 import com.cmcc.cmvideo.search.LookMoreActivity;
 import com.cmcc.cmvideo.search.aiui.AIUIService;
-import com.cmcc.cmvideo.search.aiui.FuncAdapter;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.aiui.Logger;
 import com.cmcc.cmvideo.search.aiui.bean.MicBean;
@@ -33,7 +29,6 @@ import com.cmcc.cmvideo.search.model.SearchByAIRefreshUIEventBean;
 import com.cmcc.cmvideo.search.presenters.SearchByAIPresenter;
 import com.cmcc.cmvideo.util.AiResponse;
 import com.cmcc.cmvideo.util.AiuiConstants;
-import com.cmcc.cmvideo.util.FileUtil;
 import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIConstant;
 import com.iflytek.aiui.AIUIEvent;
@@ -41,14 +36,11 @@ import com.iflytek.aiui.AIUIEvent;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import static com.cmcc.cmvideo.util.Constants.*;
 
