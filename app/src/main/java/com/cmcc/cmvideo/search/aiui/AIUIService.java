@@ -302,7 +302,7 @@ public class AIUIService extends Service {
                                     String resultStr = cntJson.optString("intent");
                                     if (resultStr.equals("{}")) return;
                                     String jsonResultStr = cntJson.toString();
-                                    LogUtil.e("TPP===", resultStr);
+//                                    LogUtil.e("TPP===", resultStr);
                                     Logger.debug("TPP 【" + jsonResultStr + "】");
                                     eventListenerManager.onResult(null, null, jsonResultStr);
                                 }
