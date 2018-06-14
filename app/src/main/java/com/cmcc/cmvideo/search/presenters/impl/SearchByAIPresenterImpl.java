@@ -36,9 +36,12 @@ import com.iflytek.aiui.AIUIEvent;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +67,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private int lastResponseVideoMessageType = MESSAGE_TYPE_NORMAL;
     private String lastResponseVideoTitle = "";
     private String lastRequestVideoText = "";
+    //最后一次语义的状态
+    private String lastNlpState = "";
 
     private int mCurrentState = AIUIConstant.STATE_IDLE;
     //是否是在投屏状态或者插入耳机状态
@@ -190,6 +195,22 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 aiuiService.tts(AiuiConstants.ERROR_MESSAGE, null);
             }
             return;
+        }
+
+        try {
+            //解析出当前语义状态，以便上传同步客户端状态，实现多伦对话
+            JSONObject jsonObject = new JSONObject(result);
+            if(jsonObject.has("state")){
+                JSONObject stateObj = jsonObject.getJSONObject("state");
+                Iterator<String> keysIterator = stateObj.keys();
+                while (keysIterator.hasNext()){
+                    lastNlpState = keysIterator.next();
+                    Logger.debug("lastNlpState 【"+lastNlpState+"】");
+                }
+            }
+            aiuiService.syncSpeakableData(lastNlpState,"");
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
         if (null != mData.semantic) {
@@ -797,7 +818,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             }
             hotInfo = hotInfo.substring(0, hotInfo.lastIndexOf("|"));
             Logger.debug("所见即可说同步数据【" + hotInfo + "】");
-            aiuiService.syncSpeakableData(hotInfo);
+            aiuiService.syncSpeakableData(lastNlpState,hotInfo);
         }
         List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
         SearchByAIBean searchByAIBean = new SearchByAIBean(msg, messageType, msgFrom, videoList);
