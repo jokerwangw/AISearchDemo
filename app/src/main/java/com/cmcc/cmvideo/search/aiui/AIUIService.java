@@ -33,6 +33,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -50,13 +51,13 @@ public class AIUIService extends Service {
     private boolean hasSyncData = false;
     private boolean hasClearData = false;
     private boolean hasCancelRecordAudio = false;
-
     @Override
     public void onCreate() {
         super.onCreate();
         aiuiService = new AIUIServiceImpl();
         eventListenerManager = new AIUIEventListenerManager();
         init();
+        Logger.debug("AIUIService has onCreated!");
     }
 
     @Override
@@ -67,6 +68,7 @@ public class AIUIService extends Service {
             unregisterReceiver(mReceiver);
         }
         super.onDestroy();
+        Logger.debug("AIUIService has onDestroy!");
     }
 
     /**
@@ -152,7 +154,7 @@ public class AIUIService extends Service {
 
     private class AIUIServiceImpl extends Binder implements IAIUIService {
         @Override
-        public void tts(String ttsText, SynthesizerListener synthesizerListener) {
+        public void tts(String ttsText) {
             AIUIService.this.tts(ttsText);
         }
 
@@ -239,6 +241,14 @@ public class AIUIService extends Service {
         }
 
         @Override
+        public void textUnderstander(String text) {
+            String params = "data_type=text";
+            byte[] textData = text.getBytes();
+            AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, params, textData);
+            sendMessage(msg);
+        }
+
+        @Override
         public boolean isLookMorePageData() {
             return hasSetLookMorePageSize;
         }
@@ -315,16 +325,17 @@ public class AIUIService extends Service {
                     Logger.debug("CMD_START_RECORD===========");
                     break;
                 case AIUIConstant.EVENT_ERROR:
-                    Logger.debug("EVENT_ERROR===========" + event.arg1 + "  " + event.info);
+//                    Logger.debug("EVENT_ERROR===========" + event.arg1 + "  " + event.info);
                     break;
                 case AIUIConstant.EVENT_WAKEUP:
-                    Logger.debug("EVENT_WAKEUP==========arg1【" + event.arg1 + "】arg2【" + event.arg2 + "】info【" + event.info + "】");
+//                    Logger.debug("EVENT_WAKEUP==========arg1【" + event.arg1 + "】arg2【" + event.arg2 + "】info【" + event.info + "】");
                     break;
                 case AIUIConstant.EVENT_SLEEP:
                     Logger.debug("EVENT_SLEEP===========");
                     break;
                 case AIUIConstant.EVENT_STATE:
                     mCurrentState = event.arg1;
+                    Logger.debug("state is 【"+mCurrentState+"】");
                     break;
                 case AIUIConstant.EVENT_CMD_RETURN:
                     AIUIEvent event1 = event;
@@ -335,16 +346,19 @@ public class AIUIService extends Service {
                             Logger.debug("sync_dtype is " + dtype);
                             switch (dtype) {
                                 case AIUIConstant.SYNC_DATA_SPEAKABLE:
+                                    Logger.debug("SYNC_DATA_SPEAKABLE 生效");
                                     effectDynamicEntity();
                                     break;
                                 case AIUIConstant.SYNC_DATA_STATUS:
+                                    Logger.debug("同步所见即可说数据成功");
                                     if (hasClearData) {
-                                        Logger.debug("清除所见即可说数据成功");
                                         aiuiService.getPage();
                                         hasClearData = false;
                                     }
                                     break;
                             }
+                        }else {
+                            Logger.debug(event.info);
                         }
                     }
                 default:
@@ -404,17 +418,25 @@ public class AIUIService extends Service {
     //清除所见即可说
     public void clearSpeakableData() {
         try {
-            if (mAIUIAgent != null) {
-                //确保AIUI处于唤醒状态
-                if (mCurrentState != AIUIConstant.STATE_WORKING) {
-                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
-                }
-                String params = "{\"viewCmd::default\":{\"activeStatus\":\"bg\",\"data\":{\"hotInfo\":{}},\"sceneStatus\":\"\"}}";
-                byte[] syncData = params.getBytes("utf-8");
-
-                AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC, AIUIConstant.SYNC_DATA_STATUS, 0, params, syncData);
-                mAIUIAgent.sendMessage(syncAthenaMessage);
-            }
+            JSONObject data = new JSONObject();
+            JSONObject state = new JSONObject();
+            state.put("activeStatus","fg");
+            state.put("sceneStatus","default");
+            data.put("video::default",state);
+            JSONObject viewCmd = new JSONObject();
+            viewCmd.put("activeStatus","bg");
+            viewCmd.put("sceneStatus","default");
+            JSONObject viewCmdData = new JSONObject();
+            JSONObject viewCmdHotInfo = new JSONObject();
+            viewCmdHotInfo.put("viewCmd","");
+            viewCmdData.put("hotInfo",viewCmdHotInfo);
+            viewCmd.put("data",viewCmdData);
+            data.put("viewCmd::default",viewCmd);
+            String params = data.toString();
+            byte[] syncData = params.getBytes("utf-8");
+            AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC, AIUIConstant.SYNC_DATA_STATUS, 0, params, syncData);
+            sendMessage(syncAthenaMessage);
+            Logger.debug("删除状态数据【"+data.toString()+"】");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -449,7 +471,7 @@ public class AIUIService extends Service {
             AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC, AIUIConstant.SYNC_DATA_STATUS, 0, params, syncData);
             mAIUIAgent.sendMessage(syncAthenaMessage);
             hasSyncData = true;
-            Logger.debug("已同步状态数据【"+data.toString()+"】");
+            Logger.debug("同步状态数据【"+data.toString()+"】");
         } catch (Exception e) {
             e.printStackTrace();
         }

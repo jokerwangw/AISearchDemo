@@ -13,6 +13,7 @@
         android:orientation="vertical">
 
         <RelativeLayout
+            android:id="@+id/rl_item1"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/dimen_35dp"
             android:layout_gravity="center_horizontal"
@@ -41,6 +42,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rl_item2"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/dimen_35dp"
             android:layout_gravity="center_horizontal"
@@ -69,6 +71,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rl_item3"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/dimen_35dp"
             android:layout_gravity="center_horizontal"
@@ -97,6 +100,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rl_item4"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/dimen_35dp"
             android:layout_gravity="center_horizontal"
@@ -125,6 +129,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rl_item5"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/dimen_35dp"
             android:layout_gravity="center_horizontal"
