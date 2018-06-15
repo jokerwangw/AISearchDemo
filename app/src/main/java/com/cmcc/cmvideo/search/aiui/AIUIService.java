@@ -239,6 +239,14 @@ public class AIUIService extends Service {
         }
 
         @Override
+        public void textUnderstander(String text) {
+            String params = "data_type=text";
+            byte[] textData = text.getBytes();
+            AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, params, textData);
+            sendMessage(msg);
+        }
+
+        @Override
         public boolean isLookMorePageData() {
             return hasSetLookMorePageSize;
         }

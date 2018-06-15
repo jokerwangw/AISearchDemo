@@ -129,7 +129,8 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private ItemSearchByAIClickListener itemSearchByAIClickListener = new ItemSearchByAIClickListener() {
         @Override
         public void clickItemSearchByAICanAskAI(String recommendText) {
-            Toast.makeText(mContext, recommendText, Toast.LENGTH_SHORT).show();
+            if(aiuiService!=null)
+                aiuiService.textUnderstander(recommendText);
         }
 
         @Override
