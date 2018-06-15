@@ -5,7 +5,11 @@ import com.iflytek.cloud.SynthesizerListener;
 import java.util.Map;
 
 public interface IAIUIService {
-    void tts(String ttsText, SynthesizerListener synthesizerListener);
+    /**
+     * 语音合成
+     * @param ttsText 要合成的文本
+     */
+    void tts(String ttsText);
     void startRecordAudio();
     void stopRecordAudio();
     void addAIUIEventListener(AIUIService.AIUIEventListener resultDispatchListener);

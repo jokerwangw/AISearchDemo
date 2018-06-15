@@ -191,7 +191,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 // 超过5秒表示 且rc=4（无法解析出语义） ，可显示推荐说法卡片
                 sendMessage("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI);
             } else {
-                aiuiService.tts(AiuiConstants.ERROR_MESSAGE, null);
+                aiuiService.tts(AiuiConstants.ERROR_MESSAGE);
             }
             return;
         }
@@ -405,7 +405,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             if (nlpData.answer != null
                     && !TextUtils.isEmpty(nlpData.answer.text)) {
                 //没有影片数据且存在answer 则播报
-                aiuiService.tts(nlpData.answer.text, null);
+                aiuiService.tts(nlpData.answer.text);
                 sendMessage(nlpData.answer.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
             }
             return;
@@ -482,7 +482,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 if (messageType == MESSAGE_TYPE_NORMAL
                         && nlpData.answer != null
                         && !TextUtils.isEmpty(nlpData.answer.text)) {
-                    aiuiService.tts(nlpData.answer.text, null);
+                    aiuiService.tts(nlpData.answer.text);
                 }
                 if (nlpData.data.lxresult.data.detailslist != null && nlpData.data.lxresult.data.detailslist.size() > 0) {
                     msg = lastResponseVideoTitle;
@@ -507,7 +507,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 break;
         }
         if (responseTts != null) {
-            aiuiService.tts(responseTts.response, null);
+            aiuiService.tts(responseTts.response);
         }
     }
 
@@ -604,12 +604,12 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         switch (intent) {
             case AiuiConstants.CONTROL_INTENT:
                 // TODO: 2018/5/30 控制指令跳转
-                aiuiService.tts("正在为您" + mData.text, null);
+                aiuiService.tts("正在为您" + mData.text);
                 break;
             case AiuiConstants.SREEN_INTENT:
                 // TODO: 2018/5/30 投屏跳转
                 isAvailableVideo = true;
-                aiuiService.tts("正在为您" + mData.text, null);
+                aiuiService.tts("正在为您" + mData.text);
                 break;
         }
 
@@ -621,7 +621,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private void intentQa(String nlpHandle) {
         NlpData nlpData = gson.fromJson(nlpHandle, NlpData.class);
         if ((nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text))) {
-            aiuiService.tts(nlpData.getAnswer().text, null);
+            aiuiService.tts(nlpData.getAnswer().text);
             sendMessage(nlpData.getAnswer().text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
         }
     }
@@ -672,12 +672,12 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                             return;
                         if (selectedVideoList.size() == 1) {
                             //TODO 打开当前影片
-                            aiuiService.tts("正在为你打开," + selectedVideoList.get(0).name, null);
+                            aiuiService.tts("正在为你打开," + selectedVideoList.get(0).name);
                         } else {
                             //更新UI为筛选出的Video列表
                             lastVideoList = selectedVideoList;
                             sendMessage("", lastResponseVideoMessageType, MESSAGE_FROM_AI, lastVideoList);
-                            aiuiService.tts("为你找到" + selectedVideoList.size() + "个结果", null);
+                            aiuiService.tts("为你找到" + selectedVideoList.size() + "个结果");
                         }
 
                         break;

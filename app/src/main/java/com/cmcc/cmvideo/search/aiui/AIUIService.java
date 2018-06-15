@@ -152,7 +152,7 @@ public class AIUIService extends Service {
 
     private class AIUIServiceImpl extends Binder implements IAIUIService {
         @Override
-        public void tts(String ttsText, SynthesizerListener synthesizerListener) {
+        public void tts(String ttsText) {
             AIUIService.this.tts(ttsText);
         }
 
