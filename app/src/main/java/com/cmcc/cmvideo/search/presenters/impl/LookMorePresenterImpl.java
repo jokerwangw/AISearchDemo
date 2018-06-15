@@ -59,7 +59,7 @@ public class LookMorePresenterImpl extends AbstractPresenter implements AIUIServ
         aiuiService = service;
         aiuiService.addAIUIEventListener(this);
         if (!TextUtils.isEmpty(speechText)) {
-            aiuiService.getLookMorePage(speechText, 1, Integer.MAX_VALUE);
+            aiuiService.getLookMorePage(speechText, 1, 100);
         }
     }
 
