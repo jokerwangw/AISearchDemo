@@ -400,7 +400,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         if (
                 nlpData.data == null
                         || nlpData.data.lxresult == null
-                        || nlpData.data.lxresult.data.detailslist.size() == 0) {
+                        || nlpData.data.lxresult.data.detailslist.size() == 0
+                        || !nlpData.data.lxresult.code.equals("000000")
+                ) {
             if (nlpData.answer != null
                     && !TextUtils.isEmpty(nlpData.answer.text)) {
                 //没有影片数据且存在answer 则播报
