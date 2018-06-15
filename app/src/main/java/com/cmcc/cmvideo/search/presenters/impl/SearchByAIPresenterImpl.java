@@ -90,12 +90,10 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void stop() {
-
     }
 
     @Override
@@ -106,7 +104,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     @Override
     public void onError(String message) {
-
     }
 
     /**

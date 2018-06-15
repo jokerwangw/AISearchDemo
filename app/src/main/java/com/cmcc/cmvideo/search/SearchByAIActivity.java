@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cmcc.cmvideo.R;
 import com.cmcc.cmvideo.base.MainThreadImpl;
@@ -29,6 +30,7 @@ import com.cmcc.cmvideo.search.aiui.AIUIService;
 import com.cmcc.cmvideo.search.aiui.FuncAdapter;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.aiui.Logger;
+import com.cmcc.cmvideo.search.interactors.ItemSearchByAIClickListener;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
 import com.cmcc.cmvideo.search.model.SearchByAIRefreshUIEventBean;
@@ -112,7 +114,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     }
 
     private void initCustomView() {
-        mSearchByAIAdapter = new SearchByAIAdapter(mContext);
+        mSearchByAIAdapter = new SearchByAIAdapter(mContext, itemSearchByAIClickListener);
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mSearchRecyclerView.setHasFixedSize(true);
@@ -120,6 +122,48 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         mSearchRecyclerView.setAdapter(mSearchByAIAdapter);
         btSearchVoiceInput.setOnTouchListener(onTouchListener);
     }
+
+    /**
+     * 点击不同条目对应的点击事件
+     */
+    private ItemSearchByAIClickListener itemSearchByAIClickListener = new ItemSearchByAIClickListener() {
+        @Override
+        public void clickItemSearchByAICanAskAI(String recommendText) {
+            Toast.makeText(mContext, recommendText, Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void clickItemSearchByAIAppointment() {
+        }
+
+        @Override
+        public void clickItemSearchByAIEveryoneISWatching(String speechText, String titleText) {
+            Intent intent = new Intent(mContext, LookMoreActivity.class);
+            intent.putExtra(LookMoreActivity.KEY_MORE_DATE_SPEECH_TEXT, speechText);
+            intent.putExtra(LookMoreActivity.KEY_TITLE, titleText);
+            startActivity(intent);
+        }
+
+        @Override
+        public void clickItemSearchByAIIWantTOSee() {
+        }
+
+        @Override
+        public void clickItemSearchByAIGuessWhatYouLike() {
+        }
+
+        @Override
+        public void clickItemSearchByAIGuessWhatYouLikeListHorizontal() {
+        }
+
+        @Override
+        public void clickItemSearchByAIGuessWhatYouLikeListVertical() {
+        }
+
+        @Override
+        public void clickItemSearchByAITheLatestVideo() {
+        }
+    };
 
     private View.OnTouchListener onTouchListener = new View.OnTouchListener() {
         @Override
@@ -394,13 +438,41 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (null != mSearchByAIPresenter) {
+            mSearchByAIPresenter.resume();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (null != mSearchByAIPresenter) {
+            mSearchByAIPresenter.pause();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (null != mSearchByAIPresenter) {
+            mSearchByAIPresenter.stop();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(connection);
+        if (null != connection) {
+            unbindService(connection);
+        }
+        if (null != mSearchByAIPresenter) {
+            mSearchByAIPresenter.destroy();
+        }
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
-        mSearchByAIPresenter.destroy();
     }
 
     @Override
