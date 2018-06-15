@@ -190,9 +190,13 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         if (null != mData && null != mData.moreResults) {
             mData = mData.moreResults.get(0);
             if (("video".equals(mData.service))) {
+                if (AiuiConstants.VIEWCMD_SERVICE.equals(service)){
+                    sendMessage(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
+                }
                 return;
             }
         }
+//
 
 
         if (mData.rc == 4) {
@@ -724,21 +728,21 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     case AIUIConstant.TTS_SPEAK_BEGIN:
                         // 停止后台音频播放
                         mView.requestAudioFocus();
-                        Logger.debug("开始播报");
+                        Logger.debug("+++++++++++++++开始播报");
                         break;
                     case AIUIConstant.TTS_SPEAK_PROGRESS:
-                        Logger.debug(" 播报进度为" + event.data.getInt("percent"));     // 播放进度
+//                        Logger.debug(" 播报进度为" + event.data.getInt("percent"));     // 播放进度
                         break;
                     case AIUIConstant.TTS_SPEAK_PAUSED:
-                        Logger.debug("暂停播报");
+                        Logger.debug("+++++++++++++++++暂停播报");
                         break;
                     case AIUIConstant.TTS_SPEAK_RESUMED:
-                        Logger.debug("恢复播报");
+                        Logger.debug("++++++++++++++++++恢复播报");
                         break;
                     case AIUIConstant.TTS_SPEAK_COMPLETED:
                         // 开启后台音频播放
                         mView.abandonAudioFocus();
-                        Logger.debug("播报完成");
+                        Logger.debug("+++++++++++++++播报完成");
                         break;
 
                     default:
@@ -756,7 +760,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             case AIUIConstant.EVENT_STOP_RECORD:
                 break;
             case AIUIConstant.EVENT_VAD:
-                Logger.debug("arg【" + event.arg1 + "】【" + event.arg2 + "】");
+//                Logger.debug("arg【" + event.arg1 + "】【" + event.arg2 + "】");
                 //用arg1标识前后端点或者音量信息:0(前端点)、1(音量)、2(后端点)、3（前端点超时）。
                 //当arg1取值为1时，arg2为音量大小。
                 if (event.arg1 == 0) {
