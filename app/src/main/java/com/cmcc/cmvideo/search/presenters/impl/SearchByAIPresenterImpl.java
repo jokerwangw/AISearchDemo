@@ -2,6 +2,7 @@ package com.cmcc.cmvideo.search.presenters.impl;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
@@ -147,8 +148,14 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         aiuiService.addAIUIEventListener(this);
         //上传用户数据
         aiuiService.setUserParam(map);
-        //清理所见即可说的数据
-        aiuiService.clearSpeakableData();
+        //TODO  暂时就这么做吧
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //清理所见即可说的数据
+                aiuiService.clearSpeakableData();
+            }
+        },500);
     }
 
     @Override

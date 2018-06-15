@@ -22,7 +22,6 @@ public interface IAIUIService {
      */
     void stopRecordAudio();
 
-
     /**
      * 取消录音（实际音频是上传的，只是返回结果被忽略）
      */
