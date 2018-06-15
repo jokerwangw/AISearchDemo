@@ -326,10 +326,10 @@ public class AIUIService extends Service {
                     Logger.debug("CMD_START_RECORD===========");
                     break;
                 case AIUIConstant.EVENT_ERROR:
-                    Logger.debug("EVENT_ERROR===========" + event.arg1 + "  " + event.info);
+//                    Logger.debug("EVENT_ERROR===========" + event.arg1 + "  " + event.info);
                     break;
                 case AIUIConstant.EVENT_WAKEUP:
-                    Logger.debug("EVENT_WAKEUP==========arg1【" + event.arg1 + "】arg2【" + event.arg2 + "】info【" + event.info + "】");
+//                    Logger.debug("EVENT_WAKEUP==========arg1【" + event.arg1 + "】arg2【" + event.arg2 + "】info【" + event.info + "】");
                     break;
                 case AIUIConstant.EVENT_SLEEP:
                     Logger.debug("EVENT_SLEEP===========");

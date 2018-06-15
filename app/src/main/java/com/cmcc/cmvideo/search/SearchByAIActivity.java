@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.AssetManager;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -83,6 +84,8 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     TextView tvSlideCancelSearch;
     @BindView(R.id.tv_release_finger_cancel_search)
     TextView tvReleaseFingerCancelSearch;
+    @BindView(R.id.v_spekaker)
+    View vSpekaker;
     private final String TAG = "SearchByAIActivity";
     private SearchByAIPresenterImpl mSearchByAIPresenter;
     private Context mContext;
@@ -91,6 +94,9 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private long downTime = 0;
     private long upTime = 0;
     private float downY = 0;
+    private boolean isOpenSpeaker = false;
+    private AudioManager audioManager = null;
+    private int currVolume = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -98,22 +104,11 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         mContext = this;
         setContentView(R.layout.activity_search_by_ai);
         ButterKnife.bind(this);
+        initView();
         initData();
     }
 
-    private void initData() {
-        mSearchByAIPresenter = new SearchByAIPresenterImpl(
-                ThreadExecutor.getInstance(),
-                MainThreadImpl.getInstance(),
-                this,
-                this);
-        bindService(new Intent(this, AIUIService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
-        initCustomView();
-        mSearchByAIPresenter.initListSearchItem();
-
-    }
-
-    private void initCustomView() {
+    private void initView() {
         mSearchByAIAdapter = new SearchByAIAdapter(mContext, itemSearchByAIClickListener);
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -123,13 +118,27 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         btSearchVoiceInput.setOnTouchListener(onTouchListener);
     }
 
+    private void initData() {
+        mSearchByAIPresenter = new SearchByAIPresenterImpl(
+                ThreadExecutor.getInstance(),
+                MainThreadImpl.getInstance(),
+                this,
+                this);
+
+        bindService(new Intent(this, AIUIService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
+        mSearchByAIPresenter.initListSearchItem();
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        isOpenSpeaker = audioManager.isSpeakerphoneOn();
+        vSpekaker.setVisibility(isOpenSpeaker ? View.VISIBLE : View.GONE);
+    }
+
     /**
      * 点击不同条目对应的点击事件
      */
     private ItemSearchByAIClickListener itemSearchByAIClickListener = new ItemSearchByAIClickListener() {
         @Override
         public void clickItemSearchByAICanAskAI(String recommendText) {
-            if(aiuiService!=null)
+            if (aiuiService != null)
                 aiuiService.textUnderstander(recommendText);
         }
 
@@ -268,6 +277,36 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     @OnClick(R.id.bt_title_close)
     public void clickTitleClose() {
         finish();
+    }
+
+    /**
+     * 扬声器
+     */
+    @OnClick(R.id.bt_title_voice)
+    public void clickOpenSpeaker() {
+        try {
+            if (isOpenSpeaker) {
+                //关闭扬声器
+                if (audioManager != null) {
+                    audioManager.setSpeakerphoneOn(false);
+                    audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, currVolume, AudioManager.STREAM_VOICE_CALL);
+                }
+            } else {
+                //打开扬声器
+                if (audioManager != null) {
+                    audioManager.setMode(AudioManager.ROUTE_SPEAKER);
+                    currVolume = audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL);
+                    //setSpeakerphoneOn() only work when audio mode set to MODE_IN_CALL.
+                    audioManager.setMode(AudioManager.MODE_IN_CALL);
+                    audioManager.setSpeakerphoneOn(true);
+                    audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL), AudioManager.STREAM_VOICE_CALL);
+                }
+            }
+            isOpenSpeaker = !isOpenSpeaker;
+            vSpekaker.setVisibility(isOpenSpeaker ? View.VISIBLE : View.GONE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
