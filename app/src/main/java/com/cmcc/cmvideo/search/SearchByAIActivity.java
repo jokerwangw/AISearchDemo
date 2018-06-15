@@ -400,6 +400,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
+        mSearchByAIPresenter.destroy();
     }
 
     @Override
@@ -413,4 +414,5 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     @Override
     public void showError(String message) {
     }
+
 }

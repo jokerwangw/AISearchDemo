@@ -90,10 +90,12 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     @Override
     public void pause() {
+
     }
 
     @Override
     public void stop() {
+
     }
 
     @Override
@@ -104,6 +106,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     @Override
     public void onError(String message) {
+
     }
 
     /**
@@ -173,7 +176,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     public void onIatResult(String result) {
         if (TextUtils.isEmpty(result))
             return;
-        Logger.debug("听写用户输入数据=====" + result);
         sendMessage(result, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
     }
 
@@ -195,15 +197,15 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         try {
             //解析出当前语义状态，以便上传同步客户端状态，实现多伦对话
             JSONObject jsonObject = new JSONObject(result);
-            if(jsonObject.has("state")){
+            if (jsonObject.has("state")) {
                 JSONObject stateObj = jsonObject.getJSONObject("state");
                 Iterator<String> keysIterator = stateObj.keys();
-                while (keysIterator.hasNext()){
+                while (keysIterator.hasNext()) {
                     lastNlpState = keysIterator.next();
-                    Logger.debug("lastNlpState 【"+lastNlpState+"】");
+                    Logger.debug("lastNlpState 【" + lastNlpState + "】");
                 }
             }
-            aiuiService.syncSpeakableData(lastNlpState,"");
+            aiuiService.syncSpeakableData(lastNlpState, "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -395,7 +397,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         if (
                 nlpData.data == null
                         || nlpData.data.lxresult == null
-                        || nlpData.data.lxresult.data.detailslist.size() == 0) {
+                        || nlpData.data.lxresult.data.detailslist.size() == 0
+                        || !nlpData.data.lxresult.code.equals("000000")
+                ) {
             if (nlpData.answer != null
                     && !TextUtils.isEmpty(nlpData.answer.text)) {
                 //没有影片数据且存在answer 则播报
@@ -837,7 +841,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             }
             hotInfo = hotInfo.substring(0, hotInfo.lastIndexOf("|"));
             Logger.debug("所见即可说同步数据【" + hotInfo + "】");
-            aiuiService.syncSpeakableData(lastNlpState,hotInfo);
+            aiuiService.syncSpeakableData(lastNlpState, hotInfo);
         }
         List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
         SearchByAIBean searchByAIBean = new SearchByAIBean(msg, messageType, msgFrom, videoList);
