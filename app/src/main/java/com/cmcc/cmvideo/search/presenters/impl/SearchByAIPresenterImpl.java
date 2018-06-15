@@ -185,6 +185,16 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             Logger.debug("听写用户输入数据=====" + mData.text);
             sendMessage(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
         }
+
+        //如果包含moreResults且service是video则直接返回
+        if (null != mData && null != mData.moreResults) {
+            mData = mData.moreResults.get(0);
+            if (("video".equals(mData.service))) {
+                return;
+            }
+        }
+
+
         if (mData.rc == 4) {
             //播报
             if ((System.currentTimeMillis() - startTime) > TIME_OUT) {
