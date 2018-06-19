@@ -19,11 +19,7 @@ import com.cmcc.cmvideo.search.aiui.bean.MicBean;
 import com.cmcc.cmvideo.search.aiui.bean.NlpData;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.interactors.InitSearchByAIListInteractor;
-import com.cmcc.cmvideo.search.interactors.UpdateAIResponseListInteractor;
-import com.cmcc.cmvideo.search.interactors.UpdateUserRequestListInteractor;
 import com.cmcc.cmvideo.search.interactors.impl.InitSearchByAIListInteractorImpl;
-import com.cmcc.cmvideo.search.interactors.impl.UpdateAIResponseListInteractorImpl;
-import com.cmcc.cmvideo.search.interactors.impl.UpdateUserRequestListInteractorImpl;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
 import com.cmcc.cmvideo.search.model.SearchByAIRefreshUIEventBean;
@@ -53,8 +49,12 @@ import static com.cmcc.cmvideo.util.Constants.*;
  * Describe:
  */
 
-public class SearchByAIPresenterImpl extends AbstractPresenter implements SearchByAIPresenter, AIUIService.AIUIEventListener, InitSearchByAIListInteractor.Callback, UpdateUserRequestListInteractor.Callback, UpdateAIResponseListInteractor.Callback {
+public class SearchByAIPresenterImpl extends AbstractPresenter implements SearchByAIPresenter, AIUIService.AIUIEventListener, InitSearchByAIListInteractor.Callback {
     private final String TAG = "SearchByAIPresenterImpl";
+    private int lastResponseVideoMessageType = MESSAGE_TYPE_NORMAL;
+    private int mCurrentState = AIUIConstant.STATE_IDLE;
+    private long startTime = 0;
+    private final int TIME_OUT = 5000;
     private Context mContext;
     private SearchByAIPresenter.View mView;
     private IAIUIService aiuiService;
@@ -62,16 +62,11 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private String intent;
     private NlpData mData = null;
     private android.os.Handler mHandler;
-    private long startTime = 0;
-    private final int TIME_OUT = 5000;
     private List<TppData.DetailsListBean> lastVideoList = null;
-    private int lastResponseVideoMessageType = MESSAGE_TYPE_NORMAL;
     private String lastResponseVideoTitle = "";
     private String lastRequestVideoText = "";
     //最后一次语义的状态
     private String lastNlpState = "";
-
-    private int mCurrentState = AIUIConstant.STATE_IDLE;
     //是否是在投屏状态或者插入耳机状态
     private boolean isAvailableVideo = false;
 
@@ -82,7 +77,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         gson = new Gson();
         mHandler = new android.os.Handler(Looper.getMainLooper());
         EventBus.getDefault().register(this);
-
     }
 
     @Override
@@ -116,26 +110,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         initSearchByAIListInteractor.execute();
     }
 
-    /**
-     * 这里做用户发送请求数据的操作
-     */
-    @Override
-    public void updateUserRequestListItem() {
-        UpdateUserRequestListInteractor updateUserRequestListInteractor = new UpdateUserRequestListInteractorImpl(mExecutor, mMainThread, this);
-        updateUserRequestListInteractor.execute();
-    }
-
-    /**
-     * 这里做AI响应用户请求数据的操作
-     *
-     * @param order
-     */
-    @Override
-    public void updateAIResponseListItem(String order) {
-        UpdateAIResponseListInteractor updateAIResponseListInteractor = new UpdateAIResponseListInteractorImpl(mExecutor, mMainThread, order, this);
-        updateAIResponseListInteractor.execute();
-    }
-
     @Override
     public void setAIUIService(IAIUIService service) {
         isAvailableVideo = false;
@@ -155,7 +129,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 //清理所见即可说的数据
                 aiuiService.clearSpeakableData();
             }
-        },500);
+        }, 500);
     }
 
     @Override
@@ -163,29 +137,17 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         mView.showInitList(searchByAIBeanList);
     }
 
-
-    @Override
-    public void onUpdateUserRequestListData(List<SearchByAIBean> searchByAIBeanList) {
-        if (null != searchByAIBeanList && searchByAIBeanList.size() != 0) {
-            EventBus.getDefault().post(new SearchByAIEventBean(searchByAIBeanList));
-            updateAIResponseListItem(searchByAIBeanList.get(searchByAIBeanList.size() - 1).getMessage());
-        }
-    }
-
-    @Override
-    public void onUpdateAIResponseListData(List<SearchByAIBean> searchByAIBeanList) {
-        EventBus.getDefault().post(new SearchByAIEventBean(searchByAIBeanList));
-    }
-
     public void onIatResult(String result) {
-        if (TextUtils.isEmpty(result))
+        if (TextUtils.isEmpty(result)) {
             return;
+        }
         sendMessage(result, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
     }
 
-    public void onNlpResult(String result) {
-        if (TextUtils.isEmpty(result))
+    private void onNlpResult(String result) {
+        if (TextUtils.isEmpty(result)) {
             return;
+        }
         mData = gson.fromJson(result, NlpData.class);
         String service = mData.service;
         if (!AiuiConstants.VIEWCMD_SERVICE.equals(service)) {
@@ -193,15 +155,20 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             sendMessage(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
         }
 
-        //如果包含moreResults且service是video则直接返回
+        //如果包含moreResults且service是video则直接返回，如果是viewCmd则要发送消息
         if (null != mData && null != mData.moreResults) {
             mData = mData.moreResults.get(0);
             if (("video".equals(mData.service))) {
-                if (AiuiConstants.VIEWCMD_SERVICE.equals(service)){
+                Logger.debug("video=================++++++++++++++++++===================" + mData.service);
+                if (AiuiConstants.VIEWCMD_SERVICE.equals(service)) {
+                    Logger.debug("viewCmd=================--------------===================" + service);
                     sendMessage(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
+                } else {
+                    return;
                 }
-                return;
             }
+        } else {
+            Logger.debug("video====================================" + service);
         }
 
         if (mData.rc == 4) {
@@ -266,8 +233,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 //直播模块
                 intentOnLive(mData, intent);
                 break;
-
-
+            default:
+                break;
         }
 
     }
@@ -299,10 +266,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         intentToVerity(tx);
                     }
                 }
-
-
                 break;
-
+            default:
+                break;
         }
     }
 
@@ -341,6 +307,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             case AiuiConstants.SPORTS_TV:
                 Logger.debug("体育==========");
                 break;
+            default:
+                break;
         }
     }
 
@@ -349,12 +317,14 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     public void onMicEvent(MicBean event) {
         if (event.isConnect()) {
             isAvailableVideo = true;
-            if (BuildConfig.DEBUG)
+            if (BuildConfig.DEBUG) {
                 Log.d("aiui_log", "耳机接入");
+            }
         } else {
             isAvailableVideo = false;
-            if (BuildConfig.DEBUG)
+            if (BuildConfig.DEBUG) {
                 Log.d("aiui_log", "耳机未接入");
+            }
         }
     }
 
@@ -377,17 +347,16 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     case AiuiConstants.VIDEO_PLAY:
                         //播放
                         Logger.debug("播放===" + intent);
-
                         break;
                     case AiuiConstants.VIDEO_PREVIOUS:
                         //上一集
                         Logger.debug("上一集===" + intent);
-
                         break;
                     case AiuiConstants.VIDEO_NEXT:
                         //下一集
                         Logger.debug("下一集===" + intent);
-
+                        break;
+                    default:
                         break;
                 }
 
@@ -397,8 +366,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     }
 
     public void onTppResult(String result) {
-        if (TextUtils.isEmpty(result))
+        if (TextUtils.isEmpty(result)) {
             return;
+        }
         NlpData nlpData = gson.fromJson(result, NlpData.class);
         //判断是否解出了语义，并且当前技能是video
         if (nlpData.rc == 4
@@ -522,6 +492,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 }
                 sendMessage(msg, MESSAGE_TYPE_EVERYONE_IS_WATCHING, MESSAGE_FROM_AI, nlpData.data.lxresult.data.detailslist);
                 break;
+            default:
+                break;
         }
         if (responseTts != null) {
             aiuiService.tts(responseTts.response);
@@ -536,8 +508,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
      */
     private String makeCardTitle(Map<String, String> map) {
         String cardTitle = "";
-        if (map == null)
+        if (map == null) {
             return cardTitle;
+        }
         if (map.containsKey(AiuiConstants.VIDEO_NAME)) {
             return map.get(AiuiConstants.VIDEO_NAME);
         }
@@ -566,10 +539,12 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
      * @return
      */
     private boolean hasSubserials(NlpData nlpData) {
-        if (nlpData.data.lxresult.data.detailslist == null || nlpData.data.lxresult.data.detailslist.size() == 0)
+        if (nlpData.data.lxresult.data.detailslist == null || nlpData.data.lxresult.data.detailslist.size() == 0) {
             return false;
-        if (nlpData.data.lxresult.data.detailslist.get(0).subserials == null || nlpData.data.lxresult.data.detailslist.get(0).subserials.size() == 0)
+        }
+        if (nlpData.data.lxresult.data.detailslist.get(0).subserials == null || nlpData.data.lxresult.data.detailslist.get(0).subserials.size() == 0) {
             return false;
+        }
         return true;
     }
     private boolean hasVideoData(NlpData nlpData){
@@ -589,20 +564,14 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             case AiuiConstants.MEMBER_INTENT:
                 //会员业务
                 Logger.debug("会员业务意图===" + intent);
-
-
                 break;
             case AiuiConstants.INTERNET_INTENT:
                 //流量业务
                 Logger.debug("流量意图===" + intent);
-
-
                 break;
             case AiuiConstants.TICKET_INTENT:
                 //购票业务
                 Logger.debug("购票意图===" + intent);
-
-
                 break;
             case AiuiConstants.ACYIVITY_INTENT:
                 //活动打折业务
@@ -612,6 +581,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             case AiuiConstants.GCUSTOMER_INTENT:
                 //G客业务，如：上传视频
                 Logger.debug("G客意图===" + intent);
+                break;
+            default:
                 break;
         }
 
@@ -634,6 +605,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 // TODO: 2018/5/30 投屏跳转
                 isAvailableVideo = true;
                 aiuiService.tts("正在为您" + mData.text);
+                break;
+            default:
                 break;
         }
 
@@ -688,9 +661,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                                 }
                             }
                         }
-
-                        if (selectedVideoList.size() == 0)
+                        if (selectedVideoList.size() == 0) {
                             return;
+                        }
                         if (selectedVideoList.size() == 1) {
                             //TODO 打开当前影片
                             aiuiService.tts("正在为你打开," + selectedVideoList.get(0).name);
@@ -700,7 +673,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                             sendMessage("", lastResponseVideoMessageType, MESSAGE_FROM_AI, lastVideoList);
                             aiuiService.tts("为你找到" + selectedVideoList.size() + "个结果");
                         }
-
                         break;
                 }
             }
@@ -738,7 +710,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         Logger.debug("+++++++++++++++开始播报");
                         break;
                     case AIUIConstant.TTS_SPEAK_PROGRESS:
-//                        Logger.debug(" 播报进度为" + event.data.getInt("percent"));     // 播放进度
+                        //                        Logger.debug(" 播报进度为" + event.data.getInt("percent"));     // 播放进度
                         break;
                     case AIUIConstant.TTS_SPEAK_PAUSED:
                         Logger.debug("+++++++++++++++++暂停播报");
@@ -767,7 +739,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             case AIUIConstant.EVENT_STOP_RECORD:
                 break;
             case AIUIConstant.EVENT_VAD:
-//                Logger.debug("arg【" + event.arg1 + "】【" + event.arg2 + "】");
+                //                Logger.debug("arg【" + event.arg1 + "】【" + event.arg2 + "】");
                 //用arg1标识前后端点或者音量信息:0(前端点)、1(音量)、2(后端点)、3（前端点超时）。
                 //当arg1取值为1时，arg2为音量大小。
                 if (event.arg1 == 0) {
@@ -777,6 +749,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 break;
             case AIUIConstant.EVENT_STATE:
                 mCurrentState = event.arg1;
+                break;
+            default:
                 break;
         }
         if (null != event) {
@@ -802,8 +776,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     //SlotsBean key-value 数据转换成Map 类型数据方便查找
     private Map<String, String> formatSlotsToMap(List<NlpData.SlotsBean> slotsBeans) {
         Map<String, String> map = new HashMap<>();
-        if (slotsBeans == null || slotsBeans.size() == 0)
+        if (slotsBeans == null || slotsBeans.size() == 0) {
             return map;
+        }
         for (NlpData.SlotsBean slot : slotsBeans) {
             map.put(slot.name, slot.value);
         }
@@ -836,11 +811,11 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             //服务端返回数据就去同步所见即可说
             String hotInfo = "查看更多|";
             for (TppData.DetailsListBean bean : videoList) {
-                hotInfo += bean.name + "|";
+                hotInfo.append(bean.name).append("|");
             }
-            hotInfo = hotInfo.substring(0, hotInfo.lastIndexOf("|"));
+            hotInfo = new StringBuilder(hotInfo.substring(0, hotInfo.lastIndexOf("|")));
             Logger.debug("所见即可说同步数据【" + hotInfo + "】");
-            aiuiService.syncSpeakableData(lastNlpState, hotInfo);
+            aiuiService.syncSpeakableData(lastNlpState, hotInfo.toString());
         }
         List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
         SearchByAIBean searchByAIBean = new SearchByAIBean(msg, messageType, msgFrom, videoList);

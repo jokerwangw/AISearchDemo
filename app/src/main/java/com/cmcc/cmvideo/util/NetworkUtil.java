@@ -386,6 +386,8 @@ public class NetworkUtil {
                     case TelephonyManager.NETWORK_TYPE_UNKNOWN:
                         netType = "TYPE_MOBILE";
                         break;
+                    default:
+                        break;
                 }
             }
         }
