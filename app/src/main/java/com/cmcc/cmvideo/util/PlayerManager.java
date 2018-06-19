@@ -39,8 +39,10 @@ public class PlayerManager {
     /**
      * 切换到外放
      */
-    public void changeToSpeaker(){
-        if (BuildConfig.DEBUG) Log.d("MainActivity", "外放模式");
+    public void changeToSpeaker() {
+        if (BuildConfig.DEBUG) {
+            Log.d("MainActivity", "外放模式");
+        }
         audioManager.setMode(AudioManager.MODE_NORMAL);
         audioManager.setSpeakerphoneOn(true);
     }
@@ -48,17 +50,19 @@ public class PlayerManager {
     /**
      * 切换到耳机模式
      */
-    public void changeToHeadset(){
-        if (BuildConfig.DEBUG) Log.d("MainActivity", "耳机模式");
+    public void changeToHeadset() {
+        if (BuildConfig.DEBUG){
+            Log.d("MainActivity", "耳机模式");
+        }
         audioManager.setSpeakerphoneOn(false);
     }
 
     /**
      * 切换到听筒模式
      */
-    public void changeToReceiver(){
+    public void changeToReceiver() {
         audioManager.setSpeakerphoneOn(false);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
         } else {
             audioManager.setMode(AudioManager.MODE_IN_CALL);
@@ -68,28 +72,29 @@ public class PlayerManager {
 
     /**
      * 检测麦克风是否被占用
+     *
      * @return
      */
-    public static boolean validateMicAvailability(){
+    public static boolean validateMicAvailability() {
         Boolean available = true;
         AudioRecord recorder =
                 new AudioRecord(MediaRecorder.AudioSource.MIC, 44100,
                         AudioFormat.CHANNEL_IN_MONO,
                         AudioFormat.ENCODING_DEFAULT, 44100);
-        try{
-            if(recorder.getRecordingState() != AudioRecord.RECORDSTATE_STOPPED ){
+        try {
+            if (recorder.getRecordingState() != AudioRecord.RECORDSTATE_STOPPED) {
                 available = false;
 
             }
 
             recorder.startRecording();
-            if(recorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING){
+            if (recorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
                 recorder.stop();
                 available = false;
 
             }
             recorder.stop();
-        } finally{
+        } finally {
             recorder.release();
             recorder = null;
         }

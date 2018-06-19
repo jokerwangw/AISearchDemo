@@ -15,18 +15,38 @@ import java.util.List;
 
 public interface SearchByAIPresenter extends BasePresenter {
     interface View extends BaseView {
+        /**
+         * 回调显示数据
+         *
+         * @param searchByAIBeanList
+         */
         void showInitList(List<SearchByAIBean> searchByAIBeanList);
+
+        /**
+         * requestAudioFocus
+         */
         void requestAudioFocus();
+
+        /**
+         * abandonAudioFocus
+         */
         void abandonAudioFocus();
     }
 
+    /**
+     * 初始数据
+     */
     void initListSearchItem();
 
-    void updateUserRequestListItem();
-
-    void updateAIResponseListItem(String order);
-
+    /**
+     * 传参
+     *
+     * @param service
+     */
     void setAIUIService(IAIUIService service);
 
+    /**
+     * cancelRecordAudio
+     */
     void cancelRecordAudio();
 }

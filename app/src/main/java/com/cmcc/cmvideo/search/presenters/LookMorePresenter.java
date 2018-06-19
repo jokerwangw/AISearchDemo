@@ -15,10 +15,27 @@ import java.util.List;
  * Describe:
  */
 
-public interface LookMorePresenter  extends BasePresenter {
+public interface LookMorePresenter extends BasePresenter {
     interface View extends BaseView {
+        /**
+         * 回调显示数据
+         *
+         * @param detailsListBeanArrayList
+         */
         void showInitList(List<TppData.DetailsListBean> detailsListBeanArrayList);
     }
+
+    /**
+     * setAIUIService
+     *
+     * @param service
+     */
     void setAIUIService(IAIUIService service);
+
+    /**
+     * setSpeechText
+     *
+     * @param text
+     */
     void setSpeechText(String text);
 }
