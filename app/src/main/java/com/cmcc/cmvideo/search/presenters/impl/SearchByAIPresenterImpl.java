@@ -676,6 +676,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                             aiuiService.tts("正在为你打开," + selectedVideoList.get(0).name);
                         } else {
                             //更新UI为筛选出的Video列表
+                            lastVideoSearchByAIBean.setVideoList(selectedVideoList);
                             sendMessage(lastVideoSearchByAIBean);
                             aiuiService.tts("为你找到" + selectedVideoList.size() + "个结果");
                         }
