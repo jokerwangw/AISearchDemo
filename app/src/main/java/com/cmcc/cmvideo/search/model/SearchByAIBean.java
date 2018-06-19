@@ -1,5 +1,9 @@
 package com.cmcc.cmvideo.search.model;
 
+import com.cmcc.cmvideo.search.aiui.bean.TppData;
+
+import java.util.List;
+
 /**
  * Created by Yyw on 2018/5/22.
  * Describe:
@@ -7,16 +11,30 @@ package com.cmcc.cmvideo.search.model;
 
 public class SearchByAIBean {
     private String message;
+    private String speechText;
     private int messageType;
     private String messageFrom;
+    private List<TppData.DetailsListBean> videoList;
 
     public SearchByAIBean() {
     }
-
     public SearchByAIBean(String message, int messageType, String messageFrom) {
+        this(message,messageType,messageFrom,null);
+    }
+
+    public SearchByAIBean(String message, int messageType, String messageFrom,List<TppData.DetailsListBean> videoList) {
         this.message = message;
         this.messageType = messageType;
         this.messageFrom = messageFrom;
+        this.videoList = videoList;
+    }
+
+    public String getSpeechText() {
+        return speechText;
+    }
+
+    public void setSpeechText(String speechText) {
+        this.speechText = speechText;
     }
 
     public String getMessage() {
@@ -41,5 +59,13 @@ public class SearchByAIBean {
 
     public void setMessageFrom(String messageFrom) {
         this.messageFrom = messageFrom;
+    }
+
+    public List<TppData.DetailsListBean> getVideoList() {
+        return videoList;
+    }
+
+    public void setVideoList(List<TppData.DetailsListBean> videoList) {
+        this.videoList = videoList;
     }
 }

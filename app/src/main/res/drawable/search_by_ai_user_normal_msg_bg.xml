@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:angle="180"
+        android:endColor="@color/search_by_ai_bg_cancel_end_color"
+        android:startColor="@color/search_by_ai_bg_cancel_start_color"
+        />
+    <corners
+        android:bottomLeftRadius="@dimen/dimen_35dp"
+        android:bottomRightRadius="0dp"
+        android:topLeftRadius="@dimen/dimen_35dp"
+        android:topRightRadius="@dimen/dimen_25dp"/>
+    <padding
+        android:bottom="@dimen/dimen_5dp"
+        android:left="@dimen/dimen_15dp"
+        android:right="@dimen/dimen_15dp"
+        android:top="@dimen/dimen_5dp"/>
+</shape>

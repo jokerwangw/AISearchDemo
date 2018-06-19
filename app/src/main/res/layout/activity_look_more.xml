@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <RelativeLayout
+        android:id="@+id/rl_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/look_more_header">
+
+        <ImageView
+            android:id="@+id/bt_back"
+            android:layout_width="@dimen/dimen_35dp"
+            android:layout_height="@dimen/dimen_35dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dimen_10dp"
+            android:background="@mipmap/search_by_ai_look_more_back"
+            android:gravity="center"
+            android:textSize="@dimen/dimen_15dp"
+            />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dimen_50dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="XXX的电影"
+            android:textColor="@color/guess_you_like_movie_name"
+            android:textSize="@dimen/dimen_18dp"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_1dp"
+        android:layout_below="@+id/rl_header"
+        android:background="@color/appointment_movie_time"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/look_more_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/rl_header"
+        android:layout_marginLeft="@dimen/dimen_3dp"
+        android:layout_marginTop="@dimen/dimen_3dp"
+        />
+</RelativeLayout>

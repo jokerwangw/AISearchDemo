@@ -6,6 +6,20 @@
 
 
     <color name="white">#FFFFFF</color>
+    <color name="search_by_ai_bg_start_color">#3A3B6C</color>
+    <color name="search_by_ai_bg_end_color">#151541</color>
+    <color name="search_by_ai_bg_cancel_start_color">#FCE49B</color>
+    <color name="search_by_ai_bg_cancel_end_color">#FBBA86</color>
 
+    <color name="appointment_movie_name">#313261</color>
+    <color name="appointment_movie_time">#999999</color>
+    <color name="appointment_movie_list">#FF4F16</color>
+
+    <color name="everyone_watch_list_movie_name">#30314D</color>
+
+    <color name="guess_you_like_movie_name">#333333</color>
+    <color name="guess_you_like_movie_text">#666666</color>
+
+    <color name="look_more_header">#EFEFEF</color>
 
 </resources>

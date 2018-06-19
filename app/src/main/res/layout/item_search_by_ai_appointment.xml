@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_136dp"
+        android:background="@mipmap/search_by_ai_appointment_bg">
+
+        <TextView
+            android:id="@+id/tv_movie_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dimen_35dp"
+            android:layout_marginTop="@dimen/dimen_25dp"
+            android:text="预约: 《龙门镖局》"
+            android:textColor="@color/appointment_movie_name"
+            android:textSize="@dimen/dimen_18dp"
+            />
+
+        <TextView
+            android:id="@+id/tv_movie_appointment_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_movie_name"
+            android:layout_marginLeft="@dimen/dimen_35dp"
+            android:layout_marginTop="@dimen/dimen_5dp"
+            android:text="明天  周三  10:00"
+            android:textColor="@color/appointment_movie_time"
+            android:textSize="@dimen/dimen_13dp"
+            />
+
+        <TextView
+            android:id="@+id/tv_movie_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_movie_appointment_time"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="@dimen/dimen_35dp"
+            android:layout_marginTop="@dimen/dimen_13dp"
+            android:text="查看预约列表"
+            android:textColor="@color/appointment_movie_list"
+            android:textSize="@dimen/dimen_13dp"
+            />
+    </RelativeLayout>
+</LinearLayout>

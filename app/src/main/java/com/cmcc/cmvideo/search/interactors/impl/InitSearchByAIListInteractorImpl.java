@@ -12,8 +12,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_FROM_AI;
-import static com.cmcc.cmvideo.utils.Constants.MESSAGE_TYPE_NORMAL;
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_FROM_AI;
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_NORMAL;
 
 /**
  * Created by Yyw on 2018/5/21.
@@ -40,8 +40,7 @@ public class InitSearchByAIListInteractorImpl extends AbstractInteractor impleme
     public void run() {
         final List<SearchByAIBean> searchByAIBeanList = new ArrayList<SearchByAIBean>();
         searchByAIBeanList.add(new SearchByAIBean("您希望我做什么", MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
-        searchByAIBeanList.add(new SearchByAIBean("你可以像下这样问我", MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
-        searchByAIBeanList.add(new SearchByAIBean("你可以像下这样问我你可以像下这样问我你可以像下这样问我你可以像下这样问我你可以像下这样问我", MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
+
         mMainThread.post(new Runnable() {
             @Override
             public void run() {

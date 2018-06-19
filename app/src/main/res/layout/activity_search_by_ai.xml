@@ -1,35 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/search_by_ai_bg">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:voiceView="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/search_by_ai_bg">
 
     <Button
         android:id="@+id/bt_title_close"
         android:layout_width="@dimen/dimen_25dp"
         android:layout_height="@dimen/dimen_25dp"
         android:layout_margin="@dimen/dimen_8dp"
-        android:background="@mipmap/search_by_ai_icon_cancel"
-        />
+        android:background="@mipmap/search_by_ai_icon_cancel"/>
 
     <TextView
+        android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/dimen_8dp"
-        android:text="正在聆听..."
+        android:text="@string/cmvideo"
         android:textColor="@color/white"
         android:textSize="@dimen/dimen_18dp"/>
 
-    <Button
-        android:id="@+id/bt_title_voice"
+    <RelativeLayout
         android:layout_width="@dimen/dimen_25dp"
         android:layout_height="@dimen/dimen_25dp"
         android:layout_alignParentRight="true"
-        android:layout_margin="@dimen/dimen_8dp"
-        android:background="@mipmap/search_by_ai_icon_voice"
-        />
+        android:layout_margin="@dimen/dimen_8dp">
+
+        <Button
+            android:id="@+id/bt_title_voice"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@mipmap/search_by_ai_icon_voice"/>
+
+        <View
+            android:id="@+id/v_spekaker"
+            android:layout_width="@dimen/dimen_25dp"
+            android:layout_height="@dimen/dimen_2dp"
+            android:layout_centerInParent="true"
+            android:background="@color/white"
+            android:rotation="45"/>
+    </RelativeLayout>
 
     <ImageView
         android:layout_width="wrap_content"
@@ -43,7 +55,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/search_input_area"
-        android:layout_marginTop="60dp"/>
+        android:layout_marginTop="@dimen/dimen_60dp"/>
+
+    <ImageView
+        android:id="@+id/im_release_finger"
+        android:layout_width="@dimen/dimen_40dp"
+        android:layout_height="@dimen/dimen_50dp"
+        android:layout_above="@+id/search_input_area"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/dimen_8dp"
+        android:src="@mipmap/im_release_finger"
+        android:visibility="gone"/>
 
     <RelativeLayout
         android:id="@+id/search_input_area"
@@ -51,18 +73,106 @@
         android:layout_height="@dimen/dimen_150dp"
         android:layout_alignParentBottom="true">
 
-        <ImageView
-            android:id="@+id/im_search_voice_input_ring"
-            android:layout_width="@dimen/dimen_136dp"
-            android:layout_height="@dimen/dimen_136dp"
-            android:layout_centerInParent="true"
-            android:src="@mipmap/search_by_ai_icon_ring"/>
-
-        <Button
-            android:id="@+id/bt_search_voice_input"
-            android:layout_width="@dimen/dimen_80dp"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="@dimen/dimen_80dp"
+            android:layout_centerVertical="true">
+
+            <View
+                android:id="@+id/view_left"
+                android:layout_width="@dimen/dimen_10dp"
+                android:layout_height="@dimen/dimen_3dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/dimen_20dp"
+                android:background="@color/appointment_movie_list"/>
+
+            <com.cmcc.cmvideo.weight.VoiceLineView
+                android:id="@+id/voicLine"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toLeftOf="@+id/view_right"
+                android:layout_toRightOf="@+id/view_left"
+                voiceView:fineness="three"
+                voiceView:lineSpeed="90"
+                voiceView:maxVolume="200"
+                voiceView:middleLine="@color/search_by_ai_bg_cancel_end_color"
+                voiceView:middleLineHeight="0dp"
+                voiceView:rectSpace="2dp"
+                voiceView:rectWidth="5dp"
+                voiceView:sensibility="four"
+                voiceView:viewMode="line"
+                voiceView:voiceLine="@color/search_by_ai_bg_cancel_end_color"/>
+
+            <View
+                android:id="@+id/view_right"
+                android:layout_width="@dimen/dimen_10dp"
+                android:layout_height="@dimen/dimen_3dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/dimen_20dp"
+                android:background="@color/appointment_movie_list"/>
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tv_cancel_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/search_by_ai_cancel_search_bg"
+            android:text="@string/cancel_search"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_16dp"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tv_slide_cancel_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:drawableLeft="@mipmap/search_by_ai_slide_cancel"
+            android:drawablePadding="@dimen/dimen_8dp"
+            android:text="@string/slide_cancel_search"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_14dp"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tv_release_finger_cancel_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="@string/release_finger_cancel_search"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_14dp"
+            android:visibility="gone"/>
+
+        <RelativeLayout
+            android:id="@+id/rl_search_voice_input_ring"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:background="@mipmap/search_by_ai_input_voice_bt"/>
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/im_search_voice_input_ring"
+                android:layout_width="@dimen/dimen_136dp"
+                android:layout_height="@dimen/dimen_136dp"
+                android:src="@mipmap/search_by_ai_icon_ring"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_search_voice_input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="visible">
+
+            <Button
+                android:id="@+id/bt_search_voice_input"
+                android:layout_width="@dimen/dimen_80dp"
+                android:layout_height="@dimen/dimen_80dp"
+                android:layout_centerInParent="true"
+                android:background="@mipmap/search_by_ai_input_voice_bt"/>
+        </RelativeLayout>
     </RelativeLayout>
 </RelativeLayout>
