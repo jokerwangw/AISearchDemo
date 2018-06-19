@@ -125,7 +125,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/tv_change_list"
+            android:id="@+id/tv_item_change"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/ll_video_list"

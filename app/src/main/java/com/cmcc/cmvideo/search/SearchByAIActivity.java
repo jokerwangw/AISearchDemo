@@ -89,12 +89,13 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     @BindView(R.id.v_spekaker)
     View vSpekaker;
     private final String TAG = "SearchByAIActivity";
+    private int MAX_CLICK_TIME = 500;
+    private int MIN_MOVE_VALUE = 50;
     private SearchByAIPresenter mSearchByAIPresenter;
     private Context mContext;
     private SearchByAIAdapter mSearchByAIAdapter;
     private IAIUIService aiuiService;
-    private long downTime = 0;
-    private long upTime = 0;
+    private long downTime, upTime = 0;
     private float downY = 0;
     private boolean isOpenSpeaker = false;
     private AudioManager audioManager = null;
@@ -248,7 +249,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
      * @param clickTime
      */
     private void checkClickType(long clickTime, float moveValue) {
-        if (clickTime <= 1000) {
+        if (clickTime <= MAX_CLICK_TIME) {
             //点击事件
             closeViewAnimation();
             tvCancelSearch.setVisibility(View.VISIBLE);
@@ -258,7 +259,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
             setViewAnimation(true);
         } else {
             //长按事件
-            if (moveValue >= 50) {
+            if (moveValue >= MIN_MOVE_VALUE) {
                 mSearchByAIPresenter.cancelRecordAudio();
             }
             //长按事件
