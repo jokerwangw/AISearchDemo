@@ -405,15 +405,15 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 int messageType = MESSAGE_TYPE_NORMAL;
                 while (true) {
                     // 判断意图是使用哪个卡片展示
-                    if (map.size() == 1 && map.containsKey(AiuiConstants.VIDEO_CATEGORY)) { //猜你喜欢
+                    if (map.size()<3) { //猜你喜欢
+
                         AiResponse.Response response = AiResponse.getInstance().getGuessWhatYouLike();
-                        String category = map.get(AiuiConstants.VIDEO_CATEGORY);
                         boolean hasSubserials = true;//hasSubserials(nlpData);
-                        if (category.equals("电影") || category.equals("片")) {
+                        if (isCategory(map,CategoryType.MOVIE)) {
                             messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
-                        } else if ((category.equals("电视剧") || category.equals("纪实") || category.equals("动漫")) && hasSubserials) {
+                        } else if ((isCategory(map,CategoryType.TV) || isCategory(map,CategoryType.DOC) || isCategory(map,CategoryType.CARTOON)) && hasSubserials) {
                             messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
-                        } else if (category.equals("综艺") && hasSubserials) {
+                        } else if (isCategory(map,CategoryType.VARIETY) && hasSubserials) {
                             messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
                         }
                         //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
@@ -542,6 +542,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         }
         return true;
     }
+
     private boolean hasVideoData(NlpData nlpData){
         if(nlpData==null
                 ||nlpData.data ==null
@@ -550,6 +551,37 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 ||nlpData.data.lxresult.data.detailslist.size() == 0)
             return false;
         return true;
+    }
+
+    private boolean isCategory(Map<String, String> solts,CategoryType categoryType){
+        if(solts == null||solts.size()>2)
+            return false;
+        String cate = "";
+        if(solts.size() ==1) {
+            if(solts.containsKey(AiuiConstants.VIDEO_CATEGORY))
+                cate = solts.get(AiuiConstants.VIDEO_CATEGORY);
+            if(solts.containsKey(AiuiConstants.VIDEO_TAG))
+                cate = solts.get(AiuiConstants.VIDEO_TAG);
+        }else if(solts.size() ==2){
+            String category = solts.get(AiuiConstants.VIDEO_CATEGORY);
+            if ("片".equals(category) || "节目".equals(category)){
+                cate = solts.get(AiuiConstants.VIDEO_TAG);
+            }
+        }
+        switch (categoryType) {
+            case TV:
+                return "电视剧".equals(cate);
+            case DOC:
+                return "纪录".equals(cate) || "纪实".equals(cate);
+            case MOVIE:
+                return "电影".equals(cate) || "片".equals(cate);
+            case CARTOON:
+                return "卡通".equals(cate) || "动漫".equals(cate)|| "动画".equals(cate);
+            case VARIETY:
+                return "综艺".equals(cate);
+            default:
+                return false;
+        }
     }
 
     /**
@@ -675,6 +707,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                             //TODO 打开当前影片
                             aiuiService.tts("正在为你打开," + selectedVideoList.get(0).name);
                         } else {
+                            lastVideoSearchByAIBean.setVideoList(selectedVideoList);
                             //更新UI为筛选出的Video列表
                             lastVideoSearchByAIBean.setVideoList(selectedVideoList);
                             sendMessage(lastVideoSearchByAIBean);
@@ -878,5 +911,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
         messageList.add(searchByAIBean);
         EventBus.getDefault().post(new SearchByAIEventBean(messageList));
+    }
+    public enum  CategoryType{
+        // 电影，电视剧，记录片，卡通，综艺
+        MOVIE,TV,DOC,CARTOON,VARIETY
     }
 }
