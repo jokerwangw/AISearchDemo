@@ -159,14 +159,16 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         if (null != mData && null != mData.moreResults) {
             mData = mData.moreResults.get(0);
             if (("video".equals(mData.service))) {
+                Logger.debug("video=================++++++++++++++++++===================" + mData.service);
                 if (AiuiConstants.VIEWCMD_SERVICE.equals(service)) {
+                    Logger.debug("viewCmd=================--------------===================" + service);
                     sendMessage(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
                 }
                 return;
             }
+        }else {
+            Logger.debug("video====================================" + service);
         }
-        //
-
 
         if (mData.rc == 4) {
             //播报
