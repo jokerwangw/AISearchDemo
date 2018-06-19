@@ -809,7 +809,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             lastResponseVideoMessageType = messageType;
             lastVideoList = videoList;
             //服务端返回数据就去同步所见即可说
-            String hotInfo = "查看更多|";
+            StringBuilder hotInfo = new StringBuilder("查看更多|");
             for (TppData.DetailsListBean bean : videoList) {
                 hotInfo.append(bean.name).append("|");
             }
