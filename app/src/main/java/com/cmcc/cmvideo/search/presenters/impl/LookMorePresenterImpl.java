@@ -79,7 +79,7 @@ public class LookMorePresenterImpl extends AbstractPresenter implements AIUIServ
     }
 
     public void onTppResult(String result) {
-        if (TextUtils.isEmpty(result) || !aiuiService.isLookMorePageData()){
+        if (TextUtils.isEmpty(result) || !aiuiService.isLookMorePageData()) {
             return;
         }
 
