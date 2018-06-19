@@ -32,6 +32,7 @@ import com.cmcc.cmvideo.search.aiui.AIUIService;
 import com.cmcc.cmvideo.search.aiui.FuncAdapter;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.aiui.Logger;
+import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.interactors.ItemSearchByAIClickListener;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
@@ -129,7 +130,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         bindService(new Intent(this, AIUIService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
         mSearchByAIPresenter.initListSearchItem();
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        if (null!=audioManager){
+        if (null != audioManager) {
             isOpenSpeaker = audioManager.isSpeakerphoneOn();
             vSpekaker.setVisibility(isOpenSpeaker ? View.VISIBLE : View.GONE);
         }
@@ -159,25 +160,28 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         }
 
         @Override
-        public void clickChangeItem() {
-            if(aiuiService!=null)
-                aiuiService.textUnderstander("换一个");
-        }
-
-        @Override
         public void clickItemSearchByAIIWantTOSee() {
         }
 
         @Override
-        public void clickItemSearchByAIGuessWhatYouLike() {
+        public void clickItemSearchByAIGuessWhatYouLike(boolean isChangeBt, TppData.DetailsListBean detailsListBean) {
+            if (isChangeBt && null != aiuiService) {
+                aiuiService.textUnderstander("换一个");
+            }
         }
 
         @Override
-        public void clickItemSearchByAIGuessWhatYouLikeListHorizontal() {
+        public void clickItemSearchByAIGuessWhatYouLikeListHorizontal(boolean isChangeBt, TppData.DetailsListBean detailsListBean, int position) {
+            if (isChangeBt && null != aiuiService) {
+                aiuiService.textUnderstander("换一个");
+            }
         }
 
         @Override
-        public void clickItemSearchByAIGuessWhatYouLikeListVertical() {
+        public void clickItemSearchByAIGuessWhatYouLikeListVertical(boolean isChangeBt, TppData.DetailsListBean detailsListBean, int position) {
+            if (isChangeBt && null != aiuiService) {
+                aiuiService.textUnderstander("换一个");
+            }
         }
 
         @Override
