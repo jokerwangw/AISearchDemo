@@ -49,7 +49,7 @@ import static com.cmcc.cmvideo.util.Constants.*;
  * Describe:
  */
 
-public class SearchByAIPresenterImpl extends AbstractPresenter implements SearchByAIPresenter, AIUIService.AIUIEventListener, InitSearchByAIListInteractor.Callback{
+public class SearchByAIPresenterImpl extends AbstractPresenter implements SearchByAIPresenter, AIUIService.AIUIEventListener, InitSearchByAIListInteractor.Callback {
     private final String TAG = "SearchByAIPresenterImpl";
     private int lastResponseVideoMessageType = MESSAGE_TYPE_NORMAL;
     private int mCurrentState = AIUIConstant.STATE_IDLE;
@@ -155,7 +155,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             sendMessage(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
         }
 
-        //如果包含moreResults且service是video则直接返回
+        //如果包含moreResults且service是video则直接返回，如果是viewCmd则要发送消息
         if (null != mData && null != mData.moreResults) {
             mData = mData.moreResults.get(0);
             if (("video".equals(mData.service))) {
@@ -163,10 +163,11 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 if (AiuiConstants.VIEWCMD_SERVICE.equals(service)) {
                     Logger.debug("viewCmd=================--------------===================" + service);
                     sendMessage(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
+                } else {
+                    return;
                 }
-                return;
             }
-        }else {
+        } else {
             Logger.debug("video====================================" + service);
         }
 
