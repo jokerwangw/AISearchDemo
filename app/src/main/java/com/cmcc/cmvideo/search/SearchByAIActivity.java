@@ -129,7 +129,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         bindService(new Intent(this, AIUIService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
         mSearchByAIPresenter.initListSearchItem();
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        if (null!=audioManager){
+        if (null != audioManager) {
             isOpenSpeaker = audioManager.isSpeakerphoneOn();
             vSpekaker.setVisibility(isOpenSpeaker ? View.VISIBLE : View.GONE);
         }
