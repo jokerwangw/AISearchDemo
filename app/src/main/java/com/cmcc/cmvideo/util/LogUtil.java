@@ -14,9 +14,9 @@ public class LogUtil {
      * @param msg
      */
     public static void e(String tag, String msg) {
-        if (tag == null || tag.length() == 0
-                || msg == null || msg.length() == 0)
+        if (tag == null || tag.length() == 0|| msg == null || msg.length() == 0){
             return;
+        }
 
         int segmentSize = 3 * 1024;
         long length = msg.length();

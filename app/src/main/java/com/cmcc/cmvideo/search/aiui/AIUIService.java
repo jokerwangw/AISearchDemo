@@ -51,6 +51,7 @@ public class AIUIService extends Service {
     private boolean hasSyncData = false;
     private boolean hasClearData = false;
     private boolean hasCancelRecordAudio = false;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -62,7 +63,9 @@ public class AIUIService extends Service {
 
     @Override
     public void onDestroy() {
-        if (mAIUIAgent != null) mAIUIAgent.destroy();
+        if (mAIUIAgent != null) {
+            mAIUIAgent.destroy();
+        }
         SpeechUtility.getUtility().destroy();
         if (null != mReceiver) {
             unregisterReceiver(mReceiver);
@@ -92,8 +95,10 @@ public class AIUIService extends Service {
                 SpeechUtility.getUtility().destroy();
             }
             SpeechUtility.createUtility(AIUIService.this, String.format("engine_start=ivw,delay_init=0,appid=%s", "5aceb703"));
-            if (mAIUIAgent == null)
+            if (mAIUIAgent == null) {
                 mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
+            }
+
             JSONObject objectJson = new JSONObject();
             JSONObject paramJson = new JSONObject();
             paramJson.put("wakeup_mode", "ivw");
@@ -123,8 +128,10 @@ public class AIUIService extends Service {
 
     private void standardMode() {
         try {
-            if (mAIUIAgent == null)
+            if (mAIUIAgent == null) {
                 mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
+            }
+
             JSONObject objectJson = new JSONObject();
             JSONObject paramJson = new JSONObject();
             paramJson.put("wakeup_mode", "off");
@@ -215,8 +222,8 @@ public class AIUIService extends Service {
         }
 
         @Override
-        public void syncSpeakableData(String stateKey,String hotInfo) {
-            AIUIService.this.syncSpeakableData(stateKey,hotInfo);
+        public void syncSpeakableData(String stateKey, String hotInfo) {
+            AIUIService.this.syncSpeakableData(stateKey, hotInfo);
         }
 
         private String lookMoreText;
@@ -274,7 +281,10 @@ public class AIUIService extends Service {
         public void onEvent(AIUIEvent event) {
             switch (event.eventType) {
                 case AIUIConstant.EVENT_RESULT: {
-                    if (hasCancelRecordAudio) return;
+                    if (hasCancelRecordAudio) {
+                        return;
+                    }
+
                     try {
                         JSONObject bizParamJson = new JSONObject(event.info);
                         JSONObject data = bizParamJson.getJSONArray("data").getJSONObject(0);
@@ -303,14 +313,20 @@ public class AIUIService extends Service {
 
                                 } else if ("nlp".equals(sub)) {
                                     String resultStr = cntJson.optString("intent");
-                                    if (resultStr.equals("{}") || resultStr.isEmpty()) return;
+                                    if (resultStr.equals("{}") || resultStr.isEmpty()) {
+                                        return;
+                                    }
+
                                     Logger.debug("NLP 【" + resultStr + "】");
                                     eventListenerManager.onResult(null, resultStr, null);
                                 } else {
                                     String resultStr = cntJson.optString("intent");
-                                    if (resultStr.equals("{}")) return;
+                                    if (resultStr.equals("{}")) {
+                                        return;
+                                    }
+
                                     String jsonResultStr = cntJson.toString();
-//                                    LogUtil.e("TPP===", resultStr);
+                                    //                                    LogUtil.e("TPP===", resultStr);
                                     Logger.debug("TPP 【" + jsonResultStr + "】");
                                     eventListenerManager.onResult(null, null, jsonResultStr);
                                 }
@@ -325,17 +341,17 @@ public class AIUIService extends Service {
                     Logger.debug("CMD_START_RECORD===========");
                     break;
                 case AIUIConstant.EVENT_ERROR:
-//                    Logger.debug("EVENT_ERROR===========" + event.arg1 + "  " + event.info);
+                    //                    Logger.debug("EVENT_ERROR===========" + event.arg1 + "  " + event.info);
                     break;
                 case AIUIConstant.EVENT_WAKEUP:
-//                    Logger.debug("EVENT_WAKEUP==========arg1【" + event.arg1 + "】arg2【" + event.arg2 + "】info【" + event.info + "】");
+                    //                    Logger.debug("EVENT_WAKEUP==========arg1【" + event.arg1 + "】arg2【" + event.arg2 + "】info【" + event.info + "】");
                     break;
                 case AIUIConstant.EVENT_SLEEP:
                     Logger.debug("EVENT_SLEEP===========");
                     break;
                 case AIUIConstant.EVENT_STATE:
                     mCurrentState = event.arg1;
-                    Logger.debug("state is 【"+mCurrentState+"】");
+                    Logger.debug("state is 【" + mCurrentState + "】");
                     break;
                 case AIUIConstant.EVENT_CMD_RETURN:
                     AIUIEvent event1 = event;
@@ -356,8 +372,10 @@ public class AIUIService extends Service {
                                         hasClearData = false;
                                     }
                                     break;
+                                default:
+                                    break;
                             }
-                        }else {
+                        } else {
                             Logger.debug(event.info);
                         }
                     }
@@ -370,8 +388,11 @@ public class AIUIService extends Service {
     };
 
     private void tts(String ttsText) {
-        if (TextUtils.isEmpty(ttsText)) return;
-        byte[] ttsData = new byte[0];  //转为二进制数据
+        if (TextUtils.isEmpty(ttsText)) {
+            return;
+        }
+        //转为二进制数据
+        byte[] ttsData = new byte[0];
         try {
             ttsData = ttsText.getBytes("utf-8");
         } catch (UnsupportedEncodingException e) {
@@ -420,58 +441,60 @@ public class AIUIService extends Service {
         try {
             JSONObject data = new JSONObject();
             JSONObject state = new JSONObject();
-            state.put("activeStatus","fg");
-            state.put("sceneStatus","default");
-            data.put("video::default",state);
+            state.put("activeStatus", "fg");
+            state.put("sceneStatus", "default");
+            data.put("video::default", state);
             JSONObject viewCmd = new JSONObject();
-            viewCmd.put("activeStatus","bg");
-            viewCmd.put("sceneStatus","default");
+            viewCmd.put("activeStatus", "bg");
+            viewCmd.put("sceneStatus", "default");
             JSONObject viewCmdData = new JSONObject();
             JSONObject viewCmdHotInfo = new JSONObject();
-            viewCmdHotInfo.put("viewCmd","");
-            viewCmdData.put("hotInfo",viewCmdHotInfo);
-            viewCmd.put("data",viewCmdData);
-            data.put("viewCmd::default",viewCmd);
+            viewCmdHotInfo.put("viewCmd", "");
+            viewCmdData.put("hotInfo", viewCmdHotInfo);
+            viewCmd.put("data", viewCmdData);
+            data.put("viewCmd::default", viewCmd);
             String params = data.toString();
             byte[] syncData = params.getBytes("utf-8");
             AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC, AIUIConstant.SYNC_DATA_STATUS, 0, params, syncData);
             sendMessage(syncAthenaMessage);
-            Logger.debug("删除状态数据【"+data.toString()+"】");
+            Logger.debug("删除状态数据【" + data.toString() + "】");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     //同步所见即可说
-    public void syncSpeakableData(String stateKey,String hotInfo) {
+    public void syncSpeakableData(String stateKey, String hotInfo) {
         try {
-            if(TextUtils.isEmpty(stateKey)&&TextUtils.isEmpty(hotInfo))
+            if (TextUtils.isEmpty(stateKey) && TextUtils.isEmpty(hotInfo)) {
                 return;
+            }
+
             JSONObject data = new JSONObject();
-            if(!TextUtils.isEmpty(stateKey)){
+            if (!TextUtils.isEmpty(stateKey)) {
                 String[] statep = stateKey.split("::");
                 JSONObject state = new JSONObject();
-                state.put("activeStatus",statep[0]);
-                state.put("sceneStatus",statep[3]);
-                data.put(statep[1]+"::"+statep[2],state);
+                state.put("activeStatus", statep[0]);
+                state.put("sceneStatus", statep[3]);
+                data.put(statep[1] + "::" + statep[2], state);
             }
-            if(!TextUtils.isEmpty(hotInfo)){
+            if (!TextUtils.isEmpty(hotInfo)) {
                 JSONObject viewCmd = new JSONObject();
-                viewCmd.put("activeStatus","bg");
-                viewCmd.put("sceneStatus","default");
+                viewCmd.put("activeStatus", "bg");
+                viewCmd.put("sceneStatus", "default");
                 JSONObject viewCmdData = new JSONObject();
                 JSONObject viewCmdHotInfo = new JSONObject();
-                viewCmdHotInfo.put("viewCmd",hotInfo);
-                viewCmdData.put("hotInfo",viewCmdHotInfo);
-                viewCmd.put("data",viewCmdData);
-                data.put("viewCmd::default",viewCmd);
+                viewCmdHotInfo.put("viewCmd", hotInfo);
+                viewCmdData.put("hotInfo", viewCmdHotInfo);
+                viewCmd.put("data", viewCmdData);
+                data.put("viewCmd::default", viewCmd);
             }
             String params = data.toString();
             byte[] syncData = params.getBytes("utf-8");
             AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC, AIUIConstant.SYNC_DATA_STATUS, 0, params, syncData);
             mAIUIAgent.sendMessage(syncAthenaMessage);
             hasSyncData = true;
-            Logger.debug("同步状态数据【"+data.toString()+"】");
+            Logger.debug("同步状态数据【" + data.toString() + "】");
         } catch (Exception e) {
             e.printStackTrace();
         }

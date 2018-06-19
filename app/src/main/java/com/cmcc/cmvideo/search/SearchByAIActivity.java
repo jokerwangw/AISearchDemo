@@ -1,5 +1,6 @@
 package com.cmcc.cmvideo.search;
 
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +32,7 @@ import com.cmcc.cmvideo.search.aiui.AIUIService;
 import com.cmcc.cmvideo.search.aiui.FuncAdapter;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.aiui.Logger;
+import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.interactors.ItemSearchByAIClickListener;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
@@ -87,7 +89,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     @BindView(R.id.v_spekaker)
     View vSpekaker;
     private final String TAG = "SearchByAIActivity";
-    private SearchByAIPresenterImpl mSearchByAIPresenter;
+    private SearchByAIPresenter mSearchByAIPresenter;
     private Context mContext;
     private SearchByAIAdapter mSearchByAIAdapter;
     private IAIUIService aiuiService;
@@ -128,8 +130,10 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         bindService(new Intent(this, AIUIService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
         mSearchByAIPresenter.initListSearchItem();
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        isOpenSpeaker = audioManager.isSpeakerphoneOn();
-        vSpekaker.setVisibility(isOpenSpeaker ? View.VISIBLE : View.GONE);
+        if (null != audioManager) {
+            isOpenSpeaker = audioManager.isSpeakerphoneOn();
+            vSpekaker.setVisibility(isOpenSpeaker ? View.VISIBLE : View.GONE);
+        }
     }
 
     /**
@@ -138,8 +142,9 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private ItemSearchByAIClickListener itemSearchByAIClickListener = new ItemSearchByAIClickListener() {
         @Override
         public void clickItemSearchByAICanAskAI(String recommendText) {
-            if (aiuiService != null)
+            if (aiuiService != null) {
                 aiuiService.textUnderstander(recommendText);
+            }
         }
 
         @Override
@@ -159,15 +164,24 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         }
 
         @Override
-        public void clickItemSearchByAIGuessWhatYouLike() {
+        public void clickItemSearchByAIGuessWhatYouLike(boolean isChangeBt, TppData.DetailsListBean detailsListBean) {
+            if (isChangeBt && null != aiuiService) {
+                aiuiService.textUnderstander("换一个");
+            }
         }
 
         @Override
-        public void clickItemSearchByAIGuessWhatYouLikeListHorizontal() {
+        public void clickItemSearchByAIGuessWhatYouLikeListHorizontal(boolean isChangeBt, TppData.DetailsListBean detailsListBean, int position) {
+            if (isChangeBt && null != aiuiService) {
+                aiuiService.textUnderstander("换一个");
+            }
         }
 
         @Override
-        public void clickItemSearchByAIGuessWhatYouLikeListVertical() {
+        public void clickItemSearchByAIGuessWhatYouLikeListVertical(boolean isChangeBt, TppData.DetailsListBean detailsListBean, int position) {
+            if (isChangeBt && null != aiuiService) {
+                aiuiService.textUnderstander("换一个");
+            }
         }
 
         @Override
@@ -176,6 +190,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     };
 
     private View.OnTouchListener onTouchListener = new View.OnTouchListener() {
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
@@ -379,6 +394,8 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                         //当arg1取值为1时，arg2为音量大小。
                         updateVoiceAnimation(aiuiEvent.arg2);
                     }
+                    break;
+                default:
                     break;
             }
         }

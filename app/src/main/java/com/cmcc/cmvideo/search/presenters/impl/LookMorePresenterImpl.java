@@ -59,7 +59,7 @@ public class LookMorePresenterImpl extends AbstractPresenter implements AIUIServ
         aiuiService = service;
         aiuiService.addAIUIEventListener(this);
         if (!TextUtils.isEmpty(speechText)) {
-            aiuiService.getLookMorePage(speechText, 1, 100);
+            aiuiService.getLookMorePage(speechText, 1, 40);
         }
     }
 
@@ -79,8 +79,10 @@ public class LookMorePresenterImpl extends AbstractPresenter implements AIUIServ
     }
 
     public void onTppResult(String result) {
-        if (TextUtils.isEmpty(result) || !aiuiService.isLookMorePageData())
+        if (TextUtils.isEmpty(result) || !aiuiService.isLookMorePageData()){
             return;
+        }
+
         NlpData nlpData = gson.fromJson(result, NlpData.class);
         //判断是否解出了语义，并且当前技能是video
         if (nlpData.rc == 4

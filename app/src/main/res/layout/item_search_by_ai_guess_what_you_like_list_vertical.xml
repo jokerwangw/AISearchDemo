@@ -133,6 +133,7 @@
             android:layout_marginBottom="@dimen/dimen_55dp"
             android:layout_marginTop="@dimen/dimen_10dp"
             android:text="换一个"
+            android:clickable="true"
             android:textColor="@color/appointment_movie_list"
             android:textSize="@dimen/dimen_15dp"
             />
