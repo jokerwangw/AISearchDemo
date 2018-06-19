@@ -155,6 +155,12 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         }
 
         @Override
+        public void clickChangeItem() {
+            if(aiuiService!=null)
+                aiuiService.textUnderstander("换一个");
+        }
+
+        @Override
         public void clickItemSearchByAIIWantTOSee() {
         }
 

@@ -12,6 +12,8 @@ public interface ItemSearchByAIClickListener {
 
     public void clickItemSearchByAIEveryoneISWatching(String speechText, String titleText);
 
+    public void clickChangeItem();
+
     public void clickItemSearchByAIIWantTOSee();
 
     public void clickItemSearchByAIGuessWhatYouLike();

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -243,7 +244,14 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                     itemSearchByAIGuessWhatYouLikeViewHolder.itemArea.setText(TextUtils.isEmpty(detailsListBean.area) ? "制片国家/地区:" : "制片国家/地区:" + detailsListBean.area);
                     itemSearchByAIGuessWhatYouLikeViewHolder.itemReleasetime.setText(TextUtils.isEmpty(detailsListBean.releasetime) ? "上映日期:" : "上映日期:" + detailsListBean.releasetime);
                     itemSearchByAIGuessWhatYouLikeViewHolder.itemVideoDeteil.setText(TextUtils.isEmpty(detailsListBean.detail) ? "" : "" + detailsListBean.detail);
-
+                    itemSearchByAIGuessWhatYouLikeViewHolder.itemChange.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (null != ItemSearchByAIClickListener) {
+                                ItemSearchByAIClickListener.clickChangeItem();
+                            }
+                        }
+                    });
                     if (!TextUtils.isEmpty(detailsListBean.image)) {
                         String image = detailsListBean.image;
                         try {
@@ -320,7 +328,14 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                     itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemArea.setText(TextUtils.isEmpty(detailsListBean.area) ? "制片国家/地区:" : "制片国家/地区:" + detailsListBean.area);
                     itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemReleasetime.setText(TextUtils.isEmpty(detailsListBean.releasetime) ? "上映日期:" : "上映日期:" + detailsListBean.releasetime);
                     itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemVideoDeteil.setText(TextUtils.isEmpty(detailsListBean.detail) ? "" : "" + detailsListBean.detail);
-
+                    itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemChange.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (null != ItemSearchByAIClickListener) {
+                                ItemSearchByAIClickListener.clickChangeItem();
+                            }
+                        }
+                    });
                     if (!TextUtils.isEmpty(detailsListBean.image)) {
                         String image = detailsListBean.image;
                         try {
@@ -426,7 +441,14 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                     itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemVideoName.setText(TextUtils.isEmpty(detailsListBean.name) ? "" : detailsListBean.name);
                     itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemArea.setText(TextUtils.isEmpty(detailsListBean.area) ? "制片国家/地区:" : "制片国家/地区:" + detailsListBean.area);
                     itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemReleasetime.setText(TextUtils.isEmpty(detailsListBean.releasetime) ? "上映日期:" : "上映日期:" + detailsListBean.releasetime);
-
+                    itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemChange.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (null != ItemSearchByAIClickListener) {
+                                ItemSearchByAIClickListener.clickChangeItem();
+                            }
+                        }
+                    });
                     if (!TextUtils.isEmpty(detailsListBean.image)) {
                         String image = detailsListBean.image;
                         try {
