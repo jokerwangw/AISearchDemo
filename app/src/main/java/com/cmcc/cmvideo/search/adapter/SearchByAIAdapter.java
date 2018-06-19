@@ -716,7 +716,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             itemLanguage = (TextView) itemView.findViewById(R.id.item_language);
             itemReleasetime = (TextView) itemView.findViewById(R.id.item_releasetime);
             itemVideoDeteil = (TextView) itemView.findViewById(R.id.tv_video_deteil);
-            itemChange = (TextView) itemView.findViewById(R.id.item_change);
+            itemChange = (TextView) itemView.findViewById(R.id.tv_item_change);
         }
     }
 
@@ -750,7 +750,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             itemReleasetime = (TextView) itemView.findViewById(R.id.item_releasetime);
             itemVideoDeteil = (TextView) itemView.findViewById(R.id.tv_video_deteil);
             llVideoList = (LinearLayout) itemView.findViewById(R.id.ll_video_list);
-            itemChange = (TextView) itemView.findViewById(R.id.tv_change_list);
+            itemChange = (TextView) itemView.findViewById(R.id.tv_item_change);
         }
     }
 
@@ -778,7 +778,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             itemLanguage = (TextView) itemView.findViewById(R.id.item_language);
             itemReleasetime = (TextView) itemView.findViewById(R.id.item_releasetime);
             llVideoList = (LinearLayout) itemView.findViewById(R.id.ll_video_list);
-            itemChange = (TextView) itemView.findViewById(R.id.tv_change_list);
+            itemChange = (TextView) itemView.findViewById(R.id.tv_item_change);
         }
     }
 
