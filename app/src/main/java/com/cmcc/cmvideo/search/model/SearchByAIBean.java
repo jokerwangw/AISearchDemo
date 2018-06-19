@@ -16,6 +16,7 @@ public class SearchByAIBean {
     private String messageFrom;
     private List<TppData.DetailsListBean> videoList;
 
+
     public SearchByAIBean() {
     }
     public SearchByAIBean(String message, int messageType, String messageFrom) {
