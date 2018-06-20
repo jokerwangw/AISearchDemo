@@ -221,14 +221,14 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 break;
             case AiuiConstants.CONTROL_MIGU:
                 //指令控制  如：打开语音助手/投屏播放
-                intentControl(mData, intent);
+//                intentControl(mData, intent);
                 break;
 
             case AiuiConstants.VIDEO_CMD:
                 //视频播放、暂停、下一集、上一集
-                if (isAvailableVideo) {
-                    intentVideoControl(mData, intent);
-                }
+//                if (isAvailableVideo) {
+//                    intentVideoControl(mData, intent);
+//                }
                 break;
             case AiuiConstants.VIDEO_ON_SERVICE:
                 //直播模块

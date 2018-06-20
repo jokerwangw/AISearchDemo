@@ -1,5 +1,7 @@
 package com.cmcc.cmvideo.util;
 
+import retrofit2.http.PUT;
+
 /**
  * @Author lhluo
  * @description Aiui常量
@@ -46,6 +48,36 @@ public class AiuiConstants {
     public final static String VIDEO_PLAY = "play";
     public final static String VIDEO_PREVIOUS = "previousEpisode";
     public final static String VIDEO_NEXT = "nextEpisode";
+    //换一集
+    public final static String VIDEO_CHANGE = "changeEpisode";
+    //快进（退）、快进（退）多长时间
+    public final static String VIDEO_FASTWORD = "fastForward";
+    public final static String VIDEO_BACKWORD = "fastBackward";
+    //快进到or快退到多少时刻
+    public final static String VIDEO_FASTWORD_TO = "fastForwardTo";
+
+    public final static String HOURS = "hour";
+    public final static String MINUTE = "minute";
+    public final static String SECOND = "second";
+
+
+
+
+    //视频控制指令类型  播放  暂停  下一集  上一集  打开语音助手  关闭语音助手  投屏播放
+    public final static int VDO_PAUSE = 1;
+    public final static int VDO_PLAY = 2;
+    public final static int VDO_NEXT = 3;
+    public final static int VDO_PREVIOUS = 4;
+    public final static int VDO_OPEN = 5;
+    public final static int VDO_CLOSE = 6;
+    public final static int VDO_SCREEN = 7;
+    //快进 快退 快进（快退） 换一集
+    public final static int VDO_FASTWORD = 8 ;
+    public final static int VDO_BACKWORD = 9 ;
+    public final static int VDO_FASTWORD_TO = 10 ;
+    public final static int VDO_CHANGE = 11 ;
+
+
 
     //自定义直播技能
     public final static String VIDEO_ON_SERVICE = "LINGXI2018.onlive";
