@@ -407,50 +407,50 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             case AiuiConstants.VIDEO_CMD_INTENT:
             case AiuiConstants.QUERY_INTENT:
                 int messageType = MESSAGE_TYPE_NORMAL;
-                while (true) {
-                    // 判断意图是使用哪个卡片展示
-                    if (map.size()<3) { //猜你喜欢
-
-                        AiResponse.Response response = AiResponse.getInstance().getGuessWhatYouLike();
-                        boolean hasSubserials = true;//hasSubserials(nlpData);
-                        if (isCategory(map,CategoryType.MOVIE)) {
-                            messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
-                        } else if ((isCategory(map,CategoryType.TV) || isCategory(map,CategoryType.DOC) || isCategory(map,CategoryType.CARTOON)) && hasSubserials) {
-                            messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
-                        } else if (isCategory(map,CategoryType.VARIETY) && hasSubserials) {
-                            messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
-                        }
+                /*  暂时去除该模块判断 后续会加上
+                if (map.containsKey(AiuiConstants.VIDEO_TIME_DESCR)) { // 有时间 的表示最近好看的电影
+                    AiResponse.Response response = AiResponse.getInstance().getNewVideo();
+                    messageType = MESSAGE_TYPE_THE_LATEST_VIDEO;
+                    if (response.respType == AiResponse.RespType.VIDEO_TYPE) {
                         //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
-                        if (response.respType == AiResponse.RespType.VIDEO_TYPE && messageType == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE) {
+                        if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && map.get(AiuiConstants.VIDEO_CATEGORY).equals("电影")) {
                             response.response = String.format(response.response, "电影");
-                        }
-                        //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
-                        if (response.respType == AiResponse.RespType.VIDEO_TYPE && messageType != MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE) {
+                        } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY)) {
                             response.response = String.format(response.response, "视频");
                         }
-                        //播报电影名称的反馈语
-                        if (response.respType == AiResponse.RespType.VIDEO_NAME) {
-                            response.response = String.format(response.response, nlpData.data.lxresult.data.detailslist.get(0).name);
-                        }
-                        responseTts = response;
-                        break;
+                    } else if (response.respType == AiResponse.RespType.VIDEO_NAME) {
+                        response.response = String.format(response.response, nlpData.data.lxresult.data.detailslist.get(0).name);
                     }
-                    //                        if (map.containsKey(AiuiConstants.VIDEO_TIME_DESCR)) { // 有时间 的表示最近好看的电影
-                    //                            AiResponse.Response response = AiResponse.getInstance().getNewVideo();
-                    //                            messageType = MESSAGE_TYPE_THE_LATEST_VIDEO;
-                    //                            if (response.respType == AiResponse.RespType.VIDEO_TYPE) {
-                    //                                //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
-                    //                                if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && map.get(AiuiConstants.VIDEO_CATEGORY).equals("电影")) {
-                    //                                    response.response = String.format(response.response, "电影");
-                    //                                } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY)) {
-                    //                                    response.response = String.format(response.response, "视频");
-                    //                                }
-                    //                            } else if (response.respType == AiResponse.RespType.VIDEO_NAME) {
-                    //                                response.response = String.format(response.response, nlpData.data.lxresult.data.detailslist.get(0).name);
-                    //                            }
-                    //                            responseTts = response;
-                    //                            break;
-                    //                        }
+                    responseTts = response;
+                    break;
+                }
+                */
+
+                // 判断意图是使用哪个卡片展示
+                if (map.size()<3&&map.containsKey(AiuiConstants.VIDEO_CATEGORY)) { //猜你喜欢
+                    AiResponse.Response response = AiResponse.getInstance().getGuessWhatYouLike();
+                    boolean hasSubserials = true;//hasSubserials(nlpData);
+                    if (isCategory(map,CategoryType.MOVIE)) {
+                        messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
+                    } else if ((isCategory(map,CategoryType.TV) || isCategory(map,CategoryType.DOC) || isCategory(map,CategoryType.CARTOON)) && hasSubserials) {
+                        messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
+                    } else if (isCategory(map,CategoryType.VARIETY) && hasSubserials) {
+                        messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
+                    }
+                    //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
+                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && messageType == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE) {
+                        response.response = String.format(response.response, "电影");
+                    }
+                    //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
+                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && messageType != MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE) {
+                        response.response = String.format(response.response, "视频");
+                    }
+                    //播报电影名称的反馈语
+                    if (response.respType == AiResponse.RespType.VIDEO_NAME) {
+                        response.response = String.format(response.response, nlpData.data.lxresult.data.detailslist.get(0).name);
+                    }
+                    responseTts = response;
+                }else {
                     AiResponse.Response response = AiResponse.getInstance().getEveryoneSee();
                     messageType = MESSAGE_TYPE_EVERYONE_IS_WATCHING;
                     if (response.respType == AiResponse.RespType.VIDEO_TYPE) {
@@ -462,7 +462,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         }
                     }
                     responseTts = response;
-                    break;
                 }
                 if (messageType == MESSAGE_TYPE_NORMAL
                         && nlpData.answer != null
