@@ -483,14 +483,14 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 */
 
                 // 判断意图是使用哪个卡片展示
-                if (isCommend(map)) { //猜你喜欢
+                if (isCategory(map)) { //猜你喜欢
                     AiResponse.Response response = AiResponse.getInstance().getGuessWhatYouLike();
                     boolean hasSubserials = true;//hasSubserials(nlpData);
-                    if (isCategory(map, CategoryType.MOVIE)) {
+                    if (checkCategory(map, CategoryType.MOVIE)) {
                         messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
-                    } else if ((isCategory(map, CategoryType.TV) || isCategory(map, CategoryType.DOC) || isCategory(map, CategoryType.CARTOON)) && hasSubserials) {
+                    } else if ((checkCategory(map, CategoryType.TV) || checkCategory(map, CategoryType.DOC) || checkCategory(map, CategoryType.CARTOON)) && hasSubserials) {
                         messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
-                    } else if (isCategory(map, CategoryType.VARIETY) && hasSubserials) {
+                    } else if (checkCategory(map, CategoryType.VARIETY) && hasSubserials) {
                         messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
                     }
                     //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
@@ -613,28 +613,12 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     }
 
     /**
-     * 判断是不是推荐内容
-     * @return
-     */
-    private boolean isCommend(Map<String, String> solts){
-        if(solts ==null || solts.size()>2)
-            return false;
-        if(solts.size() ==1) {
-            return solts.containsKey(AiuiConstants.VIDEO_CATEGORY)||solts.containsKey(AiuiConstants.VIDEO_TAG);
-        }
-        if(solts.size() ==2){
-            return solts.containsKey(AiuiConstants.VIDEO_CATEGORY)&&solts.containsKey(AiuiConstants.VIDEO_TAG);
-        }
-        return false;
-    }
-
-    /**
      * 判断当前类目是什么
      * @param solts
      * @param categoryType
      * @return
      */
-    private boolean isCategory(Map<String, String> solts,CategoryType categoryType){
+    private boolean checkCategory(Map<String, String> solts, CategoryType categoryType){
         if(solts == null||solts.size()>2)
             return false;
         String cate = "";
@@ -663,6 +647,29 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             default:
                 return false;
         }
+    }
+
+    /**
+     * 判断当前类目是什么
+     * @param solts
+     * @return
+     */
+    private boolean isCategory(Map<String, String> solts){
+        if(solts == null||solts.size()>2)
+            return false;
+        String cate = "";
+        if (solts.size() == 1) {
+            if (solts.containsKey(AiuiConstants.VIDEO_CATEGORY))
+                cate = solts.get(AiuiConstants.VIDEO_CATEGORY);
+            if (solts.containsKey(AiuiConstants.VIDEO_TAG))
+                cate = solts.get(AiuiConstants.VIDEO_TAG);
+        } else if (solts.size() == 2) {
+            String category = solts.get(AiuiConstants.VIDEO_CATEGORY);
+            if ("片".equals(category) || "节目".equals(category)||"影视".equals(category)){
+                cate = solts.get(AiuiConstants.VIDEO_TAG);
+            }
+        }
+        return "电视剧,纪录,纪实,电影,片,卡通,动漫,动画,综艺".contains(cate);
     }
 
     /**
