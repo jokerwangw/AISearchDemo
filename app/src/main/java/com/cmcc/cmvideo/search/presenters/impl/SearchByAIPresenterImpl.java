@@ -427,7 +427,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 */
 
                 // 判断意图是使用哪个卡片展示
-                if (map.size()<3&&map.containsKey(AiuiConstants.VIDEO_CATEGORY)) { //猜你喜欢
+                if (isCommend(map)) { //猜你喜欢
                     AiResponse.Response response = AiResponse.getInstance().getGuessWhatYouLike();
                     boolean hasSubserials = true;//hasSubserials(nlpData);
                     if (isCategory(map,CategoryType.MOVIE)) {
@@ -549,12 +549,35 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         if(nlpData==null
                 ||nlpData.data ==null
                 ||nlpData.data.lxresult==null
+                ||nlpData.data.lxresult.data ==null
                 ||nlpData.data.lxresult.data.detailslist ==null
                 ||nlpData.data.lxresult.data.detailslist.size() == 0)
             return false;
         return true;
     }
 
+    /**
+     * 判断是不是推荐内容
+     * @return
+     */
+    private boolean isCommend(Map<String, String> solts){
+        if(solts ==null || solts.size()>2)
+            return false;
+        if(solts.size() ==1) {
+            return solts.containsKey(AiuiConstants.VIDEO_CATEGORY)||solts.containsKey(AiuiConstants.VIDEO_TAG);
+        }
+        if(solts.size() ==2){
+            return solts.containsKey(AiuiConstants.VIDEO_CATEGORY)&&solts.containsKey(AiuiConstants.VIDEO_TAG);
+        }
+        return false;
+    }
+
+    /**
+     * 判断当前类目是什么
+     * @param solts
+     * @param categoryType
+     * @return
+     */
     private boolean isCategory(Map<String, String> solts,CategoryType categoryType){
         if(solts == null||solts.size()>2)
             return false;
@@ -566,7 +589,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 cate = solts.get(AiuiConstants.VIDEO_TAG);
         }else if(solts.size() ==2){
             String category = solts.get(AiuiConstants.VIDEO_CATEGORY);
-            if ("片".equals(category) || "节目".equals(category)){
+            if ("片".equals(category) || "节目".equals(category)||"影视".equals(category)){
                 cate = solts.get(AiuiConstants.VIDEO_TAG);
             }
         }
