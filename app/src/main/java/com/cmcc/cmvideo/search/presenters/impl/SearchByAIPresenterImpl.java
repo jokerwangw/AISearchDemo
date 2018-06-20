@@ -166,9 +166,13 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     Logger.debug("viewCmd=================--------------===================" + service);
                     sendMessage(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
                 }
-                AiResponse.Response response = AiResponse.getInstance().getNetWorkStatus();
-                aiuiService.tts(response.response);
-                sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
+//                if (!hasVideoData(mData)
+//                        || !mData.data.lxresult.code.equals("000000")
+//                        ) {
+//                    AiResponse.Response response = AiResponse.getInstance().getNetWorkStatus();
+//                    aiuiService.tts(response.response);
+//                    sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
+//                }
                 return;
             }
         }
@@ -448,14 +452,14 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         if (!hasVideoData(nlpData)
                 || !nlpData.data.lxresult.code.equals("000000")
                 ) {
-            if (nlpData.answer != null
-                    && !TextUtils.isEmpty(nlpData.answer.text)) {
+//            if (nlpData.answer != null
+//                    && !TextUtils.isEmpty(nlpData.answer.text)) {
                 //没有影片数据且存在answer 则播报  随机播报一条反馈语言
                 AiResponse.Response response = AiResponse.getInstance().getNetWorkStatus();
                 aiuiService.tts(response.response);
 //                aiuiService.tts(nlpData.answer.text);
                 sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
-            }
+//            }
             return;
         }
 
@@ -665,13 +669,13 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         if (solts == null || solts.size() > 2)
             return false;
         boolean reslult = false;
-        if(solts.size() ==1) {
-            reslult = solts.containsKey(AiuiConstants.VIDEO_CATEGORY)||solts.containsKey(AiuiConstants.VIDEO_TAG);
+        if (solts.size() == 1) {
+            reslult = solts.containsKey(AiuiConstants.VIDEO_CATEGORY) || solts.containsKey(AiuiConstants.VIDEO_TAG);
         }
-        if(solts.size() ==2){
-            reslult = solts.containsKey(AiuiConstants.VIDEO_CATEGORY)&&solts.containsKey(AiuiConstants.VIDEO_TAG);
+        if (solts.size() == 2) {
+            reslult = solts.containsKey(AiuiConstants.VIDEO_CATEGORY) && solts.containsKey(AiuiConstants.VIDEO_TAG);
         }
-        if(reslult) {
+        if (reslult) {
             String cate = "";
             if (solts.size() == 1) {
                 if (solts.containsKey(AiuiConstants.VIDEO_CATEGORY))
