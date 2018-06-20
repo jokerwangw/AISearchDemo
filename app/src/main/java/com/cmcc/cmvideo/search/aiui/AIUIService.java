@@ -14,8 +14,15 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.cmcc.cmvideo.search.aiui.bean.ControlEventBean;
 import com.cmcc.cmvideo.search.aiui.bean.IatBean;
 import com.cmcc.cmvideo.search.aiui.bean.MicBean;
+import com.cmcc.cmvideo.search.aiui.bean.NlpData;
+import com.cmcc.cmvideo.search.aiui.bean.TppData;
+import com.cmcc.cmvideo.search.model.SearchByAIBean;
+import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
+import com.cmcc.cmvideo.search.presenters.impl.SearchByAIPresenterImpl;
+import com.cmcc.cmvideo.util.AiuiConstants;
 import com.cmcc.cmvideo.util.LogUtil;
 import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIAgent;
@@ -34,9 +41,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_FROM_AI;
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_FROM_USER;
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_CAN_ASK_AI;
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_NORMAL;
+import static com.iflytek.aiui.AIUIConstant.CMD_SET_PARAMS;
 
 public class AIUIService extends Service {
     private static final String TAG = "AIUIService";
@@ -51,10 +66,22 @@ public class AIUIService extends Service {
     private boolean hasSyncData = false;
     private boolean hasClearData = false;
     private boolean hasCancelRecordAudio = false;
+    private Gson gson;
+    private String intent = null;
+    private NlpData mData = null;
+    private long startTime = 0;
+    private final int TIME_OUT = 5000;
+    //是否是在投屏状态或者插入耳机状态
+    private boolean isAvailableVideo = false;
+    private Map<String, String> solts = null;
+    private String controlVdoTimeHour = null, controlVdoTimeMinu = null, controlVdoTimeSecon = null;
+
 
     @Override
     public void onCreate() {
         super.onCreate();
+        isAvailableVideo = false;
+        gson = new Gson();
         aiuiService = new AIUIServiceImpl();
         eventListenerManager = new AIUIEventListenerManager();
         init();
@@ -103,7 +130,7 @@ public class AIUIService extends Service {
             JSONObject paramJson = new JSONObject();
             paramJson.put("wakeup_mode", "ivw");
             objectJson.put("speech", paramJson);
-            sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
+            sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
             mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
@@ -136,7 +163,7 @@ public class AIUIService extends Service {
             JSONObject paramJson = new JSONObject();
             paramJson.put("wakeup_mode", "off");
             objectJson.put("speech", paramJson);
-            sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
+            sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
             mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
@@ -160,6 +187,19 @@ public class AIUIService extends Service {
     }
 
     private class AIUIServiceImpl extends Binder implements IAIUIService {
+        @Override
+        public void setInteractMode(boolean isOnShot) {
+            if (isOnShot) {
+                String setParams = "{\"speech\":{\"interact_mode\":\"oneshot\"}}";
+                AIUIMessage setMsg = new AIUIMessage(CMD_SET_PARAMS, 0, 0, setParams, null);
+                mAIUIAgent.sendMessage(setMsg);
+            } else {
+                String setParams = "{\"speech\":{\"interact_mode\":\"continuous\"}}";
+                AIUIMessage setMsg = new AIUIMessage(CMD_SET_PARAMS, 0, 0, setParams, null);
+                mAIUIAgent.sendMessage(setMsg);
+            }
+        }
+
         @Override
         public void tts(String ttsText) {
             AIUIService.this.tts(ttsText);
@@ -209,7 +249,7 @@ public class AIUIService extends Service {
                         paramJson.put(item.getKey(), item.getValue());
                     }
                     objectJson.put("userparams", paramJson);
-                    sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
+                    sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -260,6 +300,7 @@ public class AIUIService extends Service {
             return hasSetLookMorePageSize;
         }
 
+
         @Override
         public void cancelRecordAudio() {
             hasCancelRecordAudio = true;
@@ -273,6 +314,251 @@ public class AIUIService extends Service {
             AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, params, textData);
             sendMessage(msg);
         }
+    }
+
+    /**
+     * 控制指令 播放、暂停、下一集、上一集
+     */
+    private void controlCmdIntent(String result) {
+        if (TextUtils.isEmpty(result)) {
+            return;
+        }
+        mData = gson.fromJson(result, NlpData.class);
+        String service = mData.service;
+//        if (!AiuiConstants.VIEWCMD_SERVICE.equals(service)) {
+//            Logger.debug("听写用户输入数据=====" + mData.text);
+//            sendMessageUI(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
+//        }
+
+        //如果包含moreResults且service是video则直接返回，如果是viewCmd则要发送消息
+//        if (null != mData && null != mData.moreResults) {
+//            mData = mData.moreResults.get(0);
+//            if (("video".equals(mData.service))) {
+//                Logger.debug("video=================++++++++++++++++++===================" + mData.service);
+//                if (AiuiConstants.VIEWCMD_SERVICE.equals(service)) {
+//                    Logger.debug("viewCmd=================--------------===================" + service);
+//                    sendMessageUI(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
+//                } else {
+//                    return;
+//                }
+//            }
+//        } else {
+//            Logger.debug("video====================================" + service);
+//        }
+
+        if (mData.rc == 4) {
+            //播报
+            if ((System.currentTimeMillis() - startTime) > TIME_OUT) {
+                // 超过5秒表示 且rc=4（无法解析出语义） ，可显示推荐说法卡片
+                sendMessageUI("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI);
+            } else {
+                aiuiService.tts(AiuiConstants.ERROR_MESSAGE);
+            }
+            return;
+        }
+
+        try {
+            //解析出当前语义状态，以便上传同步客户端状态，实现多伦对话
+            JSONObject jsonObject = new JSONObject(result);
+            if (jsonObject.has("state")) {
+                JSONObject stateObj = jsonObject.getJSONObject("state");
+                Iterator<String> keysIterator = stateObj.keys();
+                while (keysIterator.hasNext()) {
+                    lastNlpState = keysIterator.next();
+                    Logger.debug("lastNlpState 【" + lastNlpState + "】");
+                }
+            }
+            aiuiService.syncSpeakableData(lastNlpState, "");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (null != mData.semantic) {
+            intent = mData.semantic.get(0).getIntent();
+        }
+
+        switch (service) {
+            case AiuiConstants.VIDEO_CMD:
+                //视频播放、暂停、下一集、上一集  换一集  快进 快退  快进到xxx
+                intentVideoControl(mData, intent);
+                break;
+            case AiuiConstants.CONTROL_MIGU:
+                //指令控制  如：打开语音助手/投屏播放
+                intentControl(mData, intent);
+                break;
+        }
+
+
+    }
+
+
+    /**
+     * 处理控制指令
+     *
+     * @param intent
+     */
+    private void intentControl(NlpData mData, String intent) {
+        switch (intent) {
+            case AiuiConstants.CONTROL_INTENT:
+                // TODO: 2018/5/30 控制指令跳转
+                if (null != mData.semantic && null != mData.semantic.get(0) && null != mData.semantic.get(0).getSlots()) {
+                    if (mData.semantic.get(0).getSlots().size() == 1) {
+                        String norMalValue = mData.semantic.get(0).getSlots().get(0).normValue;
+                        if (norMalValue.equals("open")) {
+                            EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_OPEN));
+                            Logger.debug("VDO_OPEN=============");
+                        } else if (norMalValue.equals("close")) {
+                            EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_CLOSE));
+                            Logger.debug("VDO_CLOSE============");
+                        }
+                    }
+                }
+                aiuiService.tts("正在为您" + mData.text);
+                break;
+            case AiuiConstants.SREEN_INTENT:
+                // TODO: 2018/5/30 投屏跳转
+                isAvailableVideo = true;
+                EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_SCREEN));
+                aiuiService.tts("正在为您" + mData.text);
+                break;
+            default:
+                break;
+        }
+
+    }
+
+
+    /**
+     * 处理视频播放cmd技能
+     */
+    private void intentVideoControl(NlpData mData, String intent) {
+        if (mData.semantic == null || mData.semantic.size() == 0) {
+            return;
+        }
+
+        if (AiuiConstants.VIDEO_CMD_INTENT.equals(mData.semantic.get(0).intent)) {
+            solts = formatSlotsToMap(mData.semantic.get(0).slots);
+            if (solts.containsKey(AiuiConstants.VIDEO_INSTYPE)) {
+                switch (solts.get(AiuiConstants.VIDEO_INSTYPE)) {
+                    case AiuiConstants.VIDEO_PAUSE:
+                        //暂停
+                        Logger.debug("暂停===" + intent);
+                        EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_PAUSE));
+                        break;
+                    case AiuiConstants.VIDEO_PLAY:
+                        //播放
+                        EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_PLAY));
+                        Logger.debug("播放===" + intent);
+                        break;
+                    case AiuiConstants.VIDEO_PREVIOUS:
+                        //上一集
+                        EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_PREVIOUS));
+                        Logger.debug("上一集===" + intent);
+                        break;
+                    case AiuiConstants.VIDEO_NEXT:
+                        //下一集
+                        EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_NEXT));
+                        Logger.debug("下一集===" + intent);
+                        break;
+                    case AiuiConstants.VIDEO_CHANGE:
+                        //换一集
+                        EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_CHANGE));
+                        Logger.debug("换一集===" + intent);
+                        break;
+                    case AiuiConstants.VIDEO_FASTWORD:
+                        //快进
+                        swControl(mData);
+                        Logger.debug("快进===" + intent);
+                        break;
+                    case AiuiConstants.VIDEO_BACKWORD:
+                        //快退
+                        swControl(mData);
+                        Logger.debug("快退===" + intent);
+                        break;
+                    case AiuiConstants.VIDEO_FASTWORD_TO:
+                        //快进or快退到某个时间
+                        swControl(mData);
+                        Logger.debug("快进到XXXXX===" + intent);
+                        break;
+
+                    default:
+                        break;
+
+                }
+            }
+        }
+
+    }
+
+
+    /**
+     * 视频播放指令控制
+     *
+     * @param mData
+     */
+    private void swControl(NlpData mData) {
+        solts = formatSlotsToMap(mData.semantic.get(0).slots);
+        if (solts.containsKey(AiuiConstants.VIDEO_INSTYPE)) {
+            //快进 or 快退
+            if (solts.size() == 1) {
+                if (AiuiConstants.VIDEO_FASTWORD.equals(solts.get(AiuiConstants.VIDEO_INSTYPE))) {
+                    //快进
+                    Logger.debug("快进========" + solts.get(AiuiConstants.VIDEO_INSTYPE));
+                    EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_FASTWORD));
+
+                } else if (AiuiConstants.VIDEO_BACKWORD.equals(solts.get(AiuiConstants.VIDEO_INSTYPE))) {
+                    //快退
+                    Logger.debug("快退========" + solts.get(AiuiConstants.VIDEO_INSTYPE));
+                    EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_BACKWORD));
+
+                }
+            } else if (solts.size() == 2 || solts.size() == 3 || solts.size() == 4) {
+                //快进1小时  、1分钟  、1秒  单值  两值  三值
+                formatControlTime(solts);
+            }
+
+        }
+
+
+    }
+
+    /**
+     * 控制视频时间
+     */
+    private void formatControlTime(Map<String, String> solts) {
+        controlVdoTimeHour = null;
+        controlVdoTimeMinu = null;
+        controlVdoTimeSecon = null;
+
+        if (null != solts.get(AiuiConstants.HOURS)
+                && solts.containsKey(AiuiConstants.HOURS)) {
+            //小时
+            controlVdoTimeHour = solts.get(AiuiConstants.HOURS);
+
+        }
+
+        if (null != solts.get(AiuiConstants.MINUTE)
+                && solts.containsKey(AiuiConstants.MINUTE)) {
+            //分钟
+            controlVdoTimeMinu = solts.get(AiuiConstants.MINUTE);
+        }
+
+
+        if (null != solts.get(AiuiConstants.SECOND)
+                && solts.containsKey(AiuiConstants.SECOND)) {
+            //秒
+            controlVdoTimeSecon = solts.get(AiuiConstants.SECOND);
+
+        }
+
+        if (AiuiConstants.VIDEO_FASTWORD.equals(solts.get(AiuiConstants.VIDEO_INSTYPE))
+                || AiuiConstants.VIDEO_BACKWORD.equals(solts.get(AiuiConstants.VIDEO_INSTYPE))) {
+            EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_BACKWORD, controlVdoTimeHour, controlVdoTimeMinu, controlVdoTimeSecon));
+
+        } else if (AiuiConstants.VIDEO_FASTWORD_TO.equals(solts.get(AiuiConstants.VIDEO_INSTYPE))) {
+            EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_FASTWORD_TO, controlVdoTimeHour, controlVdoTimeMinu, controlVdoTimeSecon));
+        }
+        Logger.debug("时间打印====" + controlVdoTimeHour + "=====" + controlVdoTimeMinu + "----" + controlVdoTimeSecon);
     }
 
 
@@ -317,7 +603,7 @@ public class AIUIService extends Service {
                                     if (resultStr.equals("{}") || resultStr.isEmpty()) {
                                         return;
                                     }
-
+                                    controlCmdIntent(resultStr);
                                     Logger.debug("NLP 【" + resultStr + "】");
                                     eventListenerManager.onResult(null, resultStr, null);
                                 } else {
@@ -418,7 +704,7 @@ public class AIUIService extends Service {
             paramJson.put("pageindex", pageIndex);
             paramJson.put("pagesize", pageSize);
             objectJson.put("userparams", paramJson);
-            sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
+            sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -431,7 +717,7 @@ public class AIUIService extends Service {
             JSONObject audioParams = new JSONObject();
             audioParams.put("pers_param", "{\"uid\":\"\"}");
             params.put("audioparams", audioParams);
-            AIUIMessage setMsg = new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, params.toString(), null);
+            AIUIMessage setMsg = new AIUIMessage(CMD_SET_PARAMS, 0, 0, params.toString(), null);
             mAIUIAgent.sendMessage(setMsg);
         } catch (JSONException e) {
         }
@@ -542,6 +828,7 @@ public class AIUIService extends Service {
         void onResult(String iatResult, String nlpReslult, String tppResult);
 
         void onEvent(AIUIEvent event);
+
     }
 
     private static Gson mGson;
@@ -592,4 +879,61 @@ public class AIUIService extends Service {
             }
         }
     };
+
+    private Map<String, String> formatSlotsToMap(List<NlpData.SlotsBean> slotsBeans) {
+        Map<String, String> map = new HashMap<>();
+        if (slotsBeans == null || slotsBeans.size() == 0) {
+            return map;
+        }
+        for (NlpData.SlotsBean slot : slotsBeans) {
+            map.put(slot.name, slot.value);
+        }
+        return map;
+    }
+
+
+    private int lastResponseVideoMessageType = MESSAGE_TYPE_NORMAL;
+    private List<TppData.DetailsListBean> lastVideoList = null;
+    //最后一次语义的状态
+    private String lastNlpState = "";
+    private String lastRequestVideoText = "";
+
+    /**
+     * 发送消息更新UI
+     *
+     * @param msg         消息内容
+     * @param messageType 消息内容（普通闲聊内容，影片内容）
+     * @param msgFrom     消息来源，
+     */
+    private void sendMessageUI(String msg, int messageType, String msgFrom) {
+        sendUIMessage(msg, messageType, msgFrom, null);
+    }
+
+    /**
+     * 发送消息更新UI
+     *
+     * @param msg         消息内容
+     * @param messageType 消息内容（普通闲聊内容，影片内容）
+     * @param msgFrom     消息来源，
+     * @param videoList   影片内容影片数据，
+     */
+    private void sendUIMessage(String msg, int messageType, String msgFrom, List<TppData.DetailsListBean> videoList) {
+        if (videoList != null && videoList.size() > 0) {
+            lastResponseVideoMessageType = messageType;
+            lastVideoList = videoList;
+            //服务端返回数据就去同步所见即可说
+            StringBuilder hotInfo = new StringBuilder("查看更多|换一个|");
+            for (TppData.DetailsListBean bean : videoList) {
+                hotInfo.append(bean.name).append("|");
+            }
+            hotInfo = new StringBuilder(hotInfo.substring(0, hotInfo.lastIndexOf("|")));
+            Logger.debug("所见即可说同步数据【" + hotInfo + "】");
+            AIUIService.this.syncSpeakableData(lastNlpState, hotInfo.toString());
+        }
+        List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
+        SearchByAIBean searchByAIBean = new SearchByAIBean(msg, messageType, msgFrom, videoList);
+        searchByAIBean.setSpeechText(lastRequestVideoText);
+        messageList.add(searchByAIBean);
+        EventBus.getDefault().post(new SearchByAIEventBean(messageList));
+    }
 }
