@@ -657,19 +657,29 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private boolean isCategory(Map<String, String> solts){
         if(solts == null||solts.size()>2)
             return false;
-        String cate = "";
-        if (solts.size() == 1) {
-            if (solts.containsKey(AiuiConstants.VIDEO_CATEGORY))
-                cate = solts.get(AiuiConstants.VIDEO_CATEGORY);
-            if (solts.containsKey(AiuiConstants.VIDEO_TAG))
-                cate = solts.get(AiuiConstants.VIDEO_TAG);
-        } else if (solts.size() == 2) {
-            String category = solts.get(AiuiConstants.VIDEO_CATEGORY);
-            if ("片".equals(category) || "节目".equals(category)||"影视".equals(category)){
-                cate = solts.get(AiuiConstants.VIDEO_TAG);
-            }
+        boolean reslult = false;
+        if(solts.size() ==1) {
+            reslult = solts.containsKey(AiuiConstants.VIDEO_CATEGORY)||solts.containsKey(AiuiConstants.VIDEO_TAG);
         }
-        return "电视剧,纪录,纪实,电影,片,卡通,动漫,动画,综艺".contains(cate);
+        if(solts.size() ==2){
+            reslult = solts.containsKey(AiuiConstants.VIDEO_CATEGORY)&&solts.containsKey(AiuiConstants.VIDEO_TAG);
+        }
+        if(reslult) {
+            String cate = "";
+            if (solts.size() == 1) {
+                if (solts.containsKey(AiuiConstants.VIDEO_CATEGORY))
+                    cate = solts.get(AiuiConstants.VIDEO_CATEGORY);
+                if (solts.containsKey(AiuiConstants.VIDEO_TAG))
+                    cate = solts.get(AiuiConstants.VIDEO_TAG);
+            } else if (solts.size() == 2) {
+                String category = solts.get(AiuiConstants.VIDEO_CATEGORY);
+                if ("片".equals(category) || "节目".equals(category) || "影视".equals(category)) {
+                    cate = solts.get(AiuiConstants.VIDEO_TAG);
+                }
+            }
+            return "电视剧,纪录,纪实,电影,片,卡通,动漫,动画,综艺".contains(cate);
+        }
+        return false;
     }
 
     /**
