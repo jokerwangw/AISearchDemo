@@ -454,11 +454,11 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 ) {
 //            if (nlpData.answer != null
 //                    && !TextUtils.isEmpty(nlpData.answer.text)) {
-                //没有影片数据且存在answer 则播报  随机播报一条反馈语言
-                AiResponse.Response response = AiResponse.getInstance().getNetWorkStatus();
-                aiuiService.tts(response.response);
+            //没有影片数据且存在answer 则播报  随机播报一条反馈语言
+            AiResponse.Response response = AiResponse.getInstance().getNetWorkStatus();
+            aiuiService.tts(response.response);
 //                aiuiService.tts(nlpData.answer.text);
-                sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
+            sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
 //            }
             return;
         }
