@@ -159,21 +159,17 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         //如 我想看电影 是开放问答的技能，此时会返回moreResults字段，但是这个是要走后处理，所以moreResults里面如果是video就直接返回
         //如果包含moreResults且service是video则直接返回，如果是viewCmd则要发送消息
         if (null != mData && null != mData.moreResults) {
-            mData = mData.moreResults.get(0);
-            if (("video".equals(mData.service))) {
-                Logger.debug("video=================++++++++++++++++++===================" + mData.service);
-                if (AiuiConstants.VIEWCMD_SERVICE.equals(service)) {
-                    Logger.debug("viewCmd=================--------------===================" + service);
-                    sendMessage(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
-                }
-//                if (!hasVideoData(mData)
-//                        || !mData.data.lxresult.code.equals("000000")
-//                        ) {
-//                    AiResponse.Response response = AiResponse.getInstance().getNetWorkStatus();
-//                    aiuiService.tts(response.response);
-//                    sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
-//                }
+            if ("video".equals(mData.service) && "video".equals(mData.moreResults.get(0).service)) {
+                Logger.debug("video - video " + service);
                 return;
+            }
+            if ("openQA".equals(mData.service) && "video".equals(mData.moreResults.get(0).service)
+                    ||"video".equals(mData.service) && "openQA".equals(mData.moreResults.get(0).service)){
+                Logger.debug("openQA - video " + service);
+                return;
+            }
+            if ("video".equals(mData.service)) {
+                mData = mData.moreResults.get(0);
             }
         }
 
@@ -448,18 +444,21 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 return;
             }
         }
+
+        if (nlpData.moreResults != null) {
+            if ("QUERY".equals(nlpData.moreResults.get(0).semantic.get(0).intent)) {
+                nlpData = nlpData.moreResults.get(0);
+            }
+        }
+
         //语义后处理没有返回数据则直接退出
         if (!hasVideoData(nlpData)
                 || !nlpData.data.lxresult.code.equals("000000")
                 ) {
-//            if (nlpData.answer != null
-//                    && !TextUtils.isEmpty(nlpData.answer.text)) {
             //没有影片数据且存在answer 则播报  随机播报一条反馈语言
             AiResponse.Response response = AiResponse.getInstance().getNetWorkStatus();
             aiuiService.tts(response.response);
-//                aiuiService.tts(nlpData.answer.text);
             sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
-//            }
             return;
         }
 
@@ -503,11 +502,11 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
                     }
                     //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
-                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && messageType == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE) {
+                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.MOVIE)) {
                         response.response = String.format(response.response, "电影");
                     }
                     //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
-                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && messageType != MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE) {
+                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && !checkCategory(map, CategoryType.MOVIE)) {
                         response.response = String.format(response.response, "视频");
                     }
                     //播报电影名称的反馈语
@@ -581,6 +580,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         }
         if (map.containsKey(AiuiConstants.VIDEO_TIME)) {
             cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME) + "”" + "的";
+        }
+        if (map.containsKey(AiuiConstants.VIDEO_TIME_DESCR)) {
+            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME_DESCR) + "”";
         }
         if (map.containsKey(AiuiConstants.VIDEO_AREA)) {
             cardTitle += "“" + map.get(AiuiConstants.VIDEO_AREA) + "”";
