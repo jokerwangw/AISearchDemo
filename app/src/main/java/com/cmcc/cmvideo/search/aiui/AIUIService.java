@@ -89,6 +89,11 @@ public class AIUIService extends Service {
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
+    }
+
+    @Override
     public void onDestroy() {
         if (mAIUIAgent != null) {
             mAIUIAgent.destroy();
@@ -379,8 +384,12 @@ public class AIUIService extends Service {
 
         switch (service) {
             case AiuiConstants.VIDEO_CMD:
-                //视频播放、暂停、下一集、上一集  换一集  快进 快退  快进到xxx
-                intentVideoControl(mData, intent);
+                //耳机插入场景下执行控制指令
+                if (isAvailableVideo){
+                    //视频播放、暂停、下一集、上一集  换一集  快进 快退  快进到xxx
+                    intentVideoControl(mData, intent);
+                }
+
                 break;
             case AiuiConstants.CONTROL_MIGU:
                 //指令控制  如：打开语音助手/投屏播放
