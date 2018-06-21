@@ -688,7 +688,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     cate = solts.get(AiuiConstants.VIDEO_TAG);
                 }
             }
-            return "电视剧,纪录,纪实,电影,片,卡通,动漫,动画,综艺".contains(cate);
+            return TextUtils.isEmpty(cate)?false:"电视剧,纪录,纪实,电影,片,卡通,动漫,动画,综艺".contains(cate);
         }
         return false;
     }
