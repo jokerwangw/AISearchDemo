@@ -1,5 +1,7 @@
 package com.cmcc.cmvideo.util;
 
+import retrofit2.http.PUT;
+
 /**
  * @Author lhluo
  * @description Aiui常量
@@ -17,7 +19,34 @@ public class AiuiConstants {
     //指令控制技能名  如：开启/关闭语音助手、投屏指令
     public final static String CONTROL_MIGU = "LINGXI2018.control_migu";
     public final static String QUERY_MIGU = "LINGXI2018.businessQuery";
+    //商店技能控制技能
     public final static String VIDEO_CMD = "cmd";
+
+    //商店技能 世界杯
+    public final static String WORLD_CUP_SERVICE = "AIUI.WorldCup";
+
+    //世界杯意图名
+    public final static String WORLD_CUP_QUERY_OPEN = "QUERY_OPEN";
+    public final static String WORLD_CUP_SERCH_BY_DATE = "SERCH_BY_DATE";
+    public final static String WORLD_CUP_QUERY_TEAMS = "QUERY_TEAMS";
+
+    public final static String WORLD_CUP_QUERY_WITH_SESSION = "QUERY_WITH_SESSION";
+    public final static String WORLD_CUP_QUERY_IMPTGAME = "QUERY_IMPTGAME";
+    public final static String WORLD_CUP_TEAM_PLAYERS = "TEAM_PLAYERS";
+    public final static String WORLD_CUP_SEARCH_BY_TEAM_INTENT = "SERCH_BY_TEAM";
+
+    public final static String WORLD_CUP_QUERY_FIRST_GAME = "QUERY_FIRST_GAME";
+    public final static String WORLD_CUP_QUERY_GROUPS = "QUERY_GROUPS";
+
+    public final static String WORLD_CUP_QUERY_GPGM_OVER = "QUERY_GPGM_OVER";
+    public final static String WORLD_CUP_QUERY_TEAM_GROUP = "QUERY_TEAM_GROUP";
+    public final static String WORLD_CUP_SERCH_BY_TEAMS_INTENT = "SERCH_BY_TEAMS";
+    public final static String WORLD_CUP_QUERY_WITH_GROUP = "QUERY_WITH_GROUP";
+    public final static String WORLD_CUP_QUERY_ALLINFO = "QUERY_ALLINFO";
+
+    public final static String WORLD_CUP_QUERY_CHAMPION = "QUERY_CHAMPION";
+    public final static String WORLD_CUP_I_LIKE_TEAM = "I_LIKE_TEAM";
+
 
 
     public final static String CHANNEL_SERVICE = "tvchannel";
@@ -46,6 +75,33 @@ public class AiuiConstants {
     public final static String VIDEO_PLAY = "play";
     public final static String VIDEO_PREVIOUS = "previousEpisode";
     public final static String VIDEO_NEXT = "nextEpisode";
+    //换一集
+    public final static String VIDEO_CHANGE = "changeEpisode";
+    //快进（退）、快进（退）多长时间
+    public final static String VIDEO_FASTWORD = "fastForward";
+    public final static String VIDEO_BACKWORD = "fastBackward";
+    //快进到or快退到多少时刻
+    public final static String VIDEO_FASTWORD_TO = "fastForwardTo";
+
+    public final static String HOURS = "hour";
+    public final static String MINUTE = "minute";
+    public final static String SECOND = "second";
+
+
+    //视频控制指令类型  播放  暂停  下一集  上一集  打开语音助手  关闭语音助手  投屏播放
+    public final static int VDO_PAUSE = 1;
+    public final static int VDO_PLAY = 2;
+    public final static int VDO_NEXT = 3;
+    public final static int VDO_PREVIOUS = 4;
+    public final static int VDO_OPEN = 5;
+    public final static int VDO_CLOSE = 6;
+    public final static int VDO_SCREEN = 7;
+    //快进 快退 快进（快退） 换一集
+    public final static int VDO_FASTWORD = 8;
+    public final static int VDO_BACKWORD = 9;
+    public final static int VDO_FASTWORD_TO = 10;
+    public final static int VDO_CHANGE = 11;
+
 
     //自定义直播技能
     public final static String VIDEO_ON_SERVICE = "LINGXI2018.onlive";
