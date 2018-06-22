@@ -75,6 +75,7 @@ public class AiuiConstants {
     public final static String VIDEO_PLAY = "play";
     public final static String VIDEO_PREVIOUS = "previousEpisode";
     public final static String VIDEO_NEXT = "nextEpisode";
+    public final static String VIDEO_INDEX= "episode";
     //换一集
     public final static String VIDEO_CHANGE = "changeEpisode";
     //快进（退）、快进（退）多长时间

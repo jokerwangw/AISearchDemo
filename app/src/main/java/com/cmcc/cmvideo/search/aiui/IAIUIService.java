@@ -59,6 +59,13 @@ public interface IAIUIService {
     void syncSpeakableData(String stateKey,String hotInfo);
 
     /**
+     * 同步状态及所见即可说数据
+     * @param stateKey 状态key值 例（fg::video::default::default）（fg-当前服务端语义状态是前景，video-当前服务端技能，default-当前技能的场景，default-当前场景的状态）
+     * @param hotInfo 所见即可说的热词，服务端优先匹配上传的热词
+     */
+    void syncSpeakableData(String stateKey,Map<String,String> hotInfo);
+
+    /**
      * 清除所见即可说状态
      */
     void clearSpeakableData();
