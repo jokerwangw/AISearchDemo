@@ -669,7 +669,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             case MOVIE:
                 return "电影".equals(cate) || "片".equals(cate);
             case CARTOON:
-                return "卡通".equals(cate) || "动漫".equals(cate) || "动画".equals(cate);
+                return "卡通".equals(cate) || "动漫".equals(cate);
             case VARIETY:
                 return "综艺".equals(cate);
             default:
@@ -706,7 +706,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     cate = solts.get(AiuiConstants.VIDEO_TAG);
                 }
             }
-            return TextUtils.isEmpty(cate)?false:"电视剧,纪录,纪实,电影,片,卡通,动漫,动画,综艺".contains(cate);
+            return TextUtils.isEmpty(cate)?false:"电视剧,纪录,纪实,电影,片,卡通,动漫,综艺".contains(cate);
         }
         return false;
     }
