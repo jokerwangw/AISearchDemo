@@ -22,6 +22,7 @@ import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
 import com.cmcc.cmvideo.search.presenters.impl.SearchByAIPresenterImpl;
+import com.cmcc.cmvideo.util.AiResponse;
 import com.cmcc.cmvideo.util.AiuiConstants;
 import com.cmcc.cmvideo.util.LogUtil;
 import com.google.gson.Gson;
@@ -363,7 +364,8 @@ public class AIUIService extends Service {
                 // 超过5秒表示 且rc=4（无法解析出语义） ，可显示推荐说法卡片
                 sendMessageUI("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI);
             } else {
-                aiuiService.tts(AiuiConstants.ERROR_MESSAGE);
+                AiResponse.Response response = AiResponse.getInstance().getNetWorkStatus();
+                aiuiService.tts(response.response);
             }
             return;
         }
@@ -810,9 +812,9 @@ public class AIUIService extends Service {
     }
 
     //同步所见即可说
-    public void syncSpeakableData(String stateKey, Map<String,String> hotInfo) {
+    public void syncSpeakableData(String stateKey, Map<String, String> hotInfo) {
         try {
-            if (TextUtils.isEmpty(stateKey) && (hotInfo ==null||hotInfo.size() ==0)) {
+            if (TextUtils.isEmpty(stateKey) && (hotInfo == null || hotInfo.size() == 0)) {
                 return;
             }
 
@@ -824,15 +826,15 @@ public class AIUIService extends Service {
                 state.put("sceneStatus", statep[3]);
                 data.put(statep[1] + "::" + statep[2], state);
             }
-            if (hotInfo!=null&&hotInfo.size()>0) {
+            if (hotInfo != null && hotInfo.size() > 0) {
                 JSONObject viewCmd = new JSONObject();
                 viewCmd.put("activeStatus", "bg");
                 viewCmd.put("sceneStatus", "default");
                 JSONObject viewCmdData = new JSONObject();
                 JSONObject viewCmdHotInfo = new JSONObject();
-                Iterator<Map.Entry<String,String>> iterator = hotInfo.entrySet().iterator();
-                while (iterator.hasNext()){
-                    Map.Entry<String,String> entry = iterator.next();
+                Iterator<Map.Entry<String, String>> iterator = hotInfo.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<String, String> entry = iterator.next();
                     viewCmdHotInfo.put(entry.getKey(), entry.getValue());
                 }
                 viewCmdData.put("hotInfo", viewCmdHotInfo);
