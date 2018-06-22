@@ -271,6 +271,11 @@ public class AIUIService extends Service {
             AIUIService.this.syncSpeakableData(stateKey, hotInfo);
         }
 
+        @Override
+        public void syncSpeakableData(String stateKey, Map<String, String> hotInfo) {
+            AIUIService.this.syncSpeakableData(stateKey, hotInfo);
+        }
+
         private String lookMoreText;
         private int pageIndex;
         private int pageSize;
@@ -325,6 +330,7 @@ public class AIUIService extends Service {
      * 控制指令 播放、暂停、下一集、上一集
      */
     private void controlCmdIntent(String result) {
+        Logger.debug("controlCmdIntent===========");
         if (TextUtils.isEmpty(result)) {
             return;
         }
@@ -385,7 +391,7 @@ public class AIUIService extends Service {
         switch (service) {
             case AiuiConstants.VIDEO_CMD:
                 //耳机插入场景下执行控制指令
-                if (isAvailableVideo){
+                if (isAvailableVideo) {
                     //视频播放、暂停、下一集、上一集  换一集  快进 快退  快进到xxx
                     intentVideoControl(mData, intent);
                 }
@@ -611,8 +617,15 @@ public class AIUIService extends Service {
                                     if (resultStr.equals("{}") || resultStr.isEmpty()) {
                                         return;
                                     }
-                                    controlCmdIntent(resultStr);
                                     Logger.debug("NLP 【" + resultStr + "】");
+                                    mData = gson.fromJson(resultStr, NlpData.class);
+                                    if (!TextUtils.isEmpty(mData.service)) {
+                                        String service = mData.service;
+                                        if (AiuiConstants.VIDEO_CMD.equals(service) || AiuiConstants.CONTROL_MIGU.equals(service)) {
+                                            controlCmdIntent(resultStr);
+                                            return;
+                                        }
+                                    }
                                     eventListenerManager.onResult(null, resultStr, null);
                                 } else {
                                     String resultStr = cntJson.optString("intent");
@@ -780,6 +793,47 @@ public class AIUIService extends Service {
                 JSONObject viewCmdData = new JSONObject();
                 JSONObject viewCmdHotInfo = new JSONObject();
                 viewCmdHotInfo.put("viewCmd", hotInfo);
+                viewCmdData.put("hotInfo", viewCmdHotInfo);
+                viewCmd.put("data", viewCmdData);
+                data.put("viewCmd::default", viewCmd);
+            }
+            String params = data.toString();
+            byte[] syncData = params.getBytes("utf-8");
+            AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC, AIUIConstant.SYNC_DATA_STATUS, 0, params, syncData);
+            mAIUIAgent.sendMessage(syncAthenaMessage);
+            hasSyncData = true;
+            Logger.debug("同步状态数据【" + data.toString() + "】");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //同步所见即可说
+    public void syncSpeakableData(String stateKey, Map<String,String> hotInfo) {
+        try {
+            if (TextUtils.isEmpty(stateKey) && (hotInfo ==null||hotInfo.size() ==0)) {
+                return;
+            }
+
+            JSONObject data = new JSONObject();
+            if (!TextUtils.isEmpty(stateKey)) {
+                String[] statep = stateKey.split("::");
+                JSONObject state = new JSONObject();
+                state.put("activeStatus", statep[0]);
+                state.put("sceneStatus", statep[3]);
+                data.put(statep[1] + "::" + statep[2], state);
+            }
+            if (hotInfo!=null&&hotInfo.size()>0) {
+                JSONObject viewCmd = new JSONObject();
+                viewCmd.put("activeStatus", "bg");
+                viewCmd.put("sceneStatus", "default");
+                JSONObject viewCmdData = new JSONObject();
+                JSONObject viewCmdHotInfo = new JSONObject();
+                Iterator<Map.Entry<String,String>> iterator = hotInfo.entrySet().iterator();
+                while (iterator.hasNext()){
+                    Map.Entry<String,String> entry = iterator.next();
+                    viewCmdHotInfo.put(entry.getKey(), entry.getValue());
+                }
                 viewCmdData.put("hotInfo", viewCmdHotInfo);
                 viewCmd.put("data", viewCmdData);
                 data.put("viewCmd::default", viewCmd);

@@ -10,9 +10,15 @@ import com.cmcc.cmvideo.base.MainThread;
 import com.cmcc.cmvideo.search.aiui.AIUIService;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.aiui.bean.NlpData;
+import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.presenters.LookMorePresenter;
 import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIEvent;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Yyw on 2018/6/11.
@@ -105,6 +111,21 @@ public class LookMorePresenterImpl extends AbstractPresenter implements AIUIServ
                         || nlpData.data.lxresult.data.detailslist.size() == 0) {
             return;
         }
-        mView.showInitList(nlpData.data.lxresult.data.detailslist);
+        mView.showInitList(blurDetailsList(nlpData.data.lxresult.data.detailslist));
+    }
+    //前三个 保持不变后面的数据随机排序，产品需求 为了造成每次查看更多好像都换新的数据的假象
+    private List<TppData.DetailsListBean> blurDetailsList(List<TppData.DetailsListBean> detailslist){
+        if(detailslist ==null||detailslist.size()<4)
+            return detailslist;
+        List<TppData.DetailsListBean> headList =  detailslist.subList(0,3);
+        List<TppData.DetailsListBean> blurList = detailslist.subList(3,detailslist.size());
+        int count = blurList.size();
+        Random random  =  new Random();
+        for(int i=0;i<count;i++){
+            int index = random.nextInt(count);
+            Collections.swap(blurList,0,index);
+        }
+        headList.addAll(blurList);
+        return headList;
     }
 }
