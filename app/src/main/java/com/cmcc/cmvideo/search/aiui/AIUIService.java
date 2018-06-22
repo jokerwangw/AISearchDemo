@@ -330,6 +330,7 @@ public class AIUIService extends Service {
      * 控制指令 播放、暂停、下一集、上一集
      */
     private void controlCmdIntent(String result) {
+        Logger.debug("controlCmdIntent===========");
         if (TextUtils.isEmpty(result)) {
             return;
         }
@@ -390,7 +391,7 @@ public class AIUIService extends Service {
         switch (service) {
             case AiuiConstants.VIDEO_CMD:
                 //耳机插入场景下执行控制指令
-                if (isAvailableVideo){
+                if (isAvailableVideo) {
                     //视频播放、暂停、下一集、上一集  换一集  快进 快退  快进到xxx
                     intentVideoControl(mData, intent);
                 }
@@ -617,8 +618,15 @@ public class AIUIService extends Service {
                                     if (resultStr.equals("{}") || resultStr.isEmpty()) {
                                         return;
                                     }
-                                    controlCmdIntent(resultStr);
                                     Logger.debug("NLP 【" + resultStr + "】");
+                                    mData = gson.fromJson(resultStr, NlpData.class);
+                                    if (!TextUtils.isEmpty(mData.service)) {
+                                        String service = mData.service;
+                                        if (AiuiConstants.VIDEO_CMD.equals(service) || AiuiConstants.CONTROL_MIGU.equals(service)) {
+                                            controlCmdIntent(resultStr);
+                                            return;
+                                        }
+                                    }
                                     eventListenerManager.onResult(null, resultStr, null);
                                 } else {
                                     String resultStr = cntJson.optString("intent");
