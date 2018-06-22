@@ -21,7 +21,6 @@ public class MainActivity extends AppCompatActivity {
     private int downX, downY, btLeft, btRight, btBottom, btTop;
     private long downTime = 0;
     private int MAX_CLICK_TIME = 500;
-    private boolean hasMove = false;
     private int widthPixels, heightPixels;
 
     @Override
