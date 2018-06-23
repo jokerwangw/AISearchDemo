@@ -900,19 +900,35 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     }
                     break;
                 case "FIRST":
-                    if(lastSearchIsGuessWhatYouLike()) return;
-                    //TODO 打开第1 个电影
-                    aiuiService.tts("正在为你打开," + lastVideoSearchByAIBean.getVideoList().get(0).name);
+                    TppData.DetailsListBean detail1 = lastVideoSearchByAIBean.getVideoList().get(0);
+                    if(lastSearchIsGuessWhatYouLike()&&hasSubserials(detail1)){
+                        //TODO 打开第1 集 detail1.subserials.get(0).id
+                        aiuiService.tts("正在为你打开," + detail1.subserials.get(0).name);
+                    }else {
+                        //TODO 打开第1 个电影 lastVideoSearchByAIBean.getVideoList().get(0).id
+                        aiuiService.tts("正在为你打开," + lastVideoSearchByAIBean.getVideoList().get(0).name);
+                    }
+
                     break;
                 case "SECOND":
-                    if(lastSearchIsGuessWhatYouLike()) return;
-                    //TODO 打开第2 个电影
-                    aiuiService.tts("正在为你打开," + lastVideoSearchByAIBean.getVideoList().get(1).name);
+                    TppData.DetailsListBean detail2 = lastVideoSearchByAIBean.getVideoList().get(0);
+                    if(lastSearchIsGuessWhatYouLike()&&hasSubserials(detail2)&&detail2.subserials.size()>=2){
+                        //TODO 打开第2 集 detail2.subserials.get(1).id
+                        aiuiService.tts("正在为你打开," + detail2.subserials.get(1).name);
+                    }else {
+                        //TODO 打开第2 个电影
+                        aiuiService.tts("正在为你打开," + lastVideoSearchByAIBean.getVideoList().get(1).name);
+                    }
                     break;
                 case "THIRD":
-                    if(lastSearchIsGuessWhatYouLike()) return;
-                    //TODO 打开第3 个电影
-                    aiuiService.tts("正在为你打开," + lastVideoSearchByAIBean.getVideoList().get(2).name);
+                    TppData.DetailsListBean detail3 = lastVideoSearchByAIBean.getVideoList().get(0);
+                    if(lastSearchIsGuessWhatYouLike()&&hasSubserials(detail3)&&detail3.subserials.size()>=3) {
+                        //TODO 打开第3 集 detail2.subserials.get(2).id
+                        aiuiService.tts("正在为你打开," + detail3.subserials.get(2).name);
+                    }else {
+                        //TODO 打开第3 个电影
+                        aiuiService.tts("正在为你打开," + lastVideoSearchByAIBean.getVideoList().get(2).name);
+                    }
                     break;
             }
         }
@@ -1099,6 +1115,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 for(int i = 0;i<beans.get(0).subserials.size();i++){
                     hotInfo.append(filterSyncName(beans.get(0).subserials.get(i).name)).append("|");
                 }
+                syncMap.put("FIRST","第一个");
+                syncMap.put("SECOND","第二个|中间那个");
+                syncMap.put("THIRD","第三个|最后一个");
                 syncMap.put("VERTICAL_EPISODE",hotInfo.substring(0, hotInfo.lastIndexOf("|")));
             }
         }else if (messageType == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE){
@@ -1109,8 +1128,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             }
             syncMap.put("LOOK_MORE","查看更多");
             syncMap.put("FIRST","第一个");
-            syncMap.put("SECOND","第二个");
-            syncMap.put("THIRD","第三个");
+            syncMap.put("SECOND","第二个|中间那个");
+            syncMap.put("THIRD","第三个|最后一个");
             syncMap.put("VIDEO_NAME",hotInfo.substring(0, hotInfo.lastIndexOf("|")));
         }
         aiuiService.syncSpeakableData(lastNlpState,syncMap);

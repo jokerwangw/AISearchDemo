@@ -243,22 +243,7 @@ public class AIUIService extends Service {
         @Override
         public void setUserParam(Map<String, String> map) {
             userInfoMap = map;
-            if (userInfoMap != null && userInfoMap.size() > 0) {
-                try {
-                    JSONObject objectJson = new JSONObject();
-                    JSONObject paramJson = new JSONObject();
-                    //用户数据添加的初始化参数中
-                    Iterator<Map.Entry<String, String>> iterator = userInfoMap.entrySet().iterator();
-                    while (iterator.hasNext()) {
-                        Map.Entry<String, String> item = iterator.next();
-                        paramJson.put(item.getKey(), item.getValue());
-                    }
-                    objectJson.put("userparams", paramJson);
-                    sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
+            AIUIService.this.setUserParam();
         }
 
         @Override
@@ -647,16 +632,17 @@ public class AIUIService extends Service {
                 }
                 break;
                 case AIUIConstant.CMD_START_RECORD:
-                    Logger.debug("CMD_START_RECORD===========");
+
                     break;
                 case AIUIConstant.EVENT_ERROR:
-                    //                    Logger.debug("EVENT_ERROR===========" + event.arg1 + "  " + event.info);
+
                     break;
                 case AIUIConstant.EVENT_WAKEUP:
-                    //                    Logger.debug("EVENT_WAKEUP==========arg1【" + event.arg1 + "】arg2【" + event.arg2 + "】info【" + event.info + "】");
+                    //每次唤醒都同步用户数据
+                    setUserParam();
                     break;
                 case AIUIConstant.EVENT_SLEEP:
-                    Logger.debug("EVENT_SLEEP===========");
+
                     break;
                 case AIUIConstant.EVENT_STATE:
                     mCurrentState = event.arg1;
@@ -862,6 +848,28 @@ public class AIUIService extends Service {
                 mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
             }
             mAIUIAgent.sendMessage(message);
+        }
+    }
+
+    /**
+     * 同步用户数据
+     */
+    private void setUserParam(){
+        if (userInfoMap != null && userInfoMap.size() > 0) {
+            try {
+                JSONObject objectJson = new JSONObject();
+                JSONObject paramJson = new JSONObject();
+                //用户数据添加的初始化参数中
+                Iterator<Map.Entry<String, String>> iterator = userInfoMap.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<String, String> item = iterator.next();
+                    paramJson.put(item.getKey(), item.getValue());
+                }
+                objectJson.put("userparams", paramJson);
+                sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
