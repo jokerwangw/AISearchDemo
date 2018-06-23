@@ -177,7 +177,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 // 超过5秒表示 且rc=4（无法解析出语义） ，可显示推荐说法卡片
                 sendMessage("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI);
             } else {
-                aiuiService.tts(AiuiConstants.ERROR_MESSAGE);
+                AiResponse.Response response = AiResponse.getInstance().getResultResponse();
+                aiuiService.tts(response.response);
             }
             return;
         }

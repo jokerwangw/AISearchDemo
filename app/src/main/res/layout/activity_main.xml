@@ -15,4 +15,5 @@
         android:layout_marginBottom="@dimen/turn_to_ai_search_marginB"
         android:background="@mipmap/icon_ai_search"
         />
+
 </RelativeLayout>
