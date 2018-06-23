@@ -596,36 +596,41 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             return map.get(AiuiConstants.VIDEO_NAME);
         }
         if (map.containsKey(AiuiConstants.VIDEO_ARTIST)) {
-            cardTitle += "“" + map.get(AiuiConstants.VIDEO_ARTIST) + "”" + "的";
+            cardTitle += "“" + map.get(AiuiConstants.VIDEO_ARTIST).replace("|","、") + "”" + "的";
         }
         if (map.containsKey(AiuiConstants.VIDEO_TIME)) {
-            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME) + "”" + "的";
+            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME).replace("|","、") + "”" + "的";
         }
         if (map.containsKey(AiuiConstants.VIDEO_TIME_DESCR)) {
-            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME_DESCR) + "”";
+            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME_DESCR).replace("|","、") + "”";
         }
         if (map.containsKey(AiuiConstants.VIDEO_AREA)) {
-            cardTitle += "“" + map.get(AiuiConstants.VIDEO_AREA) + "”";
+            cardTitle += "“" + map.get(AiuiConstants.VIDEO_AREA).replace("|","、") + "”";
         }
         boolean hasCatgeory = false;
         if (map.containsKey(AiuiConstants.VIDEO_TAG)) {
             String tag = map.get(AiuiConstants.VIDEO_TAG);
-            switch (tag) {
-                case "综艺":
-                    hasCatgeory = true;
-                    cardTitle += "综艺节目";
-                    break;
-                case "动画":
-                    hasCatgeory = true;
-                    cardTitle += "动画片";
-                    break;
-                case "纪录":
-                    hasCatgeory = true;
-                    cardTitle += "纪录片";
-                    break;
-                default:
-                    cardTitle += "“" + tag + "”";
-                    break;
+            String[] tags = tag.split("\\|");
+            boolean hasMoreTags = false;
+            for(int i = 0;i<tags.length;i++){
+                switch (tags[i]) {
+                    case "综艺":
+                        hasCatgeory = true;
+                        cardTitle += hasMoreTags?"和综艺节目":"综艺节目";
+                        break;
+                    case "动画":
+                        hasCatgeory = true;
+                        cardTitle += hasMoreTags?"和动画片":"动画片";
+                        break;
+                    case "纪录":
+                        hasCatgeory = true;
+                        cardTitle += hasMoreTags?"和纪录片":"纪录片";
+                        break;
+                    default:
+                        cardTitle += hasMoreTags?"“" + tag + "”":"“" + tag + "”";
+                        break;
+                }
+                hasMoreTags = true;
             }
         }
         if (map.containsKey(AiuiConstants.VIDEO_CATEGORY)&&!hasCatgeory) {
