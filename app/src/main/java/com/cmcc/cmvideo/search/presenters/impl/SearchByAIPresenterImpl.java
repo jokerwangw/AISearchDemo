@@ -966,7 +966,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         Logger.debug("+++++++++++++++开始播报");
                         break;
                     case AIUIConstant.TTS_SPEAK_PROGRESS:
-                        //                        Logger.debug(" 播报进度为" + event.data.getInt("percent"));     // 播放进度
+                        // 播放进度
                         break;
                     case AIUIConstant.TTS_SPEAK_PAUSED:
                         Logger.debug("+++++++++++++++++暂停播报");

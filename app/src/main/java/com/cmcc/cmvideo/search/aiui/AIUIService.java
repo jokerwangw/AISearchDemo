@@ -216,7 +216,6 @@ public class AIUIService extends Service {
             if (!isIvwModel) {
                 hasCancelRecordAudio = false;
                 if (hasSetLookMorePageSize) {
-
                     setPageInfo("1", "3");
                     hasSetLookMorePageSize = false;
                 }
@@ -295,7 +294,6 @@ public class AIUIService extends Service {
         public boolean isLookMorePageData() {
             return hasSetLookMorePageSize;
         }
-
 
         @Override
         public void cancelRecordAudio() {
@@ -640,8 +638,7 @@ public class AIUIService extends Service {
 
                     break;
                 case AIUIConstant.EVENT_WAKEUP:
-                    //每次唤醒都同步用户数据
-                    setUserParam();
+
                     break;
                 case AIUIConstant.EVENT_SLEEP:
 
@@ -708,15 +705,10 @@ public class AIUIService extends Service {
 
     //设置页码
     private void setPageInfo(String pageIndex, String pageSize) {
-        try {
-            JSONObject objectJson = new JSONObject();
-            JSONObject paramJson = new JSONObject();
-            paramJson.put("pageindex", pageIndex);
-            paramJson.put("pagesize", pageSize);
-            objectJson.put("userparams", paramJson);
-            sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if(userInfoMap!=null) {
+            userInfoMap.put("pageindex", pageIndex);
+            userInfoMap.put("pagesize", pageSize);
+            setUserParam();
         }
     }
 
