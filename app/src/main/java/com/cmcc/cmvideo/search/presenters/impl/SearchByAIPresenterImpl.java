@@ -450,6 +450,10 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             if (nlpData.moreResults == null) {
                 return;
             }
+            if(AiuiConstants.VIEWCMD_SERVICE.equals(nlpData.service)
+                    &&AiuiConstants.VIDEO_SERVICE.equals(nlpData.moreResults.get(0).service)){
+                return;
+            }
             nlpData = nlpData.moreResults.get(0);
             if (nlpData.rc == 4 || !("video".equals(nlpData.service) || "LINGXI2018.user_video".equals(nlpData.service))) {
                 return;

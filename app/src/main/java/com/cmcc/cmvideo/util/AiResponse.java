@@ -40,8 +40,7 @@ public class AiResponse {
      */
     private List<Response> networkResponseList = new ArrayList<Response>(Arrays.asList(
             new Response("对不起，我开小差了", RespType.NETWORK),
-            new Response("好像连不上网了，我再努力试试", RespType.NETWORK),
-            new Response("网络去外太空了", RespType.NETWORK),
+            new Response("没有找到你想要的，我再努力试试", RespType.NETWORK),
             new Response("我好像没听明白，再说一次呗", RespType.NETWORK),
             new Response("我已经尽力了，但是没有找到结果", RespType.NETWORK)
     ));
@@ -82,6 +81,7 @@ public class AiResponse {
 
     /**
      * rc等于4随机反馈一条反馈语
+     *
      * @return
      */
     public Response getResultResponse() {
