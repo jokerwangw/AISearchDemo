@@ -91,6 +91,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private final String TAG = "SearchByAIActivity";
     private int MAX_CLICK_TIME = 500;
     private int MIN_MOVE_VALUE = 50;
+    private int MAX_CLICK_MOVE_VALUE = 10;
     private SearchByAIPresenter mSearchByAIPresenter;
     private Context mContext;
     private SearchByAIAdapter mSearchByAIAdapter;
@@ -249,7 +250,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
      * @param clickTime
      */
     private void checkClickType(long clickTime, float moveValue) {
-        if (clickTime <= MAX_CLICK_TIME) {
+        if (clickTime <= MAX_CLICK_TIME && moveValue > -MAX_CLICK_MOVE_VALUE && moveValue < MAX_CLICK_MOVE_VALUE) {
             //点击事件
             closeViewAnimation();
             tvCancelSearch.setVisibility(View.VISIBLE);
