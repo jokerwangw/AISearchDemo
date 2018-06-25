@@ -349,6 +349,7 @@ public class AIUIService extends Service {
             } else {
                 AiResponse.Response response = AiResponse.getInstance().getResultResponse();
                 aiuiService.tts(response.response);
+                sendMessageUI(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
             }
             return;
         }
@@ -705,7 +706,7 @@ public class AIUIService extends Service {
 
     //设置页码
     private void setPageInfo(String pageIndex, String pageSize) {
-        if(userInfoMap!=null) {
+        if (userInfoMap != null) {
             userInfoMap.put("pageindex", pageIndex);
             userInfoMap.put("pagesize", pageSize);
             setUserParam();
@@ -848,7 +849,7 @@ public class AIUIService extends Service {
     /**
      * 同步用户数据
      */
-    private void setUserParam(){
+    private void setUserParam() {
         if (userInfoMap != null && userInfoMap.size() > 0) {
             try {
                 JSONObject objectJson = new JSONObject();

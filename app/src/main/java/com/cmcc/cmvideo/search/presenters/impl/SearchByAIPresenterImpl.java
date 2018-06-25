@@ -179,6 +179,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             } else {
                 AiResponse.Response response = AiResponse.getInstance().getResultResponse();
                 aiuiService.tts(response.response);
+                sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
             }
             return;
         }
