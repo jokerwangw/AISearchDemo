@@ -10,10 +10,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
+import com.cmcc.cmvideo.search.PlayVideoActivity;
 import com.cmcc.cmvideo.search.SearchByAIActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.turn_to_ai_search)
@@ -44,11 +46,11 @@ public class MainActivity extends AppCompatActivity {
         heightPixels = dm.heightPixels;
     }
 
-    //    @OnClick(R.id.turn_to_ai_search)
-    //    public void turnToSearch(){
-    //        Intent intent = new Intent(MainActivity.this, SearchByAIActivity.class);
-    //        startActivity(intent);
-    //    }
+    @OnClick(R.id.turn_to_player)
+    public void turnToPlayer() {
+        Intent intent = new Intent(MainActivity.this, PlayVideoActivity.class);
+        startActivity(intent);
+    }
 
     private View.OnTouchListener btTouchListener = new View.OnTouchListener() {
         @SuppressLint("ClickableViewAccessibility")

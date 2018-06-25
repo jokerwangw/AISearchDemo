@@ -7,6 +7,15 @@
     tools:context="com.cmcc.cmvideo.MainActivity">
 
     <Button
+        android:id="@+id/turn_to_player"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/turn_to_ai_search_marginB"
+        android:text="@string/page_player"
+        />
+
+    <Button
         android:id="@+id/turn_to_ai_search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
