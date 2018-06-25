@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dimen_35dp"
             android:layout_marginTop="@dimen/dimen_25dp"
-            android:text="预约: 《龙门镖局》"
+            android:text="预约:"
             android:textColor="@color/appointment_movie_name"
             android:textSize="@dimen/dimen_18dp"
             />
@@ -28,7 +28,6 @@
             android:layout_below="@+id/tv_movie_name"
             android:layout_marginLeft="@dimen/dimen_35dp"
             android:layout_marginTop="@dimen/dimen_5dp"
-            android:text="明天  周三  10:00"
             android:textColor="@color/appointment_movie_time"
             android:textSize="@dimen/dimen_13dp"
             />

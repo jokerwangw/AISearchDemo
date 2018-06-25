@@ -22,6 +22,7 @@ import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
 import com.cmcc.cmvideo.search.presenters.impl.SearchByAIPresenterImpl;
+import com.cmcc.cmvideo.util.AiResponse;
 import com.cmcc.cmvideo.util.AiuiConstants;
 import com.cmcc.cmvideo.util.LogUtil;
 import com.google.gson.Gson;
@@ -215,7 +216,6 @@ public class AIUIService extends Service {
             if (!isIvwModel) {
                 hasCancelRecordAudio = false;
                 if (hasSetLookMorePageSize) {
-
                     setPageInfo("1", "3");
                     hasSetLookMorePageSize = false;
                 }
@@ -243,22 +243,7 @@ public class AIUIService extends Service {
         @Override
         public void setUserParam(Map<String, String> map) {
             userInfoMap = map;
-            if (userInfoMap != null && userInfoMap.size() > 0) {
-                try {
-                    JSONObject objectJson = new JSONObject();
-                    JSONObject paramJson = new JSONObject();
-                    //用户数据添加的初始化参数中
-                    Iterator<Map.Entry<String, String>> iterator = userInfoMap.entrySet().iterator();
-                    while (iterator.hasNext()) {
-                        Map.Entry<String, String> item = iterator.next();
-                        paramJson.put(item.getKey(), item.getValue());
-                    }
-                    objectJson.put("userparams", paramJson);
-                    sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
+            AIUIService.this.setUserParam();
         }
 
         @Override
@@ -309,7 +294,6 @@ public class AIUIService extends Service {
         public boolean isLookMorePageData() {
             return hasSetLookMorePageSize;
         }
-
 
         @Override
         public void cancelRecordAudio() {
@@ -363,7 +347,9 @@ public class AIUIService extends Service {
                 // 超过5秒表示 且rc=4（无法解析出语义） ，可显示推荐说法卡片
                 sendMessageUI("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI);
             } else {
-                aiuiService.tts(AiuiConstants.ERROR_MESSAGE);
+                AiResponse.Response response = AiResponse.getInstance().getResultResponse();
+                aiuiService.tts(response.response);
+                sendMessageUI(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
             }
             return;
         }
@@ -400,6 +386,8 @@ public class AIUIService extends Service {
             case AiuiConstants.CONTROL_MIGU:
                 //指令控制  如：打开语音助手/投屏播放
                 intentControl(mData, intent);
+                break;
+            default:
                 break;
         }
 
@@ -646,16 +634,16 @@ public class AIUIService extends Service {
                 }
                 break;
                 case AIUIConstant.CMD_START_RECORD:
-                    Logger.debug("CMD_START_RECORD===========");
+
                     break;
                 case AIUIConstant.EVENT_ERROR:
-                    //                    Logger.debug("EVENT_ERROR===========" + event.arg1 + "  " + event.info);
+
                     break;
                 case AIUIConstant.EVENT_WAKEUP:
-                    //                    Logger.debug("EVENT_WAKEUP==========arg1【" + event.arg1 + "】arg2【" + event.arg2 + "】info【" + event.info + "】");
+
                     break;
                 case AIUIConstant.EVENT_SLEEP:
-                    Logger.debug("EVENT_SLEEP===========");
+
                     break;
                 case AIUIConstant.EVENT_STATE:
                     mCurrentState = event.arg1;
@@ -719,15 +707,10 @@ public class AIUIService extends Service {
 
     //设置页码
     private void setPageInfo(String pageIndex, String pageSize) {
-        try {
-            JSONObject objectJson = new JSONObject();
-            JSONObject paramJson = new JSONObject();
-            paramJson.put("pageindex", pageIndex);
-            paramJson.put("pagesize", pageSize);
-            objectJson.put("userparams", paramJson);
-            sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (userInfoMap != null) {
+            userInfoMap.put("pageindex", pageIndex);
+            userInfoMap.put("pagesize", pageSize);
+            setUserParam();
         }
     }
 
@@ -809,9 +792,9 @@ public class AIUIService extends Service {
     }
 
     //同步所见即可说
-    public void syncSpeakableData(String stateKey, Map<String,String> hotInfo) {
+    public void syncSpeakableData(String stateKey, Map<String, String> hotInfo) {
         try {
-            if (TextUtils.isEmpty(stateKey) && (hotInfo ==null||hotInfo.size() ==0)) {
+            if (TextUtils.isEmpty(stateKey) && (hotInfo == null || hotInfo.size() == 0)) {
                 return;
             }
 
@@ -823,15 +806,15 @@ public class AIUIService extends Service {
                 state.put("sceneStatus", statep[3]);
                 data.put(statep[1] + "::" + statep[2], state);
             }
-            if (hotInfo!=null&&hotInfo.size()>0) {
+            if (hotInfo != null && hotInfo.size() > 0) {
                 JSONObject viewCmd = new JSONObject();
                 viewCmd.put("activeStatus", "bg");
                 viewCmd.put("sceneStatus", "default");
                 JSONObject viewCmdData = new JSONObject();
                 JSONObject viewCmdHotInfo = new JSONObject();
-                Iterator<Map.Entry<String,String>> iterator = hotInfo.entrySet().iterator();
-                while (iterator.hasNext()){
-                    Map.Entry<String,String> entry = iterator.next();
+                Iterator<Map.Entry<String, String>> iterator = hotInfo.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<String, String> entry = iterator.next();
                     viewCmdHotInfo.put(entry.getKey(), entry.getValue());
                 }
                 viewCmdData.put("hotInfo", viewCmdHotInfo);
@@ -861,6 +844,28 @@ public class AIUIService extends Service {
                 mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
             }
             mAIUIAgent.sendMessage(message);
+        }
+    }
+
+    /**
+     * 同步用户数据
+     */
+    private void setUserParam() {
+        if (userInfoMap != null && userInfoMap.size() > 0) {
+            try {
+                JSONObject objectJson = new JSONObject();
+                JSONObject paramJson = new JSONObject();
+                //用户数据添加的初始化参数中
+                Iterator<Map.Entry<String, String>> iterator = userInfoMap.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<String, String> item = iterator.next();
+                    paramJson.put(item.getKey(), item.getValue());
+                }
+                objectJson.put("userparams", paramJson);
+                sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 

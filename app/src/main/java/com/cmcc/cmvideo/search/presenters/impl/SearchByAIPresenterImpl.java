@@ -159,7 +159,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 return;
             }
             if ("openQA".equals(mData.service) && "video".equals(mData.moreResults.get(0).service)
-                    ||"video".equals(mData.service) && "openQA".equals(mData.moreResults.get(0).service)){
+                    || "video".equals(mData.service) && "openQA".equals(mData.moreResults.get(0).service)) {
                 return;
             }
             if ("video".equals(mData.service)) {
@@ -174,7 +174,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 // 超过5秒表示 且rc=4（无法解析出语义） ，可显示推荐说法卡片
                 sendMessage("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI);
             } else {
-                aiuiService.tts(AiuiConstants.ERROR_MESSAGE);
+                AiResponse.Response response = AiResponse.getInstance().getResultResponse();
+                aiuiService.tts(response.response);
+                sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
             }
             return;
         }
@@ -295,15 +297,15 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     }
 
-    private void intentCmd(NlpData mData){
+    private void intentCmd(NlpData mData) {
         Map<String, String> solts = formatSlotsToMap(mData.semantic.get(0).slots);
-        switch (mData.semantic.get(0).intent){
+        switch (mData.semantic.get(0).intent) {
             case AiuiConstants.VIDEO_CMD_INTENT:
-                if(solts.containsKey(AiuiConstants.VIDEO_INDEX)&&lastSearchIsGuessWhatYouLike()){
-                    int index = Integer.parseInt(solts.get(AiuiConstants.VIDEO_INDEX))-1;
-                    if(lastVideoSearchByAIBean!=null&&lastVideoSearchByAIBean.getVideoList()!=null&&lastVideoSearchByAIBean.getVideoList().size()>0) {
-                        List<TppData.SubserialsBean> subserials  = lastVideoSearchByAIBean.getVideoList().get(0).subserials;
-                        if(index>=0&&index<subserials.size()) {
+                if (solts.containsKey(AiuiConstants.VIDEO_INDEX) && lastSearchIsGuessWhatYouLike()) {
+                    int index = Integer.parseInt(solts.get(AiuiConstants.VIDEO_INDEX)) - 1;
+                    if (lastVideoSearchByAIBean != null && lastVideoSearchByAIBean.getVideoList() != null && lastVideoSearchByAIBean.getVideoList().size() > 0) {
+                        List<TppData.SubserialsBean> subserials = lastVideoSearchByAIBean.getVideoList().get(0).subserials;
+                        if (index >= 0 && index < subserials.size()) {
                             String id = subserials.get(index).id;
                             String name = subserials.get(index).name;
                             //TODO 猜你喜欢 选剧集
@@ -581,22 +583,45 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             return map.get(AiuiConstants.VIDEO_NAME);
         }
         if (map.containsKey(AiuiConstants.VIDEO_ARTIST)) {
-            cardTitle += "“" + map.get(AiuiConstants.VIDEO_ARTIST) + "”" + "的";
+            cardTitle += "“" + map.get(AiuiConstants.VIDEO_ARTIST).replace("|","、") + "”" + "的";
         }
         if (map.containsKey(AiuiConstants.VIDEO_TIME)) {
-            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME) + "”" + "的";
+            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME).replace("|","、") + "”" + "的";
         }
         if (map.containsKey(AiuiConstants.VIDEO_TIME_DESCR)) {
-            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME_DESCR) + "”";
+            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME_DESCR).replace("|","、") + "”";
         }
         if (map.containsKey(AiuiConstants.VIDEO_AREA)) {
-            cardTitle += "“" + map.get(AiuiConstants.VIDEO_AREA) + "”";
+            cardTitle += "“" + map.get(AiuiConstants.VIDEO_AREA).replace("|","、") + "”";
         }
+        boolean hasCatgeory = false;
         if (map.containsKey(AiuiConstants.VIDEO_TAG)) {
-            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TAG) + "”";
+            String tag = map.get(AiuiConstants.VIDEO_TAG);
+            String[] tags = tag.split("\\|");
+            boolean hasMoreTags = false;
+            for(int i = 0;i<tags.length;i++){
+                switch (tags[i]) {
+                    case "综艺":
+                        hasCatgeory = true;
+                        cardTitle += hasMoreTags?"和综艺节目":"综艺节目";
+                        break;
+                    case "动画":
+                        hasCatgeory = true;
+                        cardTitle += hasMoreTags?"和动画片":"动画片";
+                        break;
+                    case "纪录":
+                        hasCatgeory = true;
+                        cardTitle += hasMoreTags?"和纪录片":"纪录片";
+                        break;
+                    default:
+                        cardTitle += hasMoreTags?"“" + tag + "”":"“" + tag + "”";
+                        break;
+                }
+                hasMoreTags = true;
+            }
         }
-        if (map.containsKey(AiuiConstants.VIDEO_CATEGORY)) {
-            cardTitle += map.get(AiuiConstants.VIDEO_CATEGORY).equals("片") ? "电影" : map.get(AiuiConstants.VIDEO_CATEGORY);
+        if (map.containsKey(AiuiConstants.VIDEO_CATEGORY)&&!hasCatgeory) {
+             cardTitle += map.get(AiuiConstants.VIDEO_CATEGORY).equals("片") ? "电影" : map.get(AiuiConstants.VIDEO_CATEGORY);
         }
 
         return cardTitle;
@@ -650,7 +675,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             case MOVIE:
                 return "电影".equals(cate) || "片".equals(cate);
             case CARTOON:
-                return "卡通".equals(cate) || "动漫".equals(cate) || "动画".equals(cate);
+                return "卡通".equals(cate) || "动漫".equals(cate);
             case VARIETY:
                 return "综艺".equals(cate);
             default:
@@ -686,30 +711,31 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     cate = solts.get(AiuiConstants.VIDEO_TAG);
                 }
             }
-            return TextUtils.isEmpty(cate) ? false : "电视剧,纪录,纪实,电影,片,卡通,动漫,动画,综艺".contains(cate);
         }
         return false;
     }
 
     /**
      * 判断最后一次搜索是不是猜你喜欢的内容
+     *
      * @return
      */
-    private boolean lastSearchIsGuessWhatYouLike(){
-        if(lastVideoSearchByAIBean == null)
+    private boolean lastSearchIsGuessWhatYouLike() {
+        if (lastVideoSearchByAIBean == null)
             return false;
 
         return
                 lastVideoSearchByAIBean.getMessageType() == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE
-                ||lastVideoSearchByAIBean.getMessageType() == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL
-                ||lastVideoSearchByAIBean.getMessageType() == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
+                        || lastVideoSearchByAIBean.getMessageType() == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL
+                        || lastVideoSearchByAIBean.getMessageType() == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
     }
 
     /**
      * 过滤所见即可说 同步的内容。避免同步失效
+     *
      * @return
      */
-    private String filterSyncName(String name){
+    private String filterSyncName(String name) {
         return name;
 //        if(TextUtils.isEmpty(name))
 //            return "";
@@ -808,12 +834,13 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     }
                     break;
                 case "HORIZONTAL_EPISODE":
-                    if(!lastSearchIsGuessWhatYouLike()) return;
+                    if (!lastSearchIsGuessWhatYouLike()) return;
                     Logger.debug(nlpData.semantic.get(0).slots.get(0).value);
                     break;
                 case "VERTICAL_EPISODE":
-                    if(!lastSearchIsGuessWhatYouLike()) return;
-                    if(lastVideoSearchByAIBean.getVideoList()==null||lastVideoSearchByAIBean.getVideoList().size() ==0) return;
+                    if (!lastSearchIsGuessWhatYouLike()) return;
+                    if (lastVideoSearchByAIBean.getVideoList() == null || lastVideoSearchByAIBean.getVideoList().size() == 0)
+                        return;
                     String[] subNames = nlpData.semantic.get(0).slots.get(0).value.split("\\|");
                     if (subNames == null) {
                         return;
@@ -880,19 +907,35 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     }
                     break;
                 case "FIRST":
-                    if(lastSearchIsGuessWhatYouLike()) return;
-                    //TODO 打开第1 个电影
-                    aiuiService.tts("正在为你打开," + lastVideoSearchByAIBean.getVideoList().get(0).name);
+                    TppData.DetailsListBean detail1 = lastVideoSearchByAIBean.getVideoList().get(0);
+                    if (lastSearchIsGuessWhatYouLike() && hasSubserials(detail1)) {
+                        //TODO 打开第1 集 detail1.subserials.get(0).id
+                        aiuiService.tts("正在为你打开," + detail1.subserials.get(0).name);
+                    } else {
+                        //TODO 打开第1 个电影 lastVideoSearchByAIBean.getVideoList().get(0).id
+                        aiuiService.tts("正在为你打开," + lastVideoSearchByAIBean.getVideoList().get(0).name);
+                    }
+
                     break;
                 case "SECOND":
-                    if(lastSearchIsGuessWhatYouLike()) return;
-                    //TODO 打开第2 个电影
-                    aiuiService.tts("正在为你打开," + lastVideoSearchByAIBean.getVideoList().get(1).name);
+                    TppData.DetailsListBean detail2 = lastVideoSearchByAIBean.getVideoList().get(0);
+                    if (lastSearchIsGuessWhatYouLike() && hasSubserials(detail2) && detail2.subserials.size() >= 2) {
+                        //TODO 打开第2 集 detail2.subserials.get(1).id
+                        aiuiService.tts("正在为你打开," + detail2.subserials.get(1).name);
+                    } else {
+                        //TODO 打开第2 个电影
+                        aiuiService.tts("正在为你打开," + lastVideoSearchByAIBean.getVideoList().get(1).name);
+                    }
                     break;
                 case "THIRD":
-                    if(lastSearchIsGuessWhatYouLike()) return;
-                    //TODO 打开第3 个电影
-                    aiuiService.tts("正在为你打开," + lastVideoSearchByAIBean.getVideoList().get(2).name);
+                    TppData.DetailsListBean detail3 = lastVideoSearchByAIBean.getVideoList().get(0);
+                    if (lastSearchIsGuessWhatYouLike() && hasSubserials(detail3) && detail3.subserials.size() >= 3) {
+                        //TODO 打开第3 集 detail2.subserials.get(2).id
+                        aiuiService.tts("正在为你打开," + detail3.subserials.get(2).name);
+                    } else {
+                        //TODO 打开第3 个电影
+                        aiuiService.tts("正在为你打开," + lastVideoSearchByAIBean.getVideoList().get(2).name);
+                    }
                     break;
             }
         }
@@ -943,7 +986,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         Logger.debug("+++++++++++++++开始播报");
                         break;
                     case AIUIConstant.TTS_SPEAK_PROGRESS:
-                        //                        Logger.debug(" 播报进度为" + event.data.getInt("percent"));     // 播放进度
+                        // 播放进度
                         break;
                     case AIUIConstant.TTS_SPEAK_PAUSED:
                         Logger.debug("+++++++++++++++++暂停播报");
@@ -1053,7 +1096,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         if (videoList != null && videoList.size() > 0) {
             lastVideoSearchByAIBean = searchByAIBean;
             //服务端返回数据就去同步所见即可说
-            syncSpeakableData(searchByAIBean.getMessageType(),videoList);
+            syncSpeakableData(searchByAIBean.getMessageType(), videoList);
         }
         List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
         searchByAIBean.setSpeechText(lastRequestVideoText);
@@ -1068,7 +1111,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private void sendMessage(SearchByAIBean searchByAIBean) {
         if (searchByAIBean != null && searchByAIBean.getVideoList() != null && searchByAIBean.getVideoList().size() > 0) {
             //服务端返回数据就去同步所见即可说
-            syncSpeakableData(searchByAIBean.getMessageType(),searchByAIBean.getVideoList());
+            syncSpeakableData(searchByAIBean.getMessageType(), searchByAIBean.getVideoList());
         }
         List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
         messageList.add(searchByAIBean);
@@ -1082,43 +1125,47 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     /**
      * 同步所见即可说数据
+     *
      * @param messageType
      * @param beans
      */
-    private void syncSpeakableData(int messageType,List<TppData.DetailsListBean> beans) {
-        Map<String,String> syncMap = new HashMap<>();
-        if(lastSearchIsGuessWhatYouLike()){
-            syncMap.put("CHANGE","换一个|下一个");
+    private void syncSpeakableData(int messageType, List<TppData.DetailsListBean> beans) {
+        Map<String, String> syncMap = new HashMap<>();
+        if (lastSearchIsGuessWhatYouLike()) {
+            syncMap.put("CHANGE", "换一个|下一个");
         }
-        if(messageType == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL){
-            if(hasSubserials(beans.get(0))){
-                String episode ="第%s集";
+        if (messageType == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL) {
+            if (hasSubserials(beans.get(0))) {
+                String episode = "第%s集";
                 StringBuilder hotInfo = new StringBuilder();
-                for(int i = 1;i<=beans.get(0).subserials.size();i++){
-                    hotInfo.append(String.format(episode,i)).append("|");
+                for (int i = 1; i <= beans.get(0).subserials.size(); i++) {
+                    hotInfo.append(String.format(episode, i)).append("|");
                 }
-                syncMap.put("HORIZONTAL_EPISODE",hotInfo.substring(0, hotInfo.lastIndexOf("|")));
+                syncMap.put("HORIZONTAL_EPISODE", hotInfo.substring(0, hotInfo.lastIndexOf("|")));
             }
-        }else if(messageType == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL){
-            if(hasSubserials(beans.get(0))){
+        } else if (messageType == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL) {
+            if (hasSubserials(beans.get(0))) {
                 StringBuilder hotInfo = new StringBuilder();
-                for(int i = 0;i<beans.get(0).subserials.size();i++){
+                for (int i = 0; i < beans.get(0).subserials.size(); i++) {
                     hotInfo.append(filterSyncName(beans.get(0).subserials.get(i).name)).append("|");
                 }
-                syncMap.put("VERTICAL_EPISODE",hotInfo.substring(0, hotInfo.lastIndexOf("|")));
+                syncMap.put("FIRST", "第一个");
+                syncMap.put("SECOND", "第二个|中间那个");
+                syncMap.put("THIRD", "第三个|最后一个");
+                syncMap.put("VERTICAL_EPISODE", hotInfo.substring(0, hotInfo.lastIndexOf("|")));
             }
-        }else if (messageType == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE){
-        }else{
+        } else if (messageType == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE) {
+        } else {
             StringBuilder hotInfo = new StringBuilder();
             for (TppData.DetailsListBean bean : beans) {
                 hotInfo.append(bean.name).append("|");
             }
-            syncMap.put("LOOK_MORE","查看更多");
-            syncMap.put("FIRST","第一个");
-            syncMap.put("SECOND","第二个");
-            syncMap.put("THIRD","第三个");
-            syncMap.put("VIDEO_NAME",hotInfo.substring(0, hotInfo.lastIndexOf("|")));
+            syncMap.put("LOOK_MORE", "查看更多");
+            syncMap.put("FIRST", "第一个");
+            syncMap.put("SECOND", "第二个|中间那个");
+            syncMap.put("THIRD", "第三个|最后一个");
+            syncMap.put("VIDEO_NAME", hotInfo.substring(0, hotInfo.lastIndexOf("|")));
         }
-        aiuiService.syncSpeakableData(lastNlpState,syncMap);
+        aiuiService.syncSpeakableData(lastNlpState, syncMap);
     }
 }
