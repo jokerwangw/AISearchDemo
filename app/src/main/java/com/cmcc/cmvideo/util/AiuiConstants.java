@@ -8,7 +8,8 @@ import retrofit2.http.PUT;
  * @date 2018/5/30
  */
 public class AiuiConstants {
-    public final static String ERROR_MESSAGE = "抱歉，不明白你的意思";
+    public final static String MICRO_MESSAGE = "小咪为您服务";
+    public final static String MICRO_ENTER_MESSAGE = "主淫，主淫，需要我为你做什么";
 
     /**
      * 技能名(闲聊、频道、跳转充值页、展示流量、购票页、系统设置、投屏播放)
@@ -48,7 +49,6 @@ public class AiuiConstants {
     public final static String WORLD_CUP_I_LIKE_TEAM = "I_LIKE_TEAM";
 
 
-
     public final static String CHANNEL_SERVICE = "tvchannel";
     public final static String MIGU_TV_ORDER = "LINGXI2018.MiGu_TV_Order";
     public final static String MIGU_TV = "LINGXI2018.MiGu_tv";
@@ -75,7 +75,7 @@ public class AiuiConstants {
     public final static String VIDEO_PLAY = "play";
     public final static String VIDEO_PREVIOUS = "previousEpisode";
     public final static String VIDEO_NEXT = "nextEpisode";
-    public final static String VIDEO_INDEX= "episode";
+    public final static String VIDEO_INDEX = "episode";
     //换一集
     public final static String VIDEO_CHANGE = "changeEpisode";
     //快进（退）、快进（退）多长时间

@@ -147,7 +147,7 @@ public class AIUIService extends Service {
                     //正常应该发送mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
                     //进入的是等待说出“咪咕咪咕” 的带唤醒状态
                     sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
-                    tts("小咪为你服务");
+                    tts(AiuiConstants.MICRO_MESSAGE);
 
                     isIvwModel = true;
                 }
@@ -936,6 +936,7 @@ public class AIUIService extends Service {
                             standardMode();
                         }
                     } else if (intent.getIntExtra("state", 0) == 1) {
+                        isAvailableVideo = true;
                         EventBus.getDefault().post(new MicBean(true));
                         //切换为耳机模式
                         //PlayerManager.getInstance().changeToHeadset();
