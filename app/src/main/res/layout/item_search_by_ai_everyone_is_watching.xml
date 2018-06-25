@@ -17,7 +17,6 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dimen_35dp"
             android:layout_marginTop="@dimen/dimen_35dp"
-            android:text="大家都在看"
             android:textColor="@color/appointment_movie_name"
             android:textSize="@dimen/dimen_18dp"/>
 
@@ -48,7 +47,6 @@
                     android:layout_alignParentRight="true"
                     android:layout_marginBottom="@dimen/dimen_8dp"
                     android:layout_marginRight="@dimen/dimen_5dp"
-                    android:text="34344人观看"
                     android:textColor="@color/white"
                     android:textSize="@dimen/dimen_10dp"/>
             </RelativeLayout>
@@ -74,7 +72,6 @@
                     android:layout_alignParentRight="true"
                     android:layout_marginBottom="@dimen/dimen_8dp"
                     android:layout_marginRight="@dimen/dimen_5dp"
-                    android:text="34344人观看"
                     android:textColor="@color/white"
                     android:textSize="@dimen/dimen_10dp"/>
             </RelativeLayout>
@@ -98,7 +95,6 @@
                     android:layout_alignParentRight="true"
                     android:layout_marginBottom="@dimen/dimen_8dp"
                     android:layout_marginRight="@dimen/dimen_5dp"
-                    android:text="34344人观看"
                     android:textColor="@color/white"
                     android:textSize="@dimen/dimen_10dp"/>
             </RelativeLayout>
@@ -120,7 +116,6 @@
                 android:ellipsize="end"
                 android:gravity="center_horizontal"
                 android:maxLines="1"
-                android:text="美人鱼"
                 android:textColor="@color/everyone_watch_list_movie_name"/>
 
             <TextView
@@ -131,7 +126,6 @@
                 android:ellipsize="end"
                 android:gravity="center_horizontal"
                 android:maxLines="1"
-                android:text="美人鱼"
                 android:textColor="@color/everyone_watch_list_movie_name"/>
 
             <TextView
@@ -142,7 +136,6 @@
                 android:ellipsize="end"
                 android:gravity="center_horizontal"
                 android:maxLines="1"
-                android:text="美人鱼"
                 android:textColor="@color/everyone_watch_list_movie_name"
                 android:textSize="@dimen/dimen_15dp"/>
         </LinearLayout>

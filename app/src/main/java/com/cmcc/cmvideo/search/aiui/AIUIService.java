@@ -387,6 +387,8 @@ public class AIUIService extends Service {
                 //指令控制  如：打开语音助手/投屏播放
                 intentControl(mData, intent);
                 break;
+            default:
+                break;
         }
 
 
