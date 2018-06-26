@@ -215,6 +215,13 @@ public class AIUIService extends Service {
         }
 
         @Override
+        public void cancelTts() {
+            //取消语音合成
+            AIUIService.this.cancelTts();
+
+        }
+
+        @Override
         public void startRecordAudio() {
             if (!isIvwModel) {
                 hasCancelRecordAudio = false;
@@ -658,6 +665,15 @@ public class AIUIService extends Service {
                         tts(AiResponse.getInstance().getSleep().response);
                     }
                     break;
+                case AIUIConstant.EVENT_VAD:
+                    //                Logger.debug("arg【" + event.arg1 + "】【" + event.arg2 + "】");
+                    //用arg1标识前后端点或者音量信息:0(前端点)、1(音量)、2(后端点)、3（前端点超时）。
+                    //当arg1取值为1时，arg2为音量大小。
+                    if (event.arg1 == 0) {
+                        //检测到前端点表示正在录音
+                        AIUIService.this.cancelTts();
+                    }
+                    break;
                 case AIUIConstant.EVENT_STATE:
                     mCurrentState = event.arg1;
                     Logger.debug("state is 【" + mCurrentState + "】");
@@ -695,6 +711,13 @@ public class AIUIService extends Service {
             eventListenerManager.onEvent(event);
         }
     };
+
+
+
+    private void cancelTts() {
+        sendMessage(new AIUIMessage(AIUIConstant.CMD_TTS, AIUIConstant.CANCEL, 0, "", null));
+    }
+
 
     private void tts(String ttsText) {
         if (TextUtils.isEmpty(ttsText)) {

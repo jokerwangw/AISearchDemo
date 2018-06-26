@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.cmcc.cmvideo.BuildConfig;
+import com.cmcc.cmvideo.MainActivity;
 import com.cmcc.cmvideo.base.AbstractPresenter;
 import com.cmcc.cmvideo.base.Executor;
 import com.cmcc.cmvideo.base.MainThread;
@@ -137,12 +138,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         mView.showInitList(searchByAIBeanList);
     }
 
-    public void onIatResult(String result) {
-        if (TextUtils.isEmpty(result)) {
-            return;
-        }
-        sendMessage(result, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
-    }
 
     private void onNlpResult(String result) {
         if (TextUtils.isEmpty(result)) {
@@ -609,7 +604,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 //            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME_DESCR).replace("|","、") + "”";
 //        }
         if (map.containsKey(AiuiConstants.VIDEO_POPULAR)) {
-            cardTitle += "“" + map.get(AiuiConstants.VIDEO_POPULAR).replace("|","、") + "”";
+            cardTitle += "“" + map.get(AiuiConstants.VIDEO_POPULAR).replace("|", "、") + "”";
         }
         if (map.containsKey(AiuiConstants.VIDEO_AREA)) {
             cardTitle += "“" + map.get(AiuiConstants.VIDEO_AREA).replace("|", "、") + "”";
