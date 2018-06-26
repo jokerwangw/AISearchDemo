@@ -119,13 +119,15 @@ public class LookMorePresenterImpl extends AbstractPresenter implements AIUIServ
             return detailslist;
         List<TppData.DetailsListBean> headList =  detailslist.subList(0,3);
         List<TppData.DetailsListBean> blurList = detailslist.subList(3,detailslist.size());
+        List<TppData.DetailsListBean> sourceList = new ArrayList<>();
         int count = blurList.size();
         Random random  =  new Random();
         for(int i=0;i<count;i++){
             int index = random.nextInt(count);
             Collections.swap(blurList,0,index);
         }
-        headList.addAll(blurList);
-        return headList;
+        sourceList.addAll(headList);
+        sourceList.addAll(blurList);
+        return sourceList;
     }
 }
