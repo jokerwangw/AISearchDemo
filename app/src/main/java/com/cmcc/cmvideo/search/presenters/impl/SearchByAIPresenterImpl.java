@@ -604,11 +604,14 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         if (map.containsKey(AiuiConstants.VIDEO_ARTIST)) {
             cardTitle += "“" + map.get(AiuiConstants.VIDEO_ARTIST).replace("|","、") + "”" + "的";
         }
-        if (map.containsKey(AiuiConstants.VIDEO_TIME)) {
-            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME).replace("|","、") + "”" + "的";
-        }
-        if (map.containsKey(AiuiConstants.VIDEO_TIME_DESCR)) {
-            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME_DESCR).replace("|","、") + "”";
+//        if (map.containsKey(AiuiConstants.VIDEO_TIME)) {
+//            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME).replace("|","、") + "”" + "的";
+//        }
+//        if (map.containsKey(AiuiConstants.VIDEO_TIME_DESCR)) {
+//            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME_DESCR).replace("|","、") + "”";
+//        }
+        if (map.containsKey(AiuiConstants.VIDEO_POPULAR)) {
+            cardTitle += "“" + map.get(AiuiConstants.VIDEO_POPULAR).replace("|","、") + "”";
         }
         if (map.containsKey(AiuiConstants.VIDEO_AREA)) {
             cardTitle += "“" + map.get(AiuiConstants.VIDEO_AREA).replace("|","、") + "”";

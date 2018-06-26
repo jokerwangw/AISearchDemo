@@ -127,6 +127,7 @@ public class AiuiConstants {
     public final static String VIDEO_CATEGORY = "category";
     public final static String VIDEO_SCORE_DESCR = "scoreDescr";
     public final static String VIDEO_TIME_DESCR = "timeDescr";
+    public final static String VIDEO_POPULAR = "popularity";
     public final static String VIDEO_TAG = "tag";
     public final static String VIDEO_NAME = "name";
     public final static String VIDEO_ARTIST = "artist";
