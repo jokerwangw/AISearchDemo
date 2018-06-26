@@ -173,16 +173,30 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         }
 
         @Override
-        public void clickItemSearchByAIGuessWhatYouLikeListHorizontal(boolean isChangeBt, TppData.DetailsListBean detailsListBean, int position) {
-            if (isChangeBt && null != aiuiService) {
-                aiuiService.textUnderstander("换一个");
+        public void clickItemSearchByAIGuessWhatYouLikeListHorizontal(boolean isChangeBt, boolean isClickLookMore, TppData.DetailsListBean detailsListBean, int position) {
+            if (null != aiuiService) {
+                if (isChangeBt) {
+                    aiuiService.textUnderstander("换一个");
+                } else if (isClickLookMore) {
+                    Toast.makeText(mContext, "查看更多", Toast.LENGTH_SHORT).show();
+                } else {
+                    int pos = position + 1;
+                    Toast.makeText(mContext, "查看第" + pos + "集", Toast.LENGTH_SHORT).show();
+                }
             }
         }
 
         @Override
-        public void clickItemSearchByAIGuessWhatYouLikeListVertical(boolean isChangeBt, TppData.DetailsListBean detailsListBean, int position) {
-            if (isChangeBt && null != aiuiService) {
-                aiuiService.textUnderstander("换一个");
+        public void clickItemSearchByAIGuessWhatYouLikeListVertical(boolean isChangeBt, boolean isClickLookMore, TppData.DetailsListBean detailsListBean, int position) {
+            if (null != aiuiService) {
+                if (isChangeBt) {
+                    aiuiService.textUnderstander("换一个");
+                } else if (isClickLookMore) {
+                    Toast.makeText(mContext, "查看更多", Toast.LENGTH_SHORT).show();
+                } else {
+                    int pos = position + 1;
+                    Toast.makeText(mContext, "查看第" + pos + "条", Toast.LENGTH_SHORT).show();
+                }
             }
         }
 

@@ -4,13 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimen_40dp"
-        android:layout_marginBottom="@dimen/dimen_10dp"
+        android:layout_marginBottom="@dimen/dimen_5dp"
         android:background="@drawable/search_by_ai_video_item_bg"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        >
 
         <TextView
             android:id="@+id/tv_release_num"
@@ -19,20 +18,31 @@
             android:layout_marginLeft="@dimen/dimen_8dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="20180622"
             android:textColor="@color/guess_you_like_movie_name"
-            android:textSize="@dimen/dimen_13dp"/>
+            android:textSize="@dimen/dimen_13dp"
+            />
 
         <TextView
             android:id="@+id/tv_release_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/dimen_8dp"
             android:layout_marginRight="@dimen/dimen_8dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="20180622"
             android:textColor="@color/guess_you_like_movie_name"
             android:textSize="@dimen/dimen_13dp"/>
-    </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_look_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/look_more_resource"
+            android:textColor="@color/guess_you_like_movie_name"
+            android:textSize="@dimen/dimen_13dp"/>
+    </RelativeLayout>
 </RelativeLayout>

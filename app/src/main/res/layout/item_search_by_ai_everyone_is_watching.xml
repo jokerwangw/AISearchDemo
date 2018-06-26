@@ -8,7 +8,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@mipmap/search_by_ai_everyone_watching_bg"
+        android:background="@mipmap/search_by_ai_ask_ai_bg"
         android:orientation="vertical">
 
         <TextView
@@ -17,141 +17,156 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dimen_35dp"
             android:layout_marginTop="@dimen/dimen_35dp"
+            android:text="@string/everybody_watching"
             android:textColor="@color/appointment_movie_name"
             android:textSize="@dimen/dimen_18dp"/>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dimen_35dp"
-            android:layout_marginRight="@dimen/dimen_35dp"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/dimen_13dp"
             android:orientation="horizontal">
 
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_120dp"
-                android:layout_weight="1">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
-                    android:id="@+id/item_img1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="@dimen/dimen_10dp"/>
+                <RelativeLayout
+                    android:layout_width="@dimen/dimen_86dp"
+                    android:layout_height="@dimen/dimen_125dp"
+                    >
+
+                    <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
+                        android:id="@+id/item_img1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        />
+
+                    <TextView
+                        android:id="@+id/item_watch_num1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginBottom="@dimen/dimen_8dp"
+                        android:layout_marginRight="@dimen/dimen_5dp"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/dimen_10dp"/>
+                </RelativeLayout>
 
                 <TextView
-                    android:id="@+id/item_watch_num1"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/item_name1"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginBottom="@dimen/dimen_8dp"
-                    android:layout_marginRight="@dimen/dimen_5dp"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/dimen_10dp"/>
-            </RelativeLayout>
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:textColor="@color/everyone_watch_list_movie_name"/>
+            </LinearLayout>
 
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_120dp"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/dimen_8dp"
                 android:layout_marginRight="@dimen/dimen_8dp"
-                android:layout_weight="1">
+                android:orientation="vertical">
 
-                <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
-                    android:id="@+id/item_img2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="@dimen/dimen_10dp"/>
+                <RelativeLayout
+                    android:layout_width="@dimen/dimen_86dp"
+                    android:layout_height="@dimen/dimen_125dp"
+                    >
 
-                <TextView
-                    android:id="@+id/item_watch_num2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginBottom="@dimen/dimen_8dp"
-                    android:layout_marginRight="@dimen/dimen_5dp"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/dimen_10dp"/>
-            </RelativeLayout>
+                    <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
+                        android:id="@+id/item_img2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        />
 
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_120dp"
-                android:layout_weight="1">
-
-                <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
-                    android:id="@+id/item_img3"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="@dimen/dimen_10dp"/>
+                    <TextView
+                        android:id="@+id/item_watch_num2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginBottom="@dimen/dimen_8dp"
+                        android:layout_marginRight="@dimen/dimen_5dp"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/dimen_10dp"/>
+                </RelativeLayout>
 
                 <TextView
-                    android:id="@+id/item_watch_num3"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/item_name2"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginBottom="@dimen/dimen_8dp"
-                    android:layout_marginRight="@dimen/dimen_5dp"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/dimen_10dp"/>
-            </RelativeLayout>
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:textColor="@color/everyone_watch_list_movie_name"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="@dimen/dimen_86dp"
+                    android:layout_height="@dimen/dimen_125dp"
+                    >
+
+                    <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
+                        android:id="@+id/item_img3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        />
+
+                    <TextView
+                        android:id="@+id/item_watch_num3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginBottom="@dimen/dimen_8dp"
+                        android:layout_marginRight="@dimen/dimen_5dp"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/dimen_10dp"/>
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/item_name3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:textColor="@color/everyone_watch_list_movie_name"
+                    android:textSize="@dimen/dimen_15dp"/>
+            </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dimen_35dp"
-            android:layout_marginRight="@dimen/dimen_35dp"
-            android:layout_marginTop="@dimen/dimen_5dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/item_name1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:gravity="center_horizontal"
-                android:maxLines="1"
-                android:textColor="@color/everyone_watch_list_movie_name"/>
-
-            <TextView
-                android:id="@+id/item_name2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:gravity="center_horizontal"
-                android:maxLines="1"
-                android:textColor="@color/everyone_watch_list_movie_name"/>
-
-            <TextView
-                android:id="@+id/item_name3"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:gravity="center_horizontal"
-                android:maxLines="1"
-                android:textColor="@color/everyone_watch_list_movie_name"
-                android:textSize="@dimen/dimen_15dp"/>
-        </LinearLayout>
+            android:layout_height="4dp"
+            android:layout_marginLeft="@dimen/dimen_40dp"
+            android:layout_marginRight="@dimen/dimen_40dp"
+            android:layout_marginTop="@dimen/dimen_20dp"
+            android:background="@drawable/desh_line"/>
 
         <TextView
             android:id="@+id/tv_movie_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_movie_appointment_time"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/dimen_25dp"
+            android:layout_marginTop="@dimen/dimen_20dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="查看更多>"
+            android:padding="@dimen/dimen_5dp"
+            android:text="@string/look_more_resource"
             android:textColor="@color/appointment_movie_list"
-            android:textSize="@dimen/dimen_13dp"
+            android:textSize="@dimen/dimen_15dp"
             />
+
     </LinearLayout>
 </RelativeLayout>

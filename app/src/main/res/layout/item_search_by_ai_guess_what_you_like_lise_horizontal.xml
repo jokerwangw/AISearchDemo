@@ -32,9 +32,8 @@
             android:orientation="horizontal">
 
             <RelativeLayout
-                android:layout_width="@dimen/dimen_90dp"
-                android:layout_height="@dimen/dimen_120dp">
-
+                android:layout_width="@dimen/dimen_86dp"
+                android:layout_height="@dimen/dimen_125dp">
 
                 <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
                     android:id="@+id/item_detail_img"
@@ -134,8 +133,9 @@
             android:layout_marginLeft="@dimen/dimen_35dp"
             android:layout_marginRight="@dimen/dimen_35dp"
             android:layout_marginTop="@dimen/dimen_8dp"
-            android:text="剧情简介"
-            android:textColor="@color/guess_you_like_movie_text"/>
+            android:text="@string/video_plot_header"
+            android:textColor="@color/guess_you_like_movie_text"
+            android:textSize="@dimen/dimen_15dp"/>
 
         <TextView
             android:id="@+id/tv_video_deteil"
@@ -146,8 +146,9 @@
             android:layout_marginRight="@dimen/dimen_35dp"
             android:layout_marginTop="@dimen/dimen_8dp"
             android:ellipsize="end"
-            android:maxLines="5"
-            android:textColor="@color/guess_you_like_movie_text"/>
+            android:maxLines="3"
+            android:textColor="@color/guess_you_like_movie_text"
+            android:textSize="@dimen/dimen_13dp"/>
 
         <LinearLayout
             android:id="@+id/ll_video_list"
@@ -161,16 +162,30 @@
             android:orientation="horizontal">
         </LinearLayout>
 
+        <View
+            android:id="@+id/view_desh_line"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_below="@+id/ll_video_list"
+            android:layout_marginLeft="@dimen/dimen_40dp"
+            android:layout_marginRight="@dimen/dimen_40dp"
+            android:layout_marginTop="@dimen/dimen_5dp"
+            android:background="@drawable/desh_line"/>
+
         <TextView
             android:id="@+id/tv_item_change"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/ll_video_list"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="@dimen/dimen_55dp"
+            android:layout_below="@+id/view_desh_line"
+            android:layout_marginBottom="@dimen/dimen_50dp"
+            android:layout_marginLeft="@dimen/dimen_40dp"
+            android:layout_marginRight="@dimen/dimen_40dp"
             android:layout_marginTop="@dimen/dimen_10dp"
             android:clickable="true"
-            android:text="换一个"
+            android:gravity="center"
+            android:paddingBottom="@dimen/dimen_8dp"
+            android:paddingTop="@dimen/dimen_5dp"
+            android:text="@string/change_one_video"
             android:textColor="@color/appointment_movie_list"
             android:textSize="@dimen/dimen_15dp"
             />

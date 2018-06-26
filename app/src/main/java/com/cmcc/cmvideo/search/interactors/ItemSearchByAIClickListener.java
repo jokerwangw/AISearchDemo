@@ -42,19 +42,21 @@ public interface ItemSearchByAIClickListener {
      * 点击了类型为MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL的条目
      *
      * @param isChangeBt
+     * @param isClickLookMore
      * @param detailsListBean
      * @param position
      */
-    public void clickItemSearchByAIGuessWhatYouLikeListHorizontal(boolean isChangeBt, TppData.DetailsListBean detailsListBean, int position);
+    public void clickItemSearchByAIGuessWhatYouLikeListHorizontal(boolean isChangeBt, boolean isClickLookMore, TppData.DetailsListBean detailsListBean, int position);
 
     /**
      * 点击了类型为MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL的条目
      *
      * @param isChangeBt
+     * @param isClickLookMore
      * @param detailsListBean
      * @param position
      */
-    public void clickItemSearchByAIGuessWhatYouLikeListVertical(boolean isChangeBt, TppData.DetailsListBean detailsListBean, int position);
+    public void clickItemSearchByAIGuessWhatYouLikeListVertical(boolean isChangeBt, boolean isClickLookMore, TppData.DetailsListBean detailsListBean, int position);
 
     /**
      * 点击了类型为MESSAGE_TYPE_THE_LATEST_VIDEO的条目

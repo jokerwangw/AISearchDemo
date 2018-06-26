@@ -55,7 +55,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/search_input_area"
-        android:layout_marginTop="@dimen/dimen_60dp"/>
+        android:layout_below="@+id/tv_title"
+        android:layout_marginTop="@dimen/dimen_8dp"/>
 
     <ImageView
         android:id="@+id/im_release_finger"
@@ -70,7 +71,7 @@
     <RelativeLayout
         android:id="@+id/search_input_area"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_150dp"
+        android:layout_height="@dimen/dimen_125dp"
         android:layout_alignParentBottom="true">
 
         <RelativeLayout

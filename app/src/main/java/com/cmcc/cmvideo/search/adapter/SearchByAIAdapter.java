@@ -229,7 +229,6 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             } else if (holder instanceof ItemSearchByAIIWantTOSeeViewHolder) {
                 final List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
                 if (null != videoList) {
-
                 }
             } else if (holder instanceof ItemSearchByAIGuessWhatYouLikeViewHolder) {
                 final List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
@@ -240,18 +239,6 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                     }
                     final ItemSearchByAIGuessWhatYouLikeViewHolder itemSearchByAIGuessWhatYouLikeViewHolder = (ItemSearchByAIGuessWhatYouLikeViewHolder) holder;
 
-                    itemSearchByAIGuessWhatYouLikeViewHolder.itemVideoName.setText(TextUtils.isEmpty(detailsListBean.name) ? "" : detailsListBean.name);
-                    itemSearchByAIGuessWhatYouLikeViewHolder.itemArea.setText(TextUtils.isEmpty(detailsListBean.area) ? "制片国家/地区:" : "制片国家/地区:" + detailsListBean.area);
-                    itemSearchByAIGuessWhatYouLikeViewHolder.itemReleasetime.setText(TextUtils.isEmpty(detailsListBean.releasetime) ? "上映日期:" : "上映日期:" + detailsListBean.releasetime);
-                    itemSearchByAIGuessWhatYouLikeViewHolder.itemVideoDeteil.setText(TextUtils.isEmpty(detailsListBean.detail) ? "" : "" + detailsListBean.detail);
-                    itemSearchByAIGuessWhatYouLikeViewHolder.itemChange.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (null != ItemSearchByAIClickListener) {
-                                ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLike(true, detailsListBean);
-                            }
-                        }
-                    });
                     if (!TextUtils.isEmpty(detailsListBean.image)) {
                         String image = detailsListBean.image;
                         try {
@@ -270,7 +257,37 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         }
                     }
 
-                    if (null != detailsListBean.director) {
+                    if (TextUtils.isEmpty(detailsListBean.name)) {
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemVideoName.setVisibility(View.GONE);
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemVideoName.setVisibility(View.VISIBLE);
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemVideoName.setText(detailsListBean.name);
+                    }
+
+                    if (TextUtils.isEmpty(detailsListBean.area)) {
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemArea.setVisibility(View.GONE);
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemArea.setVisibility(View.VISIBLE);
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemArea.setText("制片国家/地区:" + detailsListBean.area);
+                    }
+
+                    if (TextUtils.isEmpty(detailsListBean.releasetime)) {
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemReleasetime.setVisibility(View.GONE);
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemReleasetime.setVisibility(View.VISIBLE);
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemReleasetime.setText("上映日期:" + detailsListBean.releasetime);
+                    }
+
+                    if (TextUtils.isEmpty(detailsListBean.detail)) {
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemPlotHeader.setVisibility(View.GONE);
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemVideoDeteil.setVisibility(View.GONE);
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemPlotHeader.setVisibility(View.VISIBLE);
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemVideoDeteil.setVisibility(View.VISIBLE);
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemVideoDeteil.setText(detailsListBean.detail);
+                    }
+
+                    if (null != detailsListBean.director && detailsListBean.director.size() != 0) {
                         StringBuilder director = new StringBuilder("导演:");
                         for (String text : detailsListBean.director) {
                             director.append(text).append("/");
@@ -278,10 +295,13 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         if (director.toString().contains("/")) {
                             director = new StringBuilder(director.substring(0, director.lastIndexOf("/")));
                         }
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemDirector.setVisibility(View.VISIBLE);
                         itemSearchByAIGuessWhatYouLikeViewHolder.itemDirector.setText(director.toString());
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemDirector.setVisibility(View.GONE);
                     }
 
-                    if (null != detailsListBean.actor) {
+                    if (null != detailsListBean.actor && detailsListBean.actor.size() != 0) {
                         StringBuilder actor = new StringBuilder("主演:");
                         for (String text : detailsListBean.actor) {
                             actor.append(text).append("/");
@@ -289,10 +309,13 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         if (actor.toString().contains("/")) {
                             actor = new StringBuilder(actor.substring(0, actor.lastIndexOf("/")));
                         }
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemActor.setVisibility(View.VISIBLE);
                         itemSearchByAIGuessWhatYouLikeViewHolder.itemActor.setText(actor.toString());
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemActor.setVisibility(View.GONE);
                     }
 
-                    if (null != detailsListBean.tag) {
+                    if (null != detailsListBean.tag && detailsListBean.tag.size() != 0) {
                         StringBuilder tag = new StringBuilder("类型:");
                         for (String text : detailsListBean.tag) {
                             tag.append(text).append("/");
@@ -300,10 +323,13 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         if (tag.toString().contains("/")) {
                             tag = new StringBuilder(tag.substring(0, tag.lastIndexOf("/")));
                         }
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemCategory.setVisibility(View.VISIBLE);
                         itemSearchByAIGuessWhatYouLikeViewHolder.itemCategory.setText(tag.toString());
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemCategory.setVisibility(View.GONE);
                     }
 
-                    if (null != detailsListBean.language) {
+                    if (null != detailsListBean.language && detailsListBean.language.size() != 0) {
                         StringBuilder language = new StringBuilder("语言:");
                         for (String text : detailsListBean.language) {
                             language.append(text).append("/");
@@ -311,9 +337,20 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         if (language.toString().contains("/")) {
                             language = new StringBuilder(language.substring(0, language.lastIndexOf("/")));
                         }
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemLanguage.setVisibility(View.VISIBLE);
                         itemSearchByAIGuessWhatYouLikeViewHolder.itemLanguage.setText(language.toString());
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeViewHolder.itemLanguage.setVisibility(View.GONE);
                     }
 
+                    itemSearchByAIGuessWhatYouLikeViewHolder.itemChange.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (null != ItemSearchByAIClickListener) {
+                                ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLike(true, detailsListBean);
+                            }
+                        }
+                    });
                 }
             } else if (holder instanceof ItemSearchByAIGuessWhatYouLikeListHorizontalViewHolder) {
                 final List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
@@ -324,18 +361,6 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                     }
                     final ItemSearchByAIGuessWhatYouLikeListHorizontalViewHolder itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder = (ItemSearchByAIGuessWhatYouLikeListHorizontalViewHolder) holder;
 
-                    itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemVideoName.setText(TextUtils.isEmpty(detailsListBean.name) ? "" : detailsListBean.name);
-                    itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemArea.setText(TextUtils.isEmpty(detailsListBean.area) ? "制片国家/地区:" : "制片国家/地区:" + detailsListBean.area);
-                    itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemReleasetime.setText(TextUtils.isEmpty(detailsListBean.releasetime) ? "上映日期:" : "上映日期:" + detailsListBean.releasetime);
-                    itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemVideoDeteil.setText(TextUtils.isEmpty(detailsListBean.detail) ? "" : "" + detailsListBean.detail);
-                    itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemChange.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (null != ItemSearchByAIClickListener) {
-                                ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLikeListHorizontal(true, detailsListBean, -1);
-                            }
-                        }
-                    });
                     if (!TextUtils.isEmpty(detailsListBean.image)) {
                         String image = detailsListBean.image;
                         try {
@@ -354,7 +379,37 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         }
                     }
 
-                    if (null != detailsListBean.director) {
+                    if (TextUtils.isEmpty(detailsListBean.name)) {
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemVideoName.setVisibility(View.GONE);
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemVideoName.setVisibility(View.VISIBLE);
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemVideoName.setText(detailsListBean.name);
+                    }
+
+                    if (TextUtils.isEmpty(detailsListBean.area)) {
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemArea.setVisibility(View.GONE);
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemArea.setVisibility(View.VISIBLE);
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemArea.setText("制片国家/地区:" + detailsListBean.area);
+                    }
+
+                    if (TextUtils.isEmpty(detailsListBean.releasetime)) {
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemReleasetime.setVisibility(View.GONE);
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemReleasetime.setVisibility(View.VISIBLE);
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemReleasetime.setText("上映日期:" + detailsListBean.releasetime);
+                    }
+
+                    if (TextUtils.isEmpty(detailsListBean.detail)) {
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemPlotHeader.setVisibility(View.GONE);
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemVideoDeteil.setVisibility(View.GONE);
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemPlotHeader.setVisibility(View.VISIBLE);
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemVideoDeteil.setVisibility(View.VISIBLE);
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemVideoDeteil.setText(detailsListBean.detail);
+                    }
+
+                    if (null != detailsListBean.director && detailsListBean.director.size() != 0) {
                         StringBuilder director = new StringBuilder("导演:");
                         for (String text : detailsListBean.director) {
                             director.append(text).append("/");
@@ -362,10 +417,13 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         if (director.toString().contains("/")) {
                             director = new StringBuilder(director.substring(0, director.lastIndexOf("/")));
                         }
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemDirector.setVisibility(View.VISIBLE);
                         itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemDirector.setText(director.toString());
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemDirector.setVisibility(View.GONE);
                     }
 
-                    if (null != detailsListBean.actor) {
+                    if (null != detailsListBean.actor && detailsListBean.actor.size() != 0) {
                         StringBuilder actor = new StringBuilder("主演:");
                         for (String text : detailsListBean.actor) {
                             actor.append(text).append("/");
@@ -373,10 +431,13 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         if (actor.toString().contains("/")) {
                             actor = new StringBuilder(actor.substring(0, actor.lastIndexOf("/")));
                         }
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemActor.setVisibility(View.VISIBLE);
                         itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemActor.setText(actor.toString());
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemActor.setVisibility(View.GONE);
                     }
 
-                    if (null != detailsListBean.tag) {
+                    if (null != detailsListBean.tag && detailsListBean.tag.size() != 0) {
                         StringBuilder tag = new StringBuilder("类型:");
                         for (String text : detailsListBean.tag) {
                             tag.append(text).append("/");
@@ -384,10 +445,13 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         if (tag.toString().contains("/")) {
                             tag = new StringBuilder(tag.substring(0, tag.lastIndexOf("/")));
                         }
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemCategory.setVisibility(View.VISIBLE);
                         itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemCategory.setText(tag.toString());
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemCategory.setVisibility(View.GONE);
                     }
 
-                    if (null != detailsListBean.language) {
+                    if (null != detailsListBean.language && detailsListBean.language.size() != 0) {
                         StringBuilder language = new StringBuilder("语言:");
                         for (String text : detailsListBean.language) {
                             language.append(text).append("/");
@@ -395,10 +459,14 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         if (language.toString().contains("/")) {
                             language = new StringBuilder(language.substring(0, language.lastIndexOf("/")));
                         }
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemLanguage.setVisibility(View.VISIBLE);
                         itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemLanguage.setText(language.toString());
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemLanguage.setVisibility(View.GONE);
                     }
 
-                    if (null != detailsListBean.subserials) {
+                    if (null != detailsListBean.subserials && detailsListBean.subserials.size() != 0) {
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.llVideoList.setVisibility(View.VISIBLE);
                         itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.llVideoList.removeAllViews();
                         if (detailsListBean.subserials.size() > 5) {
                             for (int i = 0; i < 3; i++) {
@@ -415,7 +483,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                                     @Override
                                     public void onClick(View v) {
                                         if (null != ItemSearchByAIClickListener) {
-                                            ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLikeListHorizontal(true, detailsListBean, pos);
+                                            ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLikeListHorizontal(false, pos == 2 ? true : false, detailsListBean, pos);
                                         }
                                     }
                                 });
@@ -431,21 +499,41 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                                     @Override
                                     public void onClick(View v) {
                                         if (null != ItemSearchByAIClickListener) {
-                                            ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLikeListHorizontal(true, detailsListBean, pos);
+                                            ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLikeListHorizontal(false, false, detailsListBean, pos);
                                         }
                                     }
                                 });
                             }
                         } else {
                             for (int i = 0; i < detailsListBean.subserials.size(); i++) {
+                                final int pos = i;
                                 View root = LayoutInflater.from(holder.itemView.getContext()).inflate(R.layout.item_search_by_ai_horizontal_item, null, false);
                                 int num = i + 1;
                                 ((TextView) root.findViewById(R.id.tv_release_num)).setText("" + num);
                                 itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.llVideoList.addView(root);
+                                root.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        if (null != ItemSearchByAIClickListener) {
+                                            ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLikeListHorizontal(false, false, detailsListBean, pos);
+                                        }
+                                    }
+                                });
                             }
                         }
 
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.llVideoList.setVisibility(View.GONE);
                     }
+
+                    itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.itemChange.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (null != ItemSearchByAIClickListener) {
+                                ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLikeListHorizontal(true, false, detailsListBean, -1);
+                            }
+                        }
+                    });
                 }
             } else if (holder instanceof ItemSearchByAIGuessWhatYouLikeListVerticalViewHolder) {
                 final List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
@@ -456,17 +544,6 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                     }
                     final ItemSearchByAIGuessWhatYouLikeListVerticalViewHolder itemSearchByAIGuessWhatYouLikeListVerticalViewHolder = (ItemSearchByAIGuessWhatYouLikeListVerticalViewHolder) holder;
 
-                    itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemVideoName.setText(TextUtils.isEmpty(detailsListBean.name) ? "" : detailsListBean.name);
-                    itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemArea.setText(TextUtils.isEmpty(detailsListBean.area) ? "制片国家/地区:" : "制片国家/地区:" + detailsListBean.area);
-                    itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemReleasetime.setText(TextUtils.isEmpty(detailsListBean.releasetime) ? "上映日期:" : "上映日期:" + detailsListBean.releasetime);
-                    itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemChange.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (null != ItemSearchByAIClickListener) {
-                                ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLikeListVertical(true, detailsListBean, -1);
-                            }
-                        }
-                    });
                     if (!TextUtils.isEmpty(detailsListBean.image)) {
                         String image = detailsListBean.image;
                         try {
@@ -485,7 +562,28 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         }
                     }
 
-                    if (null != detailsListBean.tag) {
+                    if (TextUtils.isEmpty(detailsListBean.name)) {
+                        itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemVideoName.setVisibility(View.GONE);
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemVideoName.setVisibility(View.VISIBLE);
+                        itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemVideoName.setText(detailsListBean.name);
+                    }
+
+                    if (TextUtils.isEmpty(detailsListBean.area)) {
+                        itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemArea.setVisibility(View.GONE);
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemArea.setVisibility(View.VISIBLE);
+                        itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemArea.setText("制片国家/地区:" + detailsListBean.area);
+                    }
+
+                    if (TextUtils.isEmpty(detailsListBean.releasetime)) {
+                        itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemReleasetime.setVisibility(View.GONE);
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemReleasetime.setVisibility(View.VISIBLE);
+                        itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemReleasetime.setText("上映日期:" + detailsListBean.releasetime);
+                    }
+
+                    if (null != detailsListBean.tag && detailsListBean.tag.size() != 0) {
                         StringBuilder tag = new StringBuilder("类型:");
                         for (String text : detailsListBean.tag) {
                             tag.append(text).append("/");
@@ -494,9 +592,12 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                             tag = new StringBuilder(tag.substring(0, tag.lastIndexOf("/")));
                         }
                         itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemCategory.setText(tag.toString());
+                        itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemCategory.setVisibility(View.VISIBLE);
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemCategory.setVisibility(View.GONE);
                     }
 
-                    if (null != detailsListBean.language) {
+                    if (null != detailsListBean.language && detailsListBean.language.size() != 0) {
                         StringBuilder language = new StringBuilder("语言:");
                         for (String text : detailsListBean.language) {
                             language.append(text).append("/");
@@ -504,10 +605,14 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         if (language.toString().contains("/")) {
                             language = new StringBuilder(language.substring(0, language.lastIndexOf("/")));
                         }
+                        itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemLanguage.setVisibility(View.VISIBLE);
                         itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemLanguage.setText(language.toString());
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemLanguage.setVisibility(View.GONE);
                     }
 
-                    if (null != detailsListBean.subserials) {
+                    if (null != detailsListBean.subserials && detailsListBean.subserials.size() != 0) {
+                        itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.llVideoList.setVisibility(View.VISIBLE);
                         itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.llVideoList.removeAllViews();
                         int count = detailsListBean.subserials.size();
                         if (count > 3) {
@@ -516,6 +621,9 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         for (int i = 0; i < count; i++) {
                             final int pos = i;
                             View root = LayoutInflater.from(holder.itemView.getContext()).inflate(R.layout.item_search_by_ai_vertical_item, null, false);
+                            ((TextView) root.findViewById(R.id.tv_release_num)).setVisibility(View.GONE);
+                            ((TextView) root.findViewById(R.id.tv_release_name)).setVisibility(View.VISIBLE);
+                            ((TextView) root.findViewById(R.id.tv_look_more)).setVisibility(View.GONE);
                             ((TextView) root.findViewById(R.id.tv_release_num)).setText(detailsListBean.subserials.get(i).id);
                             ((TextView) root.findViewById(R.id.tv_release_name)).setText(detailsListBean.subserials.get(i).name);
                             itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.llVideoList.addView(root);
@@ -523,12 +631,38 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                                 @Override
                                 public void onClick(View v) {
                                     if (null != ItemSearchByAIClickListener) {
-                                        ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLikeListVertical(false, detailsListBean, pos);
+                                        ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLikeListVertical(false, false, detailsListBean, pos);
                                     }
                                 }
                             });
                         }
+
+                        View rootMore = LayoutInflater.from(holder.itemView.getContext()).inflate(R.layout.item_search_by_ai_vertical_item, null, false);
+                        ((TextView) rootMore.findViewById(R.id.tv_release_num)).setVisibility(View.GONE);
+                        ((TextView) rootMore.findViewById(R.id.tv_release_name)).setVisibility(View.GONE);
+                        ((TextView) rootMore.findViewById(R.id.tv_look_more)).setVisibility(View.VISIBLE);
+                        ((TextView) rootMore.findViewById(R.id.tv_release_name)).setText(mContext.getResources().getString(R.string.look_more_resource));
+                        itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.llVideoList.addView(rootMore);
+                        rootMore.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (null != ItemSearchByAIClickListener) {
+                                    ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLikeListVertical(false, true, detailsListBean, 4);
+                                }
+                            }
+                        });
+                    } else {
+                        itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.llVideoList.setVisibility(View.GONE);
                     }
+
+                    itemSearchByAIGuessWhatYouLikeListVerticalViewHolder.itemChange.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (null != ItemSearchByAIClickListener) {
+                                ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLikeListVertical(true, false, detailsListBean, -1);
+                            }
+                        }
+                    });
                 }
             } else if (holder instanceof ItemSearchByAITheLatestVideoViewHolder) {
                 final ItemSearchByAITheLatestVideoViewHolder itemSearchByAITheLatestVideoViewHolder = (ItemSearchByAITheLatestVideoViewHolder) holder;
@@ -703,6 +837,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
         private TextView itemReleasetime;
         private TextView itemVideoDeteil;
         private TextView itemChange;
+        private TextView itemPlotHeader;
 
         private ItemSearchByAIGuessWhatYouLikeViewHolder(View itemView) {
             super(itemView);
@@ -717,6 +852,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             itemReleasetime = (TextView) itemView.findViewById(R.id.item_releasetime);
             itemVideoDeteil = (TextView) itemView.findViewById(R.id.tv_video_deteil);
             itemChange = (TextView) itemView.findViewById(R.id.tv_item_change);
+            itemPlotHeader = (TextView) itemView.findViewById(R.id.tv_plot_header);
         }
     }
 
@@ -736,6 +872,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
         private TextView itemVideoDeteil;
         private LinearLayout llVideoList;
         private TextView itemChange;
+        private TextView itemPlotHeader;
 
         private ItemSearchByAIGuessWhatYouLikeListHorizontalViewHolder(View itemView) {
             super(itemView);
@@ -751,6 +888,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             itemVideoDeteil = (TextView) itemView.findViewById(R.id.tv_video_deteil);
             llVideoList = (LinearLayout) itemView.findViewById(R.id.ll_video_list);
             itemChange = (TextView) itemView.findViewById(R.id.tv_item_change);
+            itemPlotHeader = (TextView) itemView.findViewById(R.id.tv_plot_header);
         }
     }
 

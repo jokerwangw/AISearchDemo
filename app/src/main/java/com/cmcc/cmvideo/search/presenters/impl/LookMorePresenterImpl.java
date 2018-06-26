@@ -115,8 +115,10 @@ public class LookMorePresenterImpl extends AbstractPresenter implements AIUIServ
     }
     //前三个 保持不变后面的数据随机排序，产品需求 为了造成每次查看更多好像都换新的数据的假象
     private List<TppData.DetailsListBean> blurDetailsList(List<TppData.DetailsListBean> detailslist){
-        if(detailslist ==null||detailslist.size()<4)
+        if(detailslist ==null||detailslist.size()<4){
             return detailslist;
+        }
+
         List<TppData.DetailsListBean> headList =  detailslist.subList(0,3);
         List<TppData.DetailsListBean> blurList = detailslist.subList(3,detailslist.size());
         List<TppData.DetailsListBean> sourceList = new ArrayList<>();
