@@ -87,7 +87,13 @@ public class AiResponse {
      * @return
      */
     public Response getResultResponse() {
-        return errorRcMsgList.get(random.nextInt(errorRcMsgList.size()));
+        Response target = null;
+        try{
+            target = (Response)errorRcMsgList.get(random.nextInt(errorRcMsgList.size())).clone();
+        }catch (CloneNotSupportedException c){
+            c.printStackTrace();
+        }
+        return target;
     }
 
 
@@ -97,7 +103,13 @@ public class AiResponse {
      * @return 反馈语
      */
     public Response getNetWorkStatus() {
-        return networkResponseList.get(random.nextInt(networkResponseList.size()));
+        Response target = null;
+        try{
+            target = (Response)networkResponseList.get(random.nextInt(networkResponseList.size())).clone();
+        }catch (CloneNotSupportedException c){
+            c.printStackTrace();
+        }
+        return target;
     }
 
     /**
@@ -106,7 +118,13 @@ public class AiResponse {
      * @return 反馈语对象
      */
     public Response getEveryoneSee() {
-        return everyoneSeeList.get(random.nextInt(everyoneSeeList.size()));
+        Response target = null;
+        try{
+            target = (Response)everyoneSeeList.get(random.nextInt(everyoneSeeList.size())).clone();
+        }catch (CloneNotSupportedException c){
+            c.printStackTrace();
+        }
+        return target;
     }
 
     /**
@@ -115,7 +133,13 @@ public class AiResponse {
      * @return 反馈语对象
      */
     public Response getGuessWhatYouLike() {
-        return guessWhatYouLikeList.get(random.nextInt(guessWhatYouLikeList.size()));
+        Response target = null;
+        try{
+            target = (Response)guessWhatYouLikeList.get(random.nextInt(guessWhatYouLikeList.size())).clone();
+        }catch (CloneNotSupportedException c){
+            c.printStackTrace();
+        }
+        return target;
     }
 
     /**
@@ -124,7 +148,13 @@ public class AiResponse {
      * @return 反馈语对象
      */
     public Response getNewVideo() {
-        return newVideoList.get(random.nextInt(newVideoList.size()));
+        Response target = null;
+        try{
+            target = (Response)newVideoList.get(random.nextInt(newVideoList.size())).clone();
+        }catch (CloneNotSupportedException c){
+            c.printStackTrace();
+        }
+        return target;
     }
 
     /**
@@ -133,7 +163,13 @@ public class AiResponse {
      * @return 反馈语对象
      */
     public Response getAlbum() {
-        return albumList.get(random.nextInt(albumList.size()));
+        Response target = null;
+        try{
+            target = (Response)albumList.get(random.nextInt(albumList.size())).clone();
+        }catch (CloneNotSupportedException c){
+            c.printStackTrace();
+        }
+        return target;
     }
 
     /**
@@ -145,7 +181,7 @@ public class AiResponse {
     }
 
 
-    public class Response {
+    public class Response implements Cloneable {
         public Response() {
         }
 
@@ -156,6 +192,11 @@ public class AiResponse {
 
         public String response;
         public RespType respType;
+
+        @Override
+        public Object clone() throws CloneNotSupportedException {
+            return super.clone();
+        }
     }
 
     public enum RespType {
