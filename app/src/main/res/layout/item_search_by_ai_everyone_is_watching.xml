@@ -148,11 +148,12 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="4dp"
+            android:layout_height="@dimen/dimen_2dp"
             android:layout_marginLeft="@dimen/dimen_40dp"
             android:layout_marginRight="@dimen/dimen_40dp"
             android:layout_marginTop="@dimen/dimen_20dp"
-            android:background="@drawable/desh_line"/>
+            android:background="@drawable/desh_line"
+            android:layerType="software"/>
 
         <TextView
             android:id="@+id/tv_movie_list"
