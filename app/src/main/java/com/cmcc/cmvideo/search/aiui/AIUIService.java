@@ -587,9 +587,16 @@ public class AIUIService extends Service {
                                 return;
                             }
                             String sub = params.optString("sub");
+
                             if ("iat".equals(sub) || "nlp".equals(sub) || "tpp".equals(sub)) {
                                 // 解析得到语义结果
-                                JSONObject cntJson = new JSONObject(new String(event.data.getByteArray(cnt_id), "utf-8"));
+//                                cntJson = new JSONObject(new String(event.data.getByteArray(cnt_id), "utf-8"));
+                                String json = new String(event.data.getByteArray(cnt_id), "utf-8");
+                                JSONObject cntJson = null;
+                                if (!TextUtils.isEmpty(json)) {
+                                    cntJson = new JSONObject(json);
+                                }
+                                if (cntJson == null) return;
                                 if ("iat".equals(sub)) {
                                     String iat = cntJson.optString("text");
                                     if (iat.equals("{}") || iat.isEmpty()) {
@@ -631,7 +638,7 @@ public class AIUIService extends Service {
                             }
                         }
                     } catch (Throwable e) {
-                        e.printStackTrace();
+
                     }
                 }
                 break;
