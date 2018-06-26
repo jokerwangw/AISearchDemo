@@ -702,7 +702,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             case DOC:
                 return "纪录".equals(cate) || "纪实".equals(cate);
             case MOVIE:
-                return "电影".equals(cate) || "片".equals(cate);
+                return "电影".equals(cate) || "片".equals(cate) || "影视".equals(cate);
             case CARTOON:
                 return "卡通".equals(cate) || "动漫".equals(cate);
             case VARIETY:
@@ -741,7 +741,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     cate = solts.get(AiuiConstants.VIDEO_TAG);
                 }
             }
-            return TextUtils.isEmpty(cate) ? false : "电视剧,纪录,纪实,电影,片,卡通,动漫,综艺".contains(cate);
+            return TextUtils.isEmpty(cate) ? false : "电视剧,纪录,纪实,电影,影视,片,卡通,动漫,综艺".contains(cate);
         }
         return false;
     }
@@ -1137,7 +1137,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private void syncSpeakableData(int messageType, List<TppData.DetailsListBean> beans) {
         Map<String, String> syncMap = new HashMap<>();
         if (lastSearchIsGuessWhatYouLike()) {
-            syncMap.put("CHANGE", "换一个|下一个");
+            syncMap.put("CHANGE", "换一个|下一个|再换一个");
         }
         if (messageType == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL) {
             if (hasSubserials(beans.get(0))) {
