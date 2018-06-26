@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         service = new Intent(this, AIUIService.class);
         sharedPreferencesHelper = SharedPreferencesHelper.getInstance(MainActivity.this);
+        sharedPreferencesHelper.setValue(KEY_IS_AI_HELPER_OPEN, ServiceUtils.isServiceRunning(MainActivity.this, AIUIService.AIUI_SERVICE_NAME));
         setViewVisible(sharedPreferencesHelper.getBoolean(KEY_IS_AI_HELPER_OPEN, false));
 
     }
