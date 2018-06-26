@@ -957,7 +957,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             String source = "";
             if (!TextUtils.isEmpty(nlpReslult)) {
                 NlpData nlpData = gson.fromJson(nlpReslult, NlpData.class);
-                if (nlpData.rc != 4 && !AiuiConstants.VIEWCMD_SERVICE.equals(nlpData.service) && !"video".equals(nlpData.service) && !"LINGXI2018.user_video".equals(nlpData.service)) {
+                if (!AiuiConstants.VIEWCMD_SERVICE.equals(nlpData.service) && !"video".equals(nlpData.service) && !"LINGXI2018.user_video".equals(nlpData.service)) {
                     sendMessage(nlpData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER, nlpReslult);
                 }
             }
