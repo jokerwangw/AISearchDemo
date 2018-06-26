@@ -136,6 +136,7 @@ public class AIUIService extends Service {
             JSONObject objectJson = new JSONObject();
             JSONObject paramJson = new JSONObject();
             paramJson.put("wakeup_mode", "ivw");
+            paramJson.put("interact_mode","continuous");
             objectJson.put("speech", paramJson);
             sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
             mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
@@ -169,6 +170,7 @@ public class AIUIService extends Service {
             JSONObject objectJson = new JSONObject();
             JSONObject paramJson = new JSONObject();
             paramJson.put("wakeup_mode", "off");
+            paramJson.put("interact_mode","oneshot");
             objectJson.put("speech", paramJson);
             sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
             mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
@@ -210,6 +212,13 @@ public class AIUIService extends Service {
         @Override
         public void tts(String ttsText) {
             AIUIService.this.tts(ttsText);
+        }
+
+        @Override
+        public void cancelTts() {
+            //取消语音合成
+            AIUIService.this.cancelTts();
+
         }
 
         @Override
@@ -586,9 +595,16 @@ public class AIUIService extends Service {
                                 return;
                             }
                             String sub = params.optString("sub");
+
                             if ("iat".equals(sub) || "nlp".equals(sub) || "tpp".equals(sub)) {
                                 // 解析得到语义结果
-                                JSONObject cntJson = new JSONObject(new String(event.data.getByteArray(cnt_id), "utf-8"));
+//                                cntJson = new JSONObject(new String(event.data.getByteArray(cnt_id), "utf-8"));
+                                String json = new String(event.data.getByteArray(cnt_id), "utf-8");
+                                JSONObject cntJson = null;
+                                if (!TextUtils.isEmpty(json)) {
+                                    cntJson = new JSONObject(json);
+                                }
+                                if (cntJson == null) return;
                                 if ("iat".equals(sub)) {
                                     String iat = cntJson.optString("text");
                                     if (iat.equals("{}") || iat.isEmpty()) {
@@ -630,7 +646,7 @@ public class AIUIService extends Service {
                             }
                         }
                     } catch (Throwable e) {
-                        e.printStackTrace();
+
                     }
                 }
                 break;
@@ -644,7 +660,18 @@ public class AIUIService extends Service {
 
                     break;
                 case AIUIConstant.EVENT_SLEEP:
-
+                    if(isIvwModel){
+                        tts(AiResponse.getInstance().getSleep().response);
+                    }
+                    break;
+                case AIUIConstant.EVENT_VAD:
+                    //                Logger.debug("arg【" + event.arg1 + "】【" + event.arg2 + "】");
+                    //用arg1标识前后端点或者音量信息:0(前端点)、1(音量)、2(后端点)、3（前端点超时）。
+                    //当arg1取值为1时，arg2为音量大小。
+                    if (event.arg1 == 0) {
+                        //检测到前端点表示正在录音
+                        AIUIService.this.cancelTts();
+                    }
                     break;
                 case AIUIConstant.EVENT_STATE:
                     mCurrentState = event.arg1;
@@ -683,6 +710,13 @@ public class AIUIService extends Service {
             eventListenerManager.onEvent(event);
         }
     };
+
+
+
+    private void cancelTts() {
+        sendMessage(new AIUIMessage(AIUIConstant.CMD_TTS, AIUIConstant.CANCEL, 0, "", null));
+    }
+
 
     private void tts(String ttsText) {
         if (TextUtils.isEmpty(ttsText)) {

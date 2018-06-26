@@ -223,7 +223,7 @@
             android:layout_below="@+id/tv_movie_appointment_time"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/dimen_13dp"
-            android:text="查看更多>"
+            android:text="@string/look_more_resource"
             android:textColor="@color/appointment_movie_list"
             android:textSize="@dimen/dimen_13dp" />
     </LinearLayout>

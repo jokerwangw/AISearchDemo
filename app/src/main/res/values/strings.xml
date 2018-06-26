@@ -3,6 +3,12 @@
     <string name="listening">正在聆听...</string>
     <string name="cmvideo">咪咕视频</string>
     <string name="playvideo">模拟播放界面</string>
+
+    <string name="everybody_watching">大家都在看</string>
+
+    <string name="video_plot_header">剧情简介</string>
+    <string name="change_one_video">换一个</string>
+
     <string name="cancel_search">取消搜索</string>
     <string name="slide_cancel_search">向上滑动取消搜索</string>
     <string name="release_finger_cancel_search">松开手指 取消发送</string>
@@ -26,4 +32,6 @@
     <string name="vdo_backword">快退</string>
     <string name="vdo_fastword_to">快进（快退）至</string>
     <string name="vdo_change">换一集</string>
+
+    <string name="look_more_resource">查看更多 >></string>
 </resources>

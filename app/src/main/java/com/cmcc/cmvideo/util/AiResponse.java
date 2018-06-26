@@ -72,12 +72,15 @@ public class AiResponse {
 
     private List<Response> albumList = new ArrayList<Response>(Arrays.asList(
             new Response("好的，%s的视频", RespType.USER_NAME),
-            new Response("%s的不错，我也很喜欢，看看这些是视频是不是你要的", RespType.USER_NAME),
+            new Response("%s的不错，我也很喜欢", RespType.USER_NAME),
+            new Response("看看这些视频是不是你想要的", RespType.USER_NAME),
             new Response("小case，那，挑个喜欢的吧", RespType.VIDEO_TYPE),
             new Response("找到了，你想要的是不是这些？", RespType.NORMAL),
             new Response("只找到这么多，表示已经尽力了", RespType.NORMAL)
     ));
-
+    private List<Response> sleepList = new ArrayList<Response>(Arrays.asList(
+            new Response("念动咒语咪咕咪咕我会回来", RespType.NORMAL)
+    ));
 
     /**
      * rc等于4随机反馈一条反馈语
@@ -85,7 +88,13 @@ public class AiResponse {
      * @return
      */
     public Response getResultResponse() {
-        return errorRcMsgList.get(random.nextInt(errorRcMsgList.size()));
+        Response target = null;
+        try{
+            target = (Response)errorRcMsgList.get(random.nextInt(errorRcMsgList.size())).clone();
+        }catch (CloneNotSupportedException c){
+            c.printStackTrace();
+        }
+        return target;
     }
 
 
@@ -95,7 +104,13 @@ public class AiResponse {
      * @return 反馈语
      */
     public Response getNetWorkStatus() {
-        return networkResponseList.get(random.nextInt(networkResponseList.size()));
+        Response target = null;
+        try{
+            target = (Response)networkResponseList.get(random.nextInt(networkResponseList.size())).clone();
+        }catch (CloneNotSupportedException c){
+            c.printStackTrace();
+        }
+        return target;
     }
 
     /**
@@ -104,7 +119,13 @@ public class AiResponse {
      * @return 反馈语对象
      */
     public Response getEveryoneSee() {
-        return everyoneSeeList.get(random.nextInt(everyoneSeeList.size()));
+        Response target = null;
+        try{
+            target = (Response)everyoneSeeList.get(random.nextInt(everyoneSeeList.size())).clone();
+        }catch (CloneNotSupportedException c){
+            c.printStackTrace();
+        }
+        return target;
     }
 
     /**
@@ -113,7 +134,13 @@ public class AiResponse {
      * @return 反馈语对象
      */
     public Response getGuessWhatYouLike() {
-        return guessWhatYouLikeList.get(random.nextInt(guessWhatYouLikeList.size()));
+        Response target = null;
+        try{
+            target = (Response)guessWhatYouLikeList.get(random.nextInt(guessWhatYouLikeList.size())).clone();
+        }catch (CloneNotSupportedException c){
+            c.printStackTrace();
+        }
+        return target;
     }
 
     /**
@@ -122,7 +149,13 @@ public class AiResponse {
      * @return 反馈语对象
      */
     public Response getNewVideo() {
-        return newVideoList.get(random.nextInt(newVideoList.size()));
+        Response target = null;
+        try{
+            target = (Response)newVideoList.get(random.nextInt(newVideoList.size())).clone();
+        }catch (CloneNotSupportedException c){
+            c.printStackTrace();
+        }
+        return target;
     }
 
     /**
@@ -131,11 +164,25 @@ public class AiResponse {
      * @return 反馈语对象
      */
     public Response getAlbum() {
-        return albumList.get(random.nextInt(albumList.size()));
+        Response target = null;
+        try{
+            target = (Response)albumList.get(random.nextInt(albumList.size())).clone();
+        }catch (CloneNotSupportedException c){
+            c.printStackTrace();
+        }
+        return target;
+    }
+
+    /**
+     * 获取休眠反馈语
+     * @return
+     */
+    public Response getSleep(){
+        return  sleepList.get(0);
     }
 
 
-    public class Response {
+    public class Response implements Cloneable {
         public Response() {
         }
 
@@ -146,6 +193,11 @@ public class AiResponse {
 
         public String response;
         public RespType respType;
+
+        @Override
+        public Object clone() throws CloneNotSupportedException {
+            return super.clone();
+        }
     }
 
     public enum RespType {
