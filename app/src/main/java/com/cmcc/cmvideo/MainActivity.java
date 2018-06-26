@@ -187,7 +187,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setViewVisible(Boolean isOpen) {
-        sharedPreferencesHelper.setValue(KEY_IS_AI_HELPER_OPEN, isOpen);
         if (isOpen) {
             btTurnToAISearch.setVisibility(View.VISIBLE);
             btOpenAIHelper.setChecked(true);
@@ -202,11 +201,13 @@ public class MainActivity extends AppCompatActivity {
             if (!ServiceUtils.isServiceRunning(MainActivity.this, AIUIService.AIUI_SERVICE_NAME)) {
                 bindService(service, connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
                 setViewVisible(isChecked);
+                sharedPreferencesHelper.setValue(KEY_IS_AI_HELPER_OPEN, isChecked);
             }
         } else {
             if (ServiceUtils.isServiceRunning(MainActivity.this, AIUIService.AIUI_SERVICE_NAME)) {
                 stopService(service);
                 setViewVisible(isChecked);
+                sharedPreferencesHelper.setValue(KEY_IS_AI_HELPER_OPEN, isChecked);
             }
         }
     }
