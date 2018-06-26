@@ -211,9 +211,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 //闲聊
                 intentQa(result);
                 break;
-            case AiuiConstants.CHANNEL_SERVICE:
-                //频道 如想看央视5台
-                break;
             case AiuiConstants.VIEWCMD_SERVICE:
                 //viewCmd
                 intentViewCmd(result);
@@ -458,8 +455,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             if (nlpData.moreResults == null) {
                 return;
             }
-            if(AiuiConstants.VIEWCMD_SERVICE.equals(nlpData.service)
-                    &&AiuiConstants.VIDEO_SERVICE.equals(nlpData.moreResults.get(0).service)){
+            if (AiuiConstants.VIEWCMD_SERVICE.equals(nlpData.service)
+                    && AiuiConstants.VIDEO_SERVICE.equals(nlpData.moreResults.get(0).service)) {
                 return;
             }
             nlpData = nlpData.moreResults.get(0);
@@ -551,6 +548,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         }
                     }
                     responseTts = response;
+
                 }
                 if (messageType == MESSAGE_TYPE_NORMAL
                         && nlpData.answer != null
@@ -598,54 +596,54 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             return cardTitle;
         }
         if (map.containsKey(AiuiConstants.VIDEO_NAME)) {
-            Logger.debug("TITLE is 【"+map.get(AiuiConstants.VIDEO_NAME)+"】");
+            Logger.debug("TITLE is 【" + map.get(AiuiConstants.VIDEO_NAME) + "】");
             return map.get(AiuiConstants.VIDEO_NAME);
         }
         if (map.containsKey(AiuiConstants.VIDEO_ARTIST)) {
-            cardTitle += "“" + map.get(AiuiConstants.VIDEO_ARTIST).replace("|","、") + "”" + "的";
+            cardTitle += "“" + map.get(AiuiConstants.VIDEO_ARTIST).replace("|", "、") + "”" + "的";
         }
         if (map.containsKey(AiuiConstants.VIDEO_TIME)) {
-            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME).replace("|","、") + "”" + "的";
+            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME).replace("|", "、") + "”" + "的";
         }
         if (map.containsKey(AiuiConstants.VIDEO_TIME_DESCR)) {
-            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME_DESCR).replace("|","、") + "”";
+            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME_DESCR).replace("|", "、") + "”";
         }
         if (map.containsKey(AiuiConstants.VIDEO_AREA)) {
-            cardTitle += "“" + map.get(AiuiConstants.VIDEO_AREA).replace("|","、") + "”";
+            cardTitle += "“" + map.get(AiuiConstants.VIDEO_AREA).replace("|", "、") + "”";
         }
         boolean hasCatgeory = false;
         if (map.containsKey(AiuiConstants.VIDEO_TAG)) {
             String tag = map.get(AiuiConstants.VIDEO_TAG);
             String[] tags = tag.split("\\|");
             boolean hasMoreTags = false;
-            for(int i = 0;i<tags.length;i++){
+            for (int i = 0; i < tags.length; i++) {
                 switch (tags[i]) {
                     case "综艺":
                         hasCatgeory = true;
-                        cardTitle += hasMoreTags?"和综艺节目":"综艺节目";
+                        cardTitle += hasMoreTags ? "和综艺节目" : "综艺节目";
                         break;
                     case "动画":
                         hasCatgeory = true;
-                        cardTitle += hasMoreTags?"和动画片":"动画片";
+                        cardTitle += hasMoreTags ? "和动画片" : "动画片";
                         break;
                     case "纪录":
                         hasCatgeory = true;
-                        cardTitle += hasMoreTags?"和纪录片":"纪录片";
+                        cardTitle += hasMoreTags ? "和纪录片" : "纪录片";
                         break;
                     default:
-                        cardTitle += hasMoreTags?"、“" + tags[i] + "”":"“" + tags[i] + "”";
+                        cardTitle += hasMoreTags ? "、“" + tags[i] + "”" : "“" + tags[i] + "”";
                         break;
                 }
                 hasMoreTags = true;
             }
         }
-        if (map.containsKey(AiuiConstants.VIDEO_CATEGORY)&&!hasCatgeory) {
-             cardTitle += map.get(AiuiConstants.VIDEO_CATEGORY).equals("片") ? "电影" : map.get(AiuiConstants.VIDEO_CATEGORY);
+        if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && !hasCatgeory) {
+            cardTitle += map.get(AiuiConstants.VIDEO_CATEGORY).equals("片") ? "电影" : map.get(AiuiConstants.VIDEO_CATEGORY);
         }
-        if(TextUtils.isEmpty(cardTitle)){
-            cardTitle="影视";
+        if (TextUtils.isEmpty(cardTitle)) {
+            cardTitle = "影视";
         }
-        Logger.debug("TITLE is 【"+cardTitle+"】");
+        Logger.debug("TITLE is 【" + cardTitle + "】");
         return cardTitle;
     }
 

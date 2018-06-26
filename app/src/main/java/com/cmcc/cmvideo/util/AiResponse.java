@@ -72,7 +72,8 @@ public class AiResponse {
 
     private List<Response> albumList = new ArrayList<Response>(Arrays.asList(
             new Response("好的，%s的视频", RespType.USER_NAME),
-            new Response("%s的不错，我也很喜欢，看看这些是视频是不是你要的", RespType.USER_NAME),
+            new Response("%s的不错，我也很喜欢", RespType.USER_NAME),
+            new Response("看看这些视频是不是你想要的", RespType.USER_NAME),
             new Response("小case，那，挑个喜欢的吧", RespType.VIDEO_TYPE),
             new Response("找到了，你想要的是不是这些？", RespType.NORMAL),
             new Response("只找到这么多，表示已经尽力了", RespType.NORMAL)
