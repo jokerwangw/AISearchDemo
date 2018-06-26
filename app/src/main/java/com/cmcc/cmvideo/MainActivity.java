@@ -187,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setViewVisible(Boolean isOpen) {
+        sharedPreferencesHelper.setValue(KEY_IS_AI_HELPER_OPEN, isOpen);
         if (isOpen) {
             btTurnToAISearch.setVisibility(View.VISIBLE);
             btOpenAIHelper.setChecked(true);
