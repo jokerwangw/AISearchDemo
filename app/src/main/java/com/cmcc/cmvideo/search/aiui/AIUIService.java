@@ -136,6 +136,7 @@ public class AIUIService extends Service {
             JSONObject objectJson = new JSONObject();
             JSONObject paramJson = new JSONObject();
             paramJson.put("wakeup_mode", "ivw");
+            paramJson.put("interact_mode","continuous");
             objectJson.put("speech", paramJson);
             sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
             mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
@@ -169,6 +170,7 @@ public class AIUIService extends Service {
             JSONObject objectJson = new JSONObject();
             JSONObject paramJson = new JSONObject();
             paramJson.put("wakeup_mode", "off");
+            paramJson.put("interact_mode","oneshot");
             objectJson.put("speech", paramJson);
             sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
             mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
@@ -652,7 +654,9 @@ public class AIUIService extends Service {
 
                     break;
                 case AIUIConstant.EVENT_SLEEP:
-
+                    if(isIvwModel){
+                        tts(AiResponse.getInstance().getSleep().response);
+                    }
                     break;
                 case AIUIConstant.EVENT_STATE:
                     mCurrentState = event.arg1;
