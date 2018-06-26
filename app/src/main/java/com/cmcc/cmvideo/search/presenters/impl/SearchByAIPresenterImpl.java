@@ -598,6 +598,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             return cardTitle;
         }
         if (map.containsKey(AiuiConstants.VIDEO_NAME)) {
+            Logger.debug("TITLE is 【"+map.get(AiuiConstants.VIDEO_NAME)+"】");
             return map.get(AiuiConstants.VIDEO_NAME);
         }
         if (map.containsKey(AiuiConstants.VIDEO_ARTIST)) {
@@ -632,7 +633,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         cardTitle += hasMoreTags?"和纪录片":"纪录片";
                         break;
                     default:
-                        cardTitle += hasMoreTags?"“" + tag + "”":"“" + tag + "”";
+                        cardTitle += hasMoreTags?"、“" + tags[i] + "”":"“" + tags[i] + "”";
                         break;
                 }
                 hasMoreTags = true;
@@ -641,6 +642,10 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         if (map.containsKey(AiuiConstants.VIDEO_CATEGORY)&&!hasCatgeory) {
              cardTitle += map.get(AiuiConstants.VIDEO_CATEGORY).equals("片") ? "电影" : map.get(AiuiConstants.VIDEO_CATEGORY);
         }
+        if(TextUtils.isEmpty(cardTitle)){
+            cardTitle="影视";
+        }
+        Logger.debug("TITLE is 【"+cardTitle+"】");
         return cardTitle;
     }
 
