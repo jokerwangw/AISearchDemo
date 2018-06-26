@@ -7,15 +7,6 @@
     tools:context="com.cmcc.cmvideo.MainActivity">
 
     <Button
-        android:id="@+id/turn_to_player"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="@dimen/turn_to_ai_search_marginB"
-        android:text="@string/page_player"
-        />
-
-    <Button
         android:id="@+id/turn_to_ai_search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,4 +16,27 @@
         android:background="@mipmap/icon_ai_search"
         />
 
+    <Button
+        android:id="@+id/turn_to_player"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/dimen_8dp"
+        android:text="@string/page_player"
+        />
+
+    <ToggleButton
+        android:id="@+id/open_aiui_helper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/dimen_8dp"
+        android:background="@drawable/open_aiui_helper_selector"
+        android:gravity="center"
+        android:paddingLeft="@dimen/dimen_8dp"
+        android:paddingRight="@dimen/dimen_8dp"
+        android:textColor="#333333"
+        android:textOff="开启语音助手"
+        android:textOn="关闭语音助手"/>
 </RelativeLayout>

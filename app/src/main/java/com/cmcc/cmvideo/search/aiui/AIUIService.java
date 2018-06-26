@@ -55,6 +55,7 @@ import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_NORMAL;
 import static com.iflytek.aiui.AIUIConstant.CMD_SET_PARAMS;
 
 public class AIUIService extends Service {
+    public static final String AIUI_SERVICE_NAME = "com.cmcc.cmvideo.search.aiui.AIUIService";
     private static final String TAG = "AIUIService";
     private AIUIServiceImpl aiuiService;
     private AIUIAgent mAIUIAgent;
