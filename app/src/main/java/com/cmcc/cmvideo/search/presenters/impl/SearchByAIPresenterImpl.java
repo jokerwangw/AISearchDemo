@@ -52,32 +52,23 @@ import static com.cmcc.cmvideo.util.Constants.*;
 
 public class SearchByAIPresenterImpl extends AbstractPresenter implements SearchByAIPresenter, AIUIService.AIUIEventListener, InitSearchByAIListInteractor.Callback {
     private final String TAG = "SearchByAIPresenterImpl";
-    private int lastResponseVideoMessageType = MESSAGE_TYPE_NORMAL;
-    private int mCurrentState = AIUIConstant.STATE_IDLE;
-    private long startTime = 0;
     private final int TIME_OUT = 5000;
     private Context mContext;
     private SearchByAIPresenter.View mView;
     private IAIUIService aiuiService;
     private Gson gson;
-    private String intent;
-    private NlpData mData = null;
-    private android.os.Handler mHandler;
     private String lastResponseVideoTitle = "";
     private String lastRequestVideoText = "";
     private SearchByAIBean lastVideoSearchByAIBean = null;
     //最后一次语义的状态
     private String lastNlpState = "";
     //是否是在投屏状态或者插入耳机状态
-    private boolean isAvailableVideo = false;
 
     public SearchByAIPresenterImpl(Executor executor, MainThread mainThread, SearchByAIPresenter.View view, Context context) {
         super(executor, mainThread);
         mView = view;
         mContext = context;
         gson = new Gson();
-        mHandler = new android.os.Handler(Looper.getMainLooper());
-        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -94,7 +85,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     @Override
     public void destroy() {
-        EventBus.getDefault().unregister(this);
         aiuiService.removeAIUIEventListener(this);
     }
 
@@ -113,7 +103,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     @Override
     public void setAIUIService(IAIUIService service) {
-        isAvailableVideo = false;
         aiuiService = service;
         Map<String, String> map = new HashMap<String, String>() {{
             put("msisdn", "13764279837");
@@ -139,157 +128,20 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     }
 
 
-    private void onNlpResult(String result) {
-        if (TextUtils.isEmpty(result)) {
-            return;
-        }
-        mData = gson.fromJson(result, NlpData.class);
+    private void onNlpResult(String nlpResult){
+        NlpData mData = gson.fromJson(nlpResult, NlpData.class);
+        if (mData.rc == 4) return;
         String service = mData.service;
-        if (!AiuiConstants.VIEWCMD_SERVICE.equals(service)) {
-            Logger.debug("听写用户输入数据=====" + mData.text);
-            sendMessage(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
-        }
-
-
-        //如 我想看电影 是开放问答的技能，此时会返回moreResults字段，但是这个是要走后处理，所以moreResults里面如果是video就直接返回
-        //如果包含moreResults且service是video则直接返回，如果是viewCmd则要发送消息
-        if (null != mData && null != mData.moreResults) {
-            if ("video".equals(mData.service) && "video".equals(mData.moreResults.get(0).service)) {
-                return;
-            }
-            if ("openQA".equals(mData.service) && "video".equals(mData.moreResults.get(0).service)
-                    || "video".equals(mData.service) && "openQA".equals(mData.moreResults.get(0).service)) {
-                return;
-            }
-            if ("video".equals(mData.service)) {
-                mData = mData.moreResults.get(0);
-            }
-        }
-
-        if (mData.rc == 4) {
-            //播报
-            if ((System.currentTimeMillis() - startTime) > TIME_OUT) {
-                // 超过5秒表示 且rc=4（无法解析出语义） ，可显示推荐说法卡片
-                sendMessage("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI);
-            } else {
-                AiResponse.Response response = AiResponse.getInstance().getResultResponse();
-                aiuiService.tts(response.response);
-                sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
-            }
-            return;
-        }
-
-        try {
-            //解析出当前语义状态，以便上传同步客户端状态，实现多伦对话
-            JSONObject jsonObject = new JSONObject(result);
-            if (jsonObject.has("state")) {
-                JSONObject stateObj = jsonObject.getJSONObject("state");
-                Iterator<String> keysIterator = stateObj.keys();
-                while (keysIterator.hasNext()) {
-                    lastNlpState = keysIterator.next();
-                    Logger.debug("lastNlpState 【" + lastNlpState + "】");
-                }
-            }
-            if (!"fg::viewCmd::default::default".equals(lastNlpState)) {
-                aiuiService.syncSpeakableData(lastNlpState, "");
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        if (null != mData.semantic) {
-            intent = mData.semantic.get(0).getIntent();
-        }
-
         switch (service) {
-            case AiuiConstants.QA_SERVICE:
-                //闲聊
-                intentQa(result);
-                break;
             case AiuiConstants.VIEWCMD_SERVICE:
-                //viewCmd
-                intentViewCmd(result);
+                intentViewCmd(mData);
                 break;
-            case AiuiConstants.QUERY_MIGU:
-                //业务查询与办理
-                intentQuery(intent);
-                break;
-            case AiuiConstants.CONTROL_MIGU:
-                //指令控制  如：打开语音助手/投屏播放
-//                intentControl(mData, intent);
-                break;
-
             case AiuiConstants.VIDEO_CMD:
-                //视频播放、暂停、下一集、上一集
-//                if (isAvailableVideo) {
-//                    intentVideoControl(mData, intent);
-//                }
                 intentCmd(mData);
-                break;
-            case AiuiConstants.VIDEO_ON_SERVICE:
-                //直播模块
-                intentOnLive(mData, intent);
-                break;
-            case AiuiConstants.WORLD_CUP_SERVICE:
-                //伪球迷必备
-                intentWorldCup(result);
                 break;
             default:
                 break;
         }
-
-    }
-
-
-    /**
-     * 处理商店技能世界杯
-     *
-     * @param nlpHandle
-     */
-    private void intentWorldCup(String nlpHandle) {
-        NlpData nlpData = gson.fromJson(nlpHandle, NlpData.class);
-        if (null != nlpData.semantic && null != nlpData.semantic.get(0) && null != nlpData.semantic.get(0).intent) {
-            switch (nlpData.semantic.get(0).intent) {
-                case AiuiConstants.WORLD_CUP_QUERY_OPEN:
-                    break;
-                case AiuiConstants.WORLD_CUP_SERCH_BY_DATE:
-                    break;
-                case AiuiConstants.WORLD_CUP_QUERY_TEAMS:
-                    break;
-                case AiuiConstants.WORLD_CUP_QUERY_WITH_SESSION:
-                    break;
-                case AiuiConstants.WORLD_CUP_QUERY_IMPTGAME:
-                    break;
-                case AiuiConstants.WORLD_CUP_TEAM_PLAYERS:
-                    break;
-                case AiuiConstants.WORLD_CUP_SEARCH_BY_TEAM_INTENT:
-                    break;
-                case AiuiConstants.WORLD_CUP_QUERY_FIRST_GAME:
-                    break;
-                case AiuiConstants.WORLD_CUP_QUERY_GROUPS:
-                    break;
-                case AiuiConstants.WORLD_CUP_QUERY_GPGM_OVER:
-                    break;
-                case AiuiConstants.WORLD_CUP_QUERY_TEAM_GROUP:
-                    break;
-                case AiuiConstants.WORLD_CUP_SERCH_BY_TEAMS_INTENT:
-                    break;
-                case AiuiConstants.WORLD_CUP_QUERY_WITH_GROUP:
-                    break;
-                case AiuiConstants.WORLD_CUP_QUERY_ALLINFO:
-                    break;
-                case AiuiConstants.WORLD_CUP_QUERY_CHAMPION:
-                    break;
-                case AiuiConstants.WORLD_CUP_I_LIKE_TEAM:
-                    break;
-            }
-        }
-
-        if ((nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text))) {
-            aiuiService.tts(nlpData.getAnswer().text);
-            sendMessage(nlpData.getAnswer().text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
-        }
-
     }
 
     private void intentCmd(NlpData mData) {
@@ -305,6 +157,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                             String name = subserials.get(index).name;
                             //TODO 猜你喜欢 选剧集
                             Logger.debug("猜你喜欢 选择 id 【" + id + "】 name 【" + name + "】");
+                            aiuiService.tts("正在为你打开"+mData.text);
                         }
                     }
                 }
@@ -312,136 +165,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         }
     }
 
-    /**
-     * 处理直播模块指令 各意图
-     *
-     * @param mData
-     * @param intent
-     */
-    private void intentOnLive(NlpData mData, String intent) {
-        switch (intent) {
-            case AiuiConstants.VIDEO_CHANNEL_INTENT:
-                //频道查询 如：我要看CCTV5体育 / 湖南卫视
-                Logger.debug("VIDEO_CHANNEL_INTENT=================="
-                        + mData.text
-                        + mData.semantic.get(0).getSlots().get(0).normValue
-                        + mData.semantic.get(0).getSlots().get(0).value);
-                break;
-            case AiuiConstants.VIDEO_VERITY_INTENT:
-                //多样直播视频查询 如：我要看直播 、体育直播
-                if (!TextUtils.isEmpty(mData.text)) {
-                    if ("我要看直播".equals(mData.text)) {
-                        //直接跳转到直播模块
-                        Logger.debug("我要看直播===================");
-                    } else {
-                        //跳转到直播内各大类模块
-                        String tx = mData.semantic.get(0).getSlots().get(0).normValue;
-                        intentToVerity(tx);
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
-    /**
-     * 直播模块分类  跳转
-     */
-    private void intentToVerity(String textNormal) {
-        switch (textNormal) {
-            case AiuiConstants.CCTV:
-                //央视
-                Logger.debug("央视==========");
-                break;
-            case AiuiConstants.START_TV:
-                Logger.debug("卫视==========");
-                break;
-            case AiuiConstants.FILMS:
-                Logger.debug("影视==========");
-                break;
-            case AiuiConstants.CHILDREN:
-                Logger.debug("少儿==========");
-                break;
-            case AiuiConstants.NEWS:
-                Logger.debug("新闻==========");
-                break;
-            case AiuiConstants.DOCUMENTARY:
-                Logger.debug("纪录片========");
-                break;
-            case AiuiConstants.TURN_TV:
-                Logger.debug("地方台========");
-                break;
-            case AiuiConstants.AREA_TV:
-                Logger.debug("地方台========");
-            case AiuiConstants.FEATURE_TV:
-                Logger.debug("特色台========");
-                break;
-            case AiuiConstants.SPORTS_TV:
-                Logger.debug("体育==========");
-                break;
-            default:
-                break;
-        }
-    }
-
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMicEvent(MicBean event) {
-        if (event.isConnect()) {
-            isAvailableVideo = true;
-            if (BuildConfig.DEBUG) {
-                Log.d("aiui_log", "耳机接入");
-            }
-        } else {
-            isAvailableVideo = false;
-            if (BuildConfig.DEBUG) {
-                Log.d("aiui_log", "耳机未接入");
-            }
-        }
-    }
-
-    /**
-     * 处理视频播放cmd技能
-     */
-    private void intentVideoControl(NlpData mData, String intent) {
-        if (mData.semantic == null || mData.semantic.size() == 0) {
-            return;
-        }
-
-        if (AiuiConstants.VIDEO_CMD_INTENT.equals(mData.semantic.get(0).intent)) {
-            Map<String, String> solts = formatSlotsToMap(mData.semantic.get(0).slots);
-            if (solts.containsKey(AiuiConstants.VIDEO_INSTYPE)) {
-                switch (solts.get(AiuiConstants.VIDEO_INSTYPE)) {
-                    case AiuiConstants.VIDEO_PAUSE:
-                        //暂停
-                        Logger.debug("暂停===" + intent);
-                        break;
-                    case AiuiConstants.VIDEO_PLAY:
-                        //播放
-                        Logger.debug("播放===" + intent);
-                        break;
-                    case AiuiConstants.VIDEO_PREVIOUS:
-                        //上一集
-                        Logger.debug("上一集===" + intent);
-                        break;
-                    case AiuiConstants.VIDEO_NEXT:
-                        //下一集
-                        Logger.debug("下一集===" + intent);
-                        break;
-                    default:
-                        break;
-                }
-
-            }
-        }
-
-    }
-
     public void onTppResult(String result) {
-        if (TextUtils.isEmpty(result)) {
-            return;
-        }
         NlpData nlpData = gson.fromJson(result, NlpData.class);
         //判断是否解出了语义，并且当前技能是video
         if (nlpData.rc == 4
@@ -591,18 +315,11 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             return cardTitle;
         }
         if (map.containsKey(AiuiConstants.VIDEO_NAME)) {
-            Logger.debug("TITLE is 【" + map.get(AiuiConstants.VIDEO_NAME) + "】");
             return map.get(AiuiConstants.VIDEO_NAME);
         }
         if (map.containsKey(AiuiConstants.VIDEO_ARTIST)) {
             cardTitle += "“" + map.get(AiuiConstants.VIDEO_ARTIST).replace("|", "、") + "”" + "的";
         }
-//        if (map.containsKey(AiuiConstants.VIDEO_TIME)) {
-//            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME).replace("|","、") + "”" + "的";
-//        }
-//        if (map.containsKey(AiuiConstants.VIDEO_TIME_DESCR)) {
-//            cardTitle += "“" + map.get(AiuiConstants.VIDEO_TIME_DESCR).replace("|","、") + "”";
-//        }
         if (map.containsKey(AiuiConstants.VIDEO_POPULAR)) {
             cardTitle += "“" + map.get(AiuiConstants.VIDEO_POPULAR).replace("|", "、") + "”";
         }
@@ -641,7 +358,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         if (TextUtils.isEmpty(cardTitle)) {
             cardTitle = "影视";
         }
-        Logger.debug("TITLE is 【" + cardTitle + "】");
         return cardTitle;
     }
 
@@ -769,80 +485,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     }
 
     /**
-     * 处理查询指令
-     *
-     * @param intent
-     */
-    private void intentQuery(String intent) {
-        switch (intent) {
-            // TODO: 2018/5/31 跳转页面操作
-            case AiuiConstants.MEMBER_INTENT:
-                //会员业务
-                Logger.debug("会员业务意图===" + intent);
-                break;
-            case AiuiConstants.INTERNET_INTENT:
-                //流量业务
-                Logger.debug("流量意图===" + intent);
-                break;
-            case AiuiConstants.TICKET_INTENT:
-                //购票业务
-                Logger.debug("购票意图===" + intent);
-                break;
-            case AiuiConstants.ACYIVITY_INTENT:
-                //活动打折业务
-                Logger.debug("活动意图===" + intent);
-
-                break;
-            case AiuiConstants.GCUSTOMER_INTENT:
-                //G客业务，如：上传视频
-                Logger.debug("G客意图===" + intent);
-                break;
-            default:
-                break;
-        }
-
-
-    }
-
-
-    /**
-     * 处理控制指令
-     *
-     * @param intent
-     */
-    private void intentControl(NlpData mData, String intent) {
-        switch (intent) {
-            case AiuiConstants.CONTROL_INTENT:
-                // TODO: 2018/5/30 控制指令跳转
-                aiuiService.tts("正在为您" + mData.text);
-                break;
-            case AiuiConstants.SREEN_INTENT:
-                // TODO: 2018/5/30 投屏跳转
-                isAvailableVideo = true;
-                aiuiService.tts("正在为您" + mData.text);
-                break;
-            default:
-                break;
-        }
-
-    }
-
-    /**
-     * 处理闲聊技能
-     */
-    private void intentQa(String nlpHandle) {
-        NlpData nlpData = gson.fromJson(nlpHandle, NlpData.class);
-        if ((nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text))) {
-            aiuiService.tts(nlpData.getAnswer().text);
-            sendMessage(nlpData.getAnswer().text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
-        }
-    }
-
-    /**
      * 处理ViewCmd技能
      */
-    private void intentViewCmd(String nlpHandle) {
-        NlpData nlpData = gson.fromJson(nlpHandle, NlpData.class);
+    private void intentViewCmd(NlpData nlpData) {
         if (AiuiConstants.VIEWCMD_INTENT.equals(nlpData.semantic.get(0).intent)) {
             switch (nlpData.semantic.get(0).slots.get(0).name) {
                 case "LOOK_MORE":
@@ -973,8 +618,12 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     public void onResult(String iatResult, String nlpReslult, String tppResult) {
         //onIatResult(iatResult);
         if (!aiuiService.isLookMorePageData()) {
-            onNlpResult(nlpReslult);
-            onTppResult(tppResult);
+            if(!TextUtils.isEmpty(nlpReslult)) {
+                onNlpResult(nlpReslult);
+            }
+            if(!TextUtils.isEmpty(tppResult)) {
+                onTppResult(tppResult);
+            }
         }
     }
 
@@ -1019,48 +668,19 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 }
             }
             break;
-            case AIUIConstant.EVENT_START_RECORD:
-                if (mCurrentState == AIUIConstant.STATE_WORKING) {
-                    // 录音开始就发送延时消息，当五秒内在sendMessage()方法中都没有移除消息时就说明 5秒超时了
-                    mHandler.postDelayed(runnable, TIME_OUT);
-                    startTime = System.currentTimeMillis();
-                }
-                break;
-            case AIUIConstant.EVENT_STOP_RECORD:
-                break;
-            case AIUIConstant.EVENT_VAD:
-                //                Logger.debug("arg【" + event.arg1 + "】【" + event.arg2 + "】");
-                //用arg1标识前后端点或者音量信息:0(前端点)、1(音量)、2(后端点)、3（前端点超时）。
-                //当arg1取值为1时，arg2为音量大小。
-                if (event.arg1 == 0) {
-                    //检测到前端点表示正在录音
-                    mHandler.removeCallbacks(runnable);
-                }
-                break;
-            case AIUIConstant.EVENT_STATE:
-                mCurrentState = event.arg1;
-                break;
-            default:
-                break;
+            default: break;
         }
         if (null != event) {
             EventBus.getDefault().post(new SearchByAIRefreshUIEventBean(event));
         }
     }
 
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            // TODO 显示功能引导页面
-            sendMessage("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI);
-        }
-    };
+
 
     //取消录音
     @Override
     public void cancelRecordAudio() {
         aiuiService.cancelRecordAudio();
-        mHandler.removeCallbacks(runnable);
     }
 
     //SlotsBean key-value 数据转换成Map 类型数据方便查找
