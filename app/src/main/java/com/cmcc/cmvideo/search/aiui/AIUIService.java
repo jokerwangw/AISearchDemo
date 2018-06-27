@@ -324,60 +324,13 @@ public class AIUIService extends Service {
      * 控制指令 播放、暂停、下一集、上一集
      */
     private void controlCmdIntent(String result) {
-        Logger.debug("controlCmdIntent===========");
         if (TextUtils.isEmpty(result)) {
             return;
         }
         mData = gson.fromJson(result, NlpData.class);
         String service = mData.service;
-//        if (!AiuiConstants.VIEWCMD_SERVICE.equals(service)) {
-//            Logger.debug("听写用户输入数据=====" + mData.text);
-//            sendMessageUI(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
-//        }
-
-        //如果包含moreResults且service是video则直接返回，如果是viewCmd则要发送消息
-//        if (null != mData && null != mData.moreResults) {
-//            mData = mData.moreResults.get(0);
-//            if (("video".equals(mData.service))) {
-//                Logger.debug("video=================++++++++++++++++++===================" + mData.service);
-//                if (AiuiConstants.VIEWCMD_SERVICE.equals(service)) {
-//                    Logger.debug("viewCmd=================--------------===================" + service);
-//                    sendMessageUI(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
-//                } else {
-//                    return;
-//                }
-//            }
-//        } else {
-//            Logger.debug("video====================================" + service);
-//        }
-
         if (mData.rc == 4) {
-            //播报
-            if ((System.currentTimeMillis() - startTime) > TIME_OUT) {
-                // 超过5秒表示 且rc=4（无法解析出语义） ，可显示推荐说法卡片
-                sendMessageUI("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI);
-            } else {
-                AiResponse.Response response = AiResponse.getInstance().getResultResponse();
-                aiuiService.tts(response.response);
-                sendMessageUI(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
-            }
             return;
-        }
-
-        try {
-            //解析出当前语义状态，以便上传同步客户端状态，实现多伦对话
-            JSONObject jsonObject = new JSONObject(result);
-            if (jsonObject.has("state")) {
-                JSONObject stateObj = jsonObject.getJSONObject("state");
-                Iterator<String> keysIterator = stateObj.keys();
-                while (keysIterator.hasNext()) {
-                    lastNlpState = keysIterator.next();
-                    Logger.debug("lastNlpState 【" + lastNlpState + "】");
-                }
-            }
-            aiuiService.syncSpeakableData(lastNlpState, "");
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
 
         if (null != mData.semantic) {
@@ -391,7 +344,6 @@ public class AIUIService extends Service {
                     //视频播放、暂停、下一集、上一集  换一集  快进 快退  快进到xxx
                     intentVideoControl(mData, intent);
                 }
-
                 break;
             case AiuiConstants.CONTROL_MIGU:
                 //指令控制  如：打开语音助手/投屏播放
@@ -1010,33 +962,8 @@ public class AIUIService extends Service {
      * @param msgFrom     消息来源，
      */
     private void sendMessageUI(String msg, int messageType, String msgFrom) {
-        sendUIMessage(msg, messageType, msgFrom, null);
-    }
-
-    /**
-     * 发送消息更新UI
-     *
-     * @param msg         消息内容
-     * @param messageType 消息内容（普通闲聊内容，影片内容）
-     * @param msgFrom     消息来源，
-     * @param videoList   影片内容影片数据，
-     */
-    private void sendUIMessage(String msg, int messageType, String msgFrom, List<TppData.DetailsListBean> videoList) {
-        if (videoList != null && videoList.size() > 0) {
-            lastResponseVideoMessageType = messageType;
-            lastVideoList = videoList;
-            //服务端返回数据就去同步所见即可说
-            StringBuilder hotInfo = new StringBuilder("查看更多|换一个|");
-            for (TppData.DetailsListBean bean : videoList) {
-                hotInfo.append(bean.name).append("|");
-            }
-            hotInfo = new StringBuilder(hotInfo.substring(0, hotInfo.lastIndexOf("|")));
-            Logger.debug("所见即可说同步数据【" + hotInfo + "】");
-            AIUIService.this.syncSpeakableData(lastNlpState, hotInfo.toString());
-        }
         List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
-        SearchByAIBean searchByAIBean = new SearchByAIBean(msg, messageType, msgFrom, videoList);
-        searchByAIBean.setSpeechText(lastRequestVideoText);
+        SearchByAIBean searchByAIBean = new SearchByAIBean(msg, messageType, msgFrom);
         messageList.add(searchByAIBean);
         EventBus.getDefault().post(new SearchByAIEventBean(messageList));
     }
