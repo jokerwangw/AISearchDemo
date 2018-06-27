@@ -82,6 +82,31 @@ public class AiResponse {
             new Response("念动咒语咪咕咪咕我会回来", RespType.NORMAL)
     ));
 
+
+    private List<Response> changeList = new ArrayList<Response>(Arrays.asList(
+            new Response("我的墨水被榨干了呢", RespType.NORMAL),
+            new Response("不要急，让我再想想", RespType.NORMAL),
+            new Response("噢哟，见底了呢", RespType.NORMAL),
+            new Response("Come on,baby,再试一次", RespType.NORMAL)
+
+    ));
+
+
+    /**
+     * 换一个 没有数据了 反馈语
+     * @return
+     */
+    public Response getChangeResponse(){
+        Response target = null;
+        try{
+            target = (Response)changeList.get(random.nextInt(changeList.size())).clone();
+        }catch (CloneNotSupportedException c){
+            c.printStackTrace();
+        }
+        return target;
+    }
+
+
     /**
      * rc等于4随机反馈一条反馈语
      *
@@ -96,6 +121,7 @@ public class AiResponse {
         }
         return target;
     }
+
 
 
     /**

@@ -136,7 +136,7 @@ public class AIUIService extends Service {
             JSONObject objectJson = new JSONObject();
             JSONObject paramJson = new JSONObject();
             paramJson.put("wakeup_mode", "ivw");
-            paramJson.put("interact_mode","continuous");
+            paramJson.put("interact_mode", "continuous");
             objectJson.put("speech", paramJson);
             sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
             mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
@@ -170,7 +170,7 @@ public class AIUIService extends Service {
             JSONObject objectJson = new JSONObject();
             JSONObject paramJson = new JSONObject();
             paramJson.put("wakeup_mode", "off");
-            paramJson.put("interact_mode","oneshot");
+            paramJson.put("interact_mode", "oneshot");
             objectJson.put("speech", paramJson);
             sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
             mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
@@ -661,7 +661,7 @@ public class AIUIService extends Service {
 
                     break;
                 case AIUIConstant.EVENT_SLEEP:
-                    if(isIvwModel){
+                    if (isIvwModel) {
                         tts(AiResponse.getInstance().getSleep().response);
                     }
                     break;
@@ -713,7 +713,6 @@ public class AIUIService extends Service {
     };
 
 
-
     private void cancelTts() {
         sendMessage(new AIUIMessage(AIUIConstant.CMD_TTS, AIUIConstant.CANCEL, 0, "", null));
     }
@@ -736,6 +735,7 @@ public class AIUIService extends Service {
         params.append(",speed=85");  //合成速度
         params.append(",pitch=30");  //合成音调
         params.append(",volume=100");  //合成音量
+        params.append(",ent=xtts");//引擎，默认aisound，如果需要较好的效果，可设置成xtts
         //开始合成
         Logger.debug("合成参数【" + params.toString() + "】");
         sendMessage(new AIUIMessage(AIUIConstant.CMD_TTS, AIUIConstant.START, 0, params.toString(), ttsData));

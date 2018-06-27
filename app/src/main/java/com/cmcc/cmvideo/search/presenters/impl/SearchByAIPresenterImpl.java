@@ -856,6 +856,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         if (lastVideoSearchByAIBean.getVideoList().size() > 1) {
                             lastVideoSearchByAIBean.getVideoList().remove(0);
                             sendMessage(lastVideoSearchByAIBean);
+                        } else {
+                            aiuiService.tts(AiResponse.getInstance().getChangeResponse().response);
                         }
                     }
                     break;
