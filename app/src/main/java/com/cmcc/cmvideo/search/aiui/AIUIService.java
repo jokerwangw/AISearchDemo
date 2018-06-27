@@ -226,7 +226,7 @@ public class AIUIService extends Service {
             if (!isIvwModel) {
                 hasCancelRecordAudio = false;
                 if (hasSetLookMorePageSize) {
-                    setPageInfo("1", "3");
+                    setPageInfo("1", "10");
                     hasSetLookMorePageSize = false;
                 }
                 sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
