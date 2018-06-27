@@ -218,11 +218,38 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                     itemSearchByAIEveryoneISWatchingViewHolder.itemName3.setVisibility(View.INVISIBLE);
                 }
 
+                itemSearchByAIEveryoneISWatchingViewHolder.itemVideoOne.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (null != ItemSearchByAIClickListener) {
+                            ItemSearchByAIClickListener.clickItemSearchByAIEveryoneISWatching(false, 1, searchByAIBean.getSpeechText(), itemSearchByAIEveryoneISWatchingViewHolder.title.getText().toString().trim());
+                        }
+                    }
+                });
+
+                itemSearchByAIEveryoneISWatchingViewHolder.itemVideoTwo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (null != ItemSearchByAIClickListener) {
+                            ItemSearchByAIClickListener.clickItemSearchByAIEveryoneISWatching(false, 2, searchByAIBean.getSpeechText(), itemSearchByAIEveryoneISWatchingViewHolder.title.getText().toString().trim());
+                        }
+                    }
+                });
+
+                itemSearchByAIEveryoneISWatchingViewHolder.itemVideoThree.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (null != ItemSearchByAIClickListener) {
+                            ItemSearchByAIClickListener.clickItemSearchByAIEveryoneISWatching(false, 3, searchByAIBean.getSpeechText(), itemSearchByAIEveryoneISWatchingViewHolder.title.getText().toString().trim());
+                        }
+                    }
+                });
+
                 itemSearchByAIEveryoneISWatchingViewHolder.tvMovieList.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (null != ItemSearchByAIClickListener) {
-                            ItemSearchByAIClickListener.clickItemSearchByAIEveryoneISWatching(searchByAIBean.getSpeechText(), itemSearchByAIEveryoneISWatchingViewHolder.title.getText().toString().trim());
+                            ItemSearchByAIClickListener.clickItemSearchByAIEveryoneISWatching(true, -1, searchByAIBean.getSpeechText(), itemSearchByAIEveryoneISWatchingViewHolder.title.getText().toString().trim());
                         }
                     }
                 });
@@ -342,6 +369,15 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                     } else {
                         itemSearchByAIGuessWhatYouLikeViewHolder.itemLanguage.setVisibility(View.GONE);
                     }
+
+                    itemSearchByAIGuessWhatYouLikeViewHolder.itemContain.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (null != ItemSearchByAIClickListener) {
+                                ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLike(false, detailsListBean);
+                            }
+                        }
+                    });
 
                     itemSearchByAIGuessWhatYouLikeViewHolder.itemChange.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -763,7 +799,9 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
      * 类型：MESSAGE_TYPE_EVERYONE_IS_WATCHING
      */
     private class ItemSearchByAIEveryoneISWatchingViewHolder extends BaseViewHolder {
-
+        private LinearLayout itemVideoOne;
+        private LinearLayout itemVideoTwo;
+        private LinearLayout itemVideoThree;
         private MGSimpleDraweeView itemImg1;
         private MGSimpleDraweeView itemImg2;
         private MGSimpleDraweeView itemImg3;
@@ -778,7 +816,9 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
 
         private ItemSearchByAIEveryoneISWatchingViewHolder(View itemView) {
             super(itemView);
-
+            itemVideoOne = (LinearLayout) itemView.findViewById(R.id.ll_item_video_one);
+            itemVideoTwo = (LinearLayout) itemView.findViewById(R.id.ll_item_video_two);
+            itemVideoThree = (LinearLayout) itemView.findViewById(R.id.ll_item_video_three);
             itemImg1 = (MGSimpleDraweeView) itemView.findViewById(R.id.item_img1);
             itemImg2 = (MGSimpleDraweeView) itemView.findViewById(R.id.item_img2);
             itemImg3 = (MGSimpleDraweeView) itemView.findViewById(R.id.item_img3);
@@ -826,6 +866,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
      */
     private class ItemSearchByAIGuessWhatYouLikeViewHolder extends BaseViewHolder {
 
+        private RelativeLayout itemContain;
         private MGSimpleDraweeView itemDetailImg;
         private TextView itemWatchNum;
         private TextView itemVideoName;
@@ -841,6 +882,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
 
         private ItemSearchByAIGuessWhatYouLikeViewHolder(View itemView) {
             super(itemView);
+            itemContain = (RelativeLayout) itemView.findViewById(R.id.rl_contain);
             itemDetailImg = (MGSimpleDraweeView) itemView.findViewById(R.id.item_detail_img);
             itemWatchNum = (TextView) itemView.findViewById(R.id.item_watch_num);
             itemVideoName = (TextView) itemView.findViewById(R.id.item_video_name);

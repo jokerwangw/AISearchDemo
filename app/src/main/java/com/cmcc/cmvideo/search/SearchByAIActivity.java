@@ -101,6 +101,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private boolean isOpenSpeaker = false;
     private AudioManager audioManager = null;
     private int currVolume = 0;
+    private int mViewCacheSize = 100;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -117,6 +118,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mSearchRecyclerView.setHasFixedSize(true);
+        mSearchRecyclerView.setItemViewCacheSize(mViewCacheSize);
         mSearchRecyclerView.setLayoutManager(layoutManager);
         mSearchRecyclerView.setAdapter(mSearchByAIAdapter);
         btSearchVoiceInput.setOnTouchListener(onTouchListener);
@@ -154,11 +156,15 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         }
 
         @Override
-        public void clickItemSearchByAIEveryoneISWatching(String speechText, String titleText) {
-            Intent intent = new Intent(mContext, LookMoreActivity.class);
-            intent.putExtra(LookMoreActivity.KEY_MORE_DATE_SPEECH_TEXT, speechText);
-            intent.putExtra(LookMoreActivity.KEY_TITLE, titleText);
-            startActivity(intent);
+        public void clickItemSearchByAIEveryoneISWatching(boolean isClickMore, int position, String speechText, String titleText) {
+            if (isClickMore) {
+                Intent intent = new Intent(mContext, LookMoreActivity.class);
+                intent.putExtra(LookMoreActivity.KEY_MORE_DATE_SPEECH_TEXT, speechText);
+                intent.putExtra(LookMoreActivity.KEY_TITLE, titleText);
+                startActivity(intent);
+            } else {
+                Toast.makeText(mContext, "查看==" + position, Toast.LENGTH_SHORT).show();
+            }
         }
 
         @Override
@@ -167,8 +173,12 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
 
         @Override
         public void clickItemSearchByAIGuessWhatYouLike(boolean isChangeBt, TppData.DetailsListBean detailsListBean) {
-            if (isChangeBt && null != aiuiService) {
-                aiuiService.textUnderstander("换一个");
+            if (null != aiuiService && null != detailsListBean) {
+                if (isChangeBt) {
+                    aiuiService.textUnderstander("换一个");
+                } else {
+                    Toast.makeText(mContext, "查看==" + detailsListBean.name, Toast.LENGTH_SHORT).show();
+                }
             }
         }
 
