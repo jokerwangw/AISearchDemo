@@ -118,15 +118,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     @Override
     public void setAIUIService(IAIUIService service) {
         aiuiService = service;
-        Map<String, String> map = new HashMap<String, String>() {{
-            put("msisdn", "13764279837");
-            put("user_id", "553782460");
-            put("client_id", "897ddadc222ec9c20651da355daee9cc");
-        }};
         aiuiService.setAttached(true);
         aiuiService.addAIUIEventListener(this);
         //上传用户数据
-        aiuiService.setUserParam(map);
         //TODO  暂时就这么做吧
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override

@@ -23,6 +23,9 @@ import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.util.ServiceUtils;
 import com.cmcc.cmvideo.util.SharedPreferencesHelper;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -201,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
         if (isChecked) {
             if (!ServiceUtils.isServiceRunning(MainActivity.this, AIUIService.AIUI_SERVICE_NAME)) {
                 startService(service);
+                bindService(new Intent(this, AIUIService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
                 setViewVisible(isChecked);
                 sharedPreferencesHelper.setValue(KEY_IS_AI_HELPER_OPEN, isChecked);
             }
@@ -212,6 +216,24 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Map<String, String> map = new HashMap<String, String>() {{
+                put("msisdn", "13764279837");
+                put("user_id", "553782460");
+                put("client_id", "897ddadc222ec9c20651da355daee9cc");
+            }};
+            IAIUIService aiuiService = (IAIUIService) service;
+            aiuiService.setUserParam(map);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
 
     @Override
     protected void onDestroy() {
