@@ -85,11 +85,25 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     @Override
     public void destroy() {
+        aiuiService.setAttached(false);
         aiuiService.removeAIUIEventListener(this);
     }
 
     @Override
     public void onError(String message) {
+    }
+
+    @Override
+    public void analysisDefaultData(final String jsonData) {
+        if(!TextUtils.isEmpty(jsonData)) {
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //暂时用延迟来保证页面显示出来之后再加载数据
+                    onTppResult(jsonData);
+                }
+            }, 500);
+        }
     }
 
     /**
@@ -109,6 +123,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             put("user_id", "553782460");
             put("client_id", "897ddadc222ec9c20651da355daee9cc");
         }};
+        aiuiService.setAttached(true);
         aiuiService.addAIUIEventListener(this);
         //上传用户数据
         aiuiService.setUserParam(map);

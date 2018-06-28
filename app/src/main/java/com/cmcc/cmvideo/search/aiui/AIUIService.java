@@ -14,6 +14,7 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.cmcc.cmvideo.search.SearchByAIActivity;
 import com.cmcc.cmvideo.search.aiui.bean.ControlEventBean;
 import com.cmcc.cmvideo.search.aiui.bean.IatBean;
 import com.cmcc.cmvideo.search.aiui.bean.MicBean;
@@ -69,6 +70,7 @@ public class AIUIService extends Service {
     private boolean hasCancelRecordAudio = false;
     private boolean isAvailableVideo = false;
     private AIUISemanticProcessor semanticProcessor;
+    private boolean uiAttached =false;
 
     @Override
     public void onCreate() {
@@ -298,6 +300,21 @@ public class AIUIService extends Service {
         @Override
         public boolean isLookMorePageData() {
             return hasSetLookMorePageSize;
+        }
+
+        @Override
+        public void setAttached(boolean isAttached) {
+            uiAttached = isAttached;
+        }
+
+        @Override
+        public void showAiUi(String data) {
+            if(!uiAttached) {
+                Intent intent = new Intent(AIUIService.this, SearchByAIActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("TPP_DATA",data);
+                AIUIService.this.startActivity(intent);
+            }
         }
 
         @Override

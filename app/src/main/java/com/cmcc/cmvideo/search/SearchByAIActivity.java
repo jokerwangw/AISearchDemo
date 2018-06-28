@@ -245,6 +245,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         public void onServiceConnected(ComponentName name, IBinder service) {
             aiuiService = (IAIUIService) service;
             mSearchByAIPresenter.setAIUIService(aiuiService);
+            mSearchByAIPresenter.analysisDefaultData(getIntent().getStringExtra("TPP_DATA"));
         }
 
         @Override

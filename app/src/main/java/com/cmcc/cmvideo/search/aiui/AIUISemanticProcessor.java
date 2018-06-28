@@ -73,8 +73,13 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
 
     @Override
     public void onResult(String iatResult, String nlpReslult, String tppResult) {
-        if (!aiuiService.isLookMorePageData() && !TextUtils.isEmpty(nlpReslult)) {
-            onNlpResult(nlpReslult);
+        if (!aiuiService.isLookMorePageData()) {
+            if(!TextUtils.isEmpty(nlpReslult)) {
+                onNlpResult(nlpReslult);
+            }
+            if(!TextUtils.isEmpty(tppResult)) {
+                onTppResult(tppResult);
+            }
         }
     }
 
@@ -201,6 +206,13 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
                 break;
             default:
                 break;
+        }
+    }
+
+    private void onTppResult(String tppResult){
+        NlpData mData = gson.fromJson(tppResult, NlpData.class);
+        if(AiuiConstants.VIDEO_SERVICE.equals(mData.service)){
+            aiuiService.showAiUi(tppResult);
         }
     }
     //============================================================================================================================================

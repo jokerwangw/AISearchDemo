@@ -39,4 +39,10 @@ public interface SearchByAIPresenter extends BasePresenter {
      * cancelRecordAudio
      */
     void cancelRecordAudio();
+
+    /**
+     * 刚启动时解析AIUIService 发来的数据
+     * @param jsonData
+     */
+    void analysisDefaultData(String jsonData);
 }

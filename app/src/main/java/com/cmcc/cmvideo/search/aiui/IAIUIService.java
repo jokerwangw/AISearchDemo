@@ -95,4 +95,15 @@ public interface IAIUIService {
      */
     boolean isLookMorePageData();
 
+    /**
+     * 设置语音助手是否在自己的UI页面
+     * @param isAttached
+     */
+    void setAttached(boolean isAttached);
+
+    /**
+     * 显示语音助手是否在自己的UI页面
+     * @return
+     */
+    void showAiUi(String data);
 }
