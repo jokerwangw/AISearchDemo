@@ -374,6 +374,11 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         return true;
     }
 
+    /**
+     * 判断是否存在视频数据
+     * @param nlpData
+     * @return
+     */
     private boolean hasVideoData(NlpData nlpData) {
         if (nlpData == null
                 || nlpData.data == null
@@ -465,11 +470,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private boolean lastSearchIsGuessWhatYouLike() {
         if (lastVideoSearchByAIBean == null)
             return false;
-
-        return
-                lastVideoSearchByAIBean.getMessageType() == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE
-                        || lastVideoSearchByAIBean.getMessageType() == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL
-                        || lastVideoSearchByAIBean.getMessageType() == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
+        return lastVideoSearchByAIBean.getMessageType() == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE
+                || lastVideoSearchByAIBean.getMessageType() == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL
+                || lastVideoSearchByAIBean.getMessageType() == MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
     }
 
     /**
