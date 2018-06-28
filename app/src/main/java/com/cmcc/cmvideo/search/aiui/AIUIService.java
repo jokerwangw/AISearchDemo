@@ -69,6 +69,7 @@ public class AIUIService extends Service {
     private boolean hasCancelRecordAudio = false;
     private boolean isAvailableVideo = false;
     private AIUISemanticProcessor semanticProcessor;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -90,6 +91,8 @@ public class AIUIService extends Service {
         if (mAIUIAgent != null) {
             mAIUIAgent.destroy();
         }
+
+
         SpeechUtility.getUtility().destroy();
         if (null != mReceiver) {
             unregisterReceiver(mReceiver);
@@ -97,6 +100,7 @@ public class AIUIService extends Service {
         super.onDestroy();
         Logger.debug("AIUIService has onDestroy!");
     }
+
     //SDK 初始化
     private void init() {
         //AIUI初始化
@@ -110,7 +114,6 @@ public class AIUIService extends Service {
     }
 
     private void ivwMode() {
-
         try {
             if (SpeechUtility.getUtility() != null) {
                 SpeechUtility.getUtility().destroy();
@@ -666,6 +669,7 @@ public class AIUIService extends Service {
 
     public interface AIUIEventListener {
         void onResult(String iatResult, String nlpReslult, String tppResult);
+
         void onEvent(AIUIEvent event);
     }
 
@@ -699,7 +703,7 @@ public class AIUIService extends Service {
             if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
                 if (intent.hasExtra("state")) {
                     if (intent.getIntExtra("state", 0) == 0) {
-                        EventBus.getDefault().post(new MicBean(false));
+                        semanticProcessor.setIsMicConnect(false);
                         //切换为外放模式
                         //PlayerManager.getInstance().changeToReceiver();
                         if (isIvwModel) {
@@ -707,7 +711,7 @@ public class AIUIService extends Service {
                         }
                     } else if (intent.getIntExtra("state", 0) == 1) {
                         isAvailableVideo = true;
-                        EventBus.getDefault().post(new MicBean(true));
+                        semanticProcessor.setIsMicConnect(true);
                         //切换为耳机模式
                         //PlayerManager.getInstance().changeToHeadset();
                         if (!isIvwModel) {
