@@ -51,7 +51,7 @@ public class PlayerManager {
      * 切换到耳机模式
      */
     public void changeToHeadset() {
-        if (BuildConfig.DEBUG){
+        if (BuildConfig.DEBUG) {
             Log.d("MainActivity", "耳机模式");
         }
         audioManager.setSpeakerphoneOn(false);

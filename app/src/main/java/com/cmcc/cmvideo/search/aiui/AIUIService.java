@@ -70,7 +70,7 @@ public class AIUIService extends Service {
     private boolean hasCancelRecordAudio = false;
     private boolean isAvailableVideo = false;
     private AIUISemanticProcessor semanticProcessor;
-    private boolean uiAttached =false;
+    private boolean uiAttached = false;
 
     @Override
     public void onCreate() {
@@ -141,8 +141,6 @@ public class AIUIService extends Service {
                     //正常应该发送mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
                     //进入的是等待说出“咪咕咪咕” 的带唤醒状态
                     sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
-                    tts(AiuiConstants.MICRO_MESSAGE);
-
                     isIvwModel = true;
                 }
             }, 500);
@@ -309,10 +307,10 @@ public class AIUIService extends Service {
 
         @Override
         public void showAiUi(String data) {
-            if(!uiAttached) {
+            if (!uiAttached) {
                 Intent intent = new Intent(AIUIService.this, SearchByAIActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("TPP_DATA",data);
+                intent.putExtra("TPP_DATA", data);
                 AIUIService.this.startActivity(intent);
             }
         }
@@ -408,14 +406,20 @@ public class AIUIService extends Service {
 
                     break;
                 case AIUIConstant.EVENT_WAKEUP:
-
+                    Logger.debug("----------------EVENT_WAKEUP======");
+                    if (isIvwModel) {
+                        tts(AiuiConstants.MICRO_MESSAGE);
+                    }
                     break;
                 case AIUIConstant.EVENT_SLEEP:
+                    Logger.debug("----------------EVENT_SLEEP======");
                     if (isIvwModel) {
                         tts(AiResponse.getInstance().getSleep().response);
                     }
                     break;
                 case AIUIConstant.EVENT_VAD:
+                    Logger.debug("----------------EVENT_VAD======");
+
                     //                Logger.debug("arg【" + event.arg1 + "】【" + event.arg2 + "】");
                     //用arg1标识前后端点或者音量信息:0(前端点)、1(音量)、2(后端点)、3（前端点超时）。
                     //当arg1取值为1时，arg2为音量大小。
