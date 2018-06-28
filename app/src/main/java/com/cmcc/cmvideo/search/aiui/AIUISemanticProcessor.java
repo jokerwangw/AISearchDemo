@@ -63,11 +63,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
      * @param isConnect
      */
     public void setIsMicConnect(Boolean isConnect) {
-        if (isConnect) {
-            isAvailableVideo = true;
-        } else {
-            isAvailableVideo = false;
-        }
+        isAvailableVideo = isConnect;
     }
 
 
