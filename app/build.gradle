@@ -1,6 +1,10 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.jakewharton.butterknife'
 
+// 定义一个打包时间
+def releaseTime() {
+    return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
+}
 android {
     compileSdkVersion 25
     defaultConfig {
@@ -9,8 +13,9 @@ android {
         maxSdkVersion 0
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
         ndk {
             abiFilters "armeabi-v7a", "armeabi"
         }
@@ -29,6 +34,15 @@ android {
     lintOptions {
         checkReleaseBuilds false
         abortOnError false
+    }
+
+    //修改生成的apk名字
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            output ->
+                def fileName="${releaseTime()}_v${defaultConfig.versionName}.apk"
+                outputFileName = new File('AiSearchDemo-' + fileName )
+        }
     }
 }
 
