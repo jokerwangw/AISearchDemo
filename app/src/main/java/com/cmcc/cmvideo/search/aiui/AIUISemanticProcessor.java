@@ -35,7 +35,7 @@ import static com.cmcc.cmvideo.util.Constants.MESSAGE_FROM_USER;
 import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_CAN_ASK_AI;
 import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_NORMAL;
 
-public class AIUISemanticProcessor implements AIUIService.AIUIEventListener, BasePresenter {
+public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
     private long startTime = 0;
     private final int TIME_OUT = 5000;
     private int mCurrentState = AIUIConstant.STATE_IDLE;
@@ -50,24 +50,26 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener, Bas
     private android.os.Handler mHandler;
 
     public AIUISemanticProcessor(IAIUIService service) {
-        EventBus.getDefault().register(this);
         aiuiService = service;
         isAvailableVideo = false;
         gson = new Gson();
         mHandler = new android.os.Handler(Looper.getMainLooper());
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMainMicroEvent(MicBean event) {
-        if (event.isConnect()) {
+
+    /**
+     * 耳机接入状态
+     *
+     * @param isConnect
+     */
+    public void setIsMicConnect(Boolean isConnect) {
+        if (isConnect) {
             isAvailableVideo = true;
-            Logger.debug("耳机插入======" + event.isConnect());
         } else {
             isAvailableVideo = false;
-            Logger.debug("耳机没有插入======" + event.isConnect());
         }
-
     }
+
 
     @Override
     public void onResult(String iatResult, String nlpReslult, String tppResult) {
@@ -594,29 +596,4 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener, Bas
         mHandler.removeCallbacks(runnable);
     }
 
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void stop() {
-
-    }
-
-    @Override
-    public void destroy() {
-        EventBus.getDefault().unregister(this);
-
-    }
-
-    @Override
-    public void onError(String message) {
-
-    }
 }

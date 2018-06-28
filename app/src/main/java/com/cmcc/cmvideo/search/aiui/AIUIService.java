@@ -92,9 +92,6 @@ public class AIUIService extends Service {
             mAIUIAgent.destroy();
         }
 
-        if (null != semanticProcessor) {
-            semanticProcessor.destroy();
-        }
 
         SpeechUtility.getUtility().destroy();
         if (null != mReceiver) {
@@ -686,7 +683,7 @@ public class AIUIService extends Service {
             if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
                 if (intent.hasExtra("state")) {
                     if (intent.getIntExtra("state", 0) == 0) {
-                        EventBus.getDefault().post(new MicBean(false));
+                        semanticProcessor.setIsMicConnect(false);
                         //切换为外放模式
                         //PlayerManager.getInstance().changeToReceiver();
                         if (isIvwModel) {
@@ -694,7 +691,7 @@ public class AIUIService extends Service {
                         }
                     } else if (intent.getIntExtra("state", 0) == 1) {
                         isAvailableVideo = true;
-                        EventBus.getDefault().post(new MicBean(true));
+                        semanticProcessor.setIsMicConnect(true);
                         //切换为耳机模式
                         //PlayerManager.getInstance().changeToHeadset();
                         if (!isIvwModel) {
