@@ -3,7 +3,10 @@ package com.cmcc.cmvideo.search.aiui;
 import android.os.Looper;
 import android.text.TextUtils;
 
+import com.cmcc.cmvideo.base.BasePresenter;
+import com.cmcc.cmvideo.base.MainThread;
 import com.cmcc.cmvideo.search.aiui.bean.ControlEventBean;
+import com.cmcc.cmvideo.search.aiui.bean.MicBean;
 import com.cmcc.cmvideo.search.aiui.bean.NlpData;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
@@ -16,6 +19,8 @@ import com.iflytek.aiui.AIUIConstant;
 import com.iflytek.aiui.AIUIEvent;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,7 +35,7 @@ import static com.cmcc.cmvideo.util.Constants.MESSAGE_FROM_USER;
 import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_CAN_ASK_AI;
 import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_NORMAL;
 
-public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
+public class AIUISemanticProcessor implements AIUIService.AIUIEventListener, BasePresenter {
     private long startTime = 0;
     private final int TIME_OUT = 5000;
     private int mCurrentState = AIUIConstant.STATE_IDLE;
@@ -43,16 +48,30 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
     private Gson gson;
     private IAIUIService aiuiService;
     private android.os.Handler mHandler;
-    public AIUISemanticProcessor(IAIUIService service){
+
+    public AIUISemanticProcessor(IAIUIService service) {
+        EventBus.getDefault().register(this);
         aiuiService = service;
         isAvailableVideo = false;
         gson = new Gson();
         mHandler = new android.os.Handler(Looper.getMainLooper());
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMainMicroEvent(MicBean event) {
+        if (event.isConnect()) {
+            isAvailableVideo = true;
+            Logger.debug("耳机插入======" + event.isConnect());
+        } else {
+            isAvailableVideo = false;
+            Logger.debug("耳机没有插入======" + event.isConnect());
+        }
+
+    }
+
     @Override
     public void onResult(String iatResult, String nlpReslult, String tppResult) {
-        if (!aiuiService.isLookMorePageData()&&!TextUtils.isEmpty(nlpReslult)) {
+        if (!aiuiService.isLookMorePageData() && !TextUtils.isEmpty(nlpReslult)) {
             onNlpResult(nlpReslult);
         }
     }
@@ -97,7 +116,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
         }
     }
 
-    private void onNlpResult(String nlpResult){
+    private void onNlpResult(String nlpResult) {
         NlpData mData = gson.fromJson(nlpResult, NlpData.class);
         String service = mData.service;
         if (!AiuiConstants.VIEWCMD_SERVICE.equals(service)) {
@@ -209,6 +228,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
         }
     }
 
+
     /**
      * 处理控制指令
      *
@@ -249,7 +269,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
      * 处理视频播放cmd技能
      */
     private void intentVideoControl(NlpData mData) {
-        String intent =mData.semantic.get(0).intent;
+        String intent = mData.semantic.get(0).intent;
         if (AiuiConstants.VIDEO_CMD_INTENT.equals(intent)) {
             solts = formatSlotsToMap(mData.semantic.get(0).slots);
             if (solts.containsKey(AiuiConstants.VIDEO_INSTYPE)) {
@@ -536,6 +556,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
             sendMessage(nlpData.getAnswer().text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
         }
     }
+
     //SlotsBean key-value 数据转换成Map 类型数据方便查找
     private Map<String, String> formatSlotsToMap(List<NlpData.SlotsBean> slotsBeans) {
         Map<String, String> map = new HashMap<>();
@@ -557,7 +578,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
      */
     private void sendMessage(String msg, int messageType, String msgFrom) {
         List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
-        messageList.add(new SearchByAIBean(msg, messageType, msgFrom,null));
+        messageList.add(new SearchByAIBean(msg, messageType, msgFrom, null));
         EventBus.getDefault().post(new SearchByAIEventBean(messageList));
     }
 
@@ -569,7 +590,33 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
         }
     };
 
-    public void cancelRecordAudio(){
+    public void cancelRecordAudio() {
         mHandler.removeCallbacks(runnable);
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void stop() {
+
+    }
+
+    @Override
+    public void destroy() {
+        EventBus.getDefault().unregister(this);
+
+    }
+
+    @Override
+    public void onError(String message) {
+
     }
 }

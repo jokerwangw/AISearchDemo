@@ -69,6 +69,7 @@ public class AIUIService extends Service {
     private boolean hasCancelRecordAudio = false;
     private boolean isAvailableVideo = false;
     private AIUISemanticProcessor semanticProcessor;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -90,6 +91,11 @@ public class AIUIService extends Service {
         if (mAIUIAgent != null) {
             mAIUIAgent.destroy();
         }
+
+        if (null != semanticProcessor) {
+            semanticProcessor.destroy();
+        }
+
         SpeechUtility.getUtility().destroy();
         if (null != mReceiver) {
             unregisterReceiver(mReceiver);
@@ -97,6 +103,7 @@ public class AIUIService extends Service {
         super.onDestroy();
         Logger.debug("AIUIService has onDestroy!");
     }
+
     //SDK 初始化
     private void init() {
         //AIUI初始化
@@ -110,7 +117,6 @@ public class AIUIService extends Service {
     }
 
     private void ivwMode() {
-
         try {
             if (SpeechUtility.getUtility() != null) {
                 SpeechUtility.getUtility().destroy();
@@ -646,6 +652,7 @@ public class AIUIService extends Service {
 
     public interface AIUIEventListener {
         void onResult(String iatResult, String nlpReslult, String tppResult);
+
         void onEvent(AIUIEvent event);
     }
 
