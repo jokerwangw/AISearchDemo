@@ -644,33 +644,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     // TODO 网络有点问题 ，超时
                 }
                 break;
-            case AIUIConstant.EVENT_TTS: {
-                switch (event.arg1) {
-                    case AIUIConstant.TTS_SPEAK_BEGIN:
-                        // 停止后台音频播放
-                        mView.requestAudioFocus();
-                        Logger.debug("+++++++++++++++开始播报");
-                        break;
-                    case AIUIConstant.TTS_SPEAK_PROGRESS:
-                        // 播放进度
-                        break;
-                    case AIUIConstant.TTS_SPEAK_PAUSED:
-                        Logger.debug("+++++++++++++++++暂停播报");
-                        break;
-                    case AIUIConstant.TTS_SPEAK_RESUMED:
-                        Logger.debug("++++++++++++++++++恢复播报");
-                        break;
-                    case AIUIConstant.TTS_SPEAK_COMPLETED:
-                        // 开启后台音频播放
-                        mView.abandonAudioFocus();
-                        Logger.debug("+++++++++++++++播报完成");
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-            break;
             default: break;
         }
         if (null != event) {

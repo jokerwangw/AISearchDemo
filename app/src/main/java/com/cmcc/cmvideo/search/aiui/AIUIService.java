@@ -182,6 +182,11 @@ public class AIUIService extends Service {
         return aiuiService;
     }
 
+    @Override
+    public boolean onUnbind(Intent intent) {
+        return super.onUnbind(intent);
+    }
+
     private class AIUIServiceImpl extends Binder implements IAIUIService {
         @Override
         public void setInteractMode(boolean isOnShot) {
@@ -429,6 +434,21 @@ public class AIUIService extends Service {
                             Logger.debug(event.info);
                         }
                     }
+                case AIUIConstant.EVENT_TTS: {
+                    switch (event.arg1) {
+                        case AIUIConstant.TTS_SPEAK_BEGIN:
+                            // 停止后台音频播放
+                            FuncAdapter.Lock(AIUIService.this, null);
+                            break;
+                        case AIUIConstant.TTS_SPEAK_COMPLETED:
+                            // 开启后台音频播放
+                            FuncAdapter.UnLock(AIUIService.this, null);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                break;
                 default:
                     break;
             }

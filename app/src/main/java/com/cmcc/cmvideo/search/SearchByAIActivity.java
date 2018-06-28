@@ -253,22 +253,6 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     };
 
     /**
-     * 获取音频播放焦点
-     */
-    @Override
-    public void requestAudioFocus() {
-        FuncAdapter.Lock(this, null);
-    }
-
-    /**
-     * 释放音频播放焦点
-     */
-    @Override
-    public void abandonAudioFocus() {
-        FuncAdapter.UnLock(this, null);
-    }
-
-    /**
      * 区分用户搜索的点击事件类型
      *
      * @param clickTime

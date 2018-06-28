@@ -21,16 +21,6 @@ public interface SearchByAIPresenter extends BasePresenter {
          * @param searchByAIBeanList
          */
         void showInitList(List<SearchByAIBean> searchByAIBeanList);
-
-        /**
-         * requestAudioFocus
-         */
-        void requestAudioFocus();
-
-        /**
-         * abandonAudioFocus
-         */
-        void abandonAudioFocus();
     }
 
     /**
