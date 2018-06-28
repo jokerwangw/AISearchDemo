@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
     private void startAIService(boolean isChecked) {
         if (isChecked) {
             if (!ServiceUtils.isServiceRunning(MainActivity.this, AIUIService.AIUI_SERVICE_NAME)) {
-                bindService(service, connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
+                startService(service);
                 setViewVisible(isChecked);
                 sharedPreferencesHelper.setValue(KEY_IS_AI_HELPER_OPEN, isChecked);
             }
@@ -213,21 +213,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-        }
-    };
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (null != connection) {
-            unbindService(connection);
-        }
     }
 }
