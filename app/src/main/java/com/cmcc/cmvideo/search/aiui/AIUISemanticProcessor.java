@@ -43,6 +43,11 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
     private Map<String, String> solts = null;
     private String controlVdoTimeHour = null, controlVdoTimeMinu = null, controlVdoTimeSecon = null;
     private boolean isAvailableVideo = false;
+
+    public String getLastNlpState() {
+        return lastNlpState;
+    }
+
     //最后一次语义的状态
     private String lastNlpState = "";
     private Gson gson;

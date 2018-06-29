@@ -317,6 +317,11 @@ public class AIUIService extends Service {
         }
 
         @Override
+        public String getLastNlpState() {
+            return semanticProcessor.getLastNlpState();
+        }
+
+        @Override
         public void cancelRecordAudio() {
             hasCancelRecordAudio = true;
             semanticProcessor.cancelRecordAudio();

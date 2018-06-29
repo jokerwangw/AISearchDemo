@@ -106,4 +106,10 @@ public interface IAIUIService {
      * @return
      */
     void showAiUi(String data);
+
+    /**
+     * 获取最后一个语义的状态
+     * @return
+     */
+    String getLastNlpState();
 }

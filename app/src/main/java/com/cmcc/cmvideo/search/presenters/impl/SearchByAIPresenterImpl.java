@@ -60,8 +60,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private String lastResponseVideoTitle = "";
     private String lastRequestVideoText = "";
     private SearchByAIBean lastVideoSearchByAIBean = null;
-    //最后一次语义的状态
-    private String lastNlpState = "";
     //是否是在投屏状态或者插入耳机状态
 
     public SearchByAIPresenterImpl(Executor executor, MainThread mainThread, SearchByAIPresenter.View view, Context context) {
@@ -773,6 +771,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             syncMap.put("THIRD", "第三个|最后一个");
             syncMap.put("VIDEO_NAME", hotInfo.substring(0, hotInfo.lastIndexOf("|")));
         }
-        aiuiService.syncSpeakableData(lastNlpState, syncMap);
+        aiuiService.syncSpeakableData(aiuiService.getLastNlpState(), syncMap);
     }
 }
