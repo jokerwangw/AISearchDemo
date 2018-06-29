@@ -106,6 +106,7 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        lookMorePresenter.destroy();
         unbindService(connection);
     }
 
