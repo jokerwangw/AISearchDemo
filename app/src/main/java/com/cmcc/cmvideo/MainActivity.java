@@ -210,6 +210,7 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             if (ServiceUtils.isServiceRunning(MainActivity.this, AIUIService.AIUI_SERVICE_NAME)) {
+                unbindService(connection);
                 stopService(service);
                 setViewVisible(isChecked);
                 sharedPreferencesHelper.setValue(KEY_IS_AI_HELPER_OPEN, isChecked);
@@ -238,5 +239,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unbindService(connection);
     }
 }

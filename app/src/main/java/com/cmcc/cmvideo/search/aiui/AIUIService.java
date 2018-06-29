@@ -140,7 +140,8 @@ public class AIUIService extends Service {
                     //根据需求文档直接进入working 状态sendMessage中会再发送CMD_WEAKUP
                     //正常应该发送mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
                     //进入的是等待说出“咪咕咪咕” 的带唤醒状态
-                    sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
+                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
+                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
                     isIvwModel = true;
                 }
             }, 500);
@@ -403,7 +404,7 @@ public class AIUIService extends Service {
 
                     break;
                 case AIUIConstant.EVENT_ERROR:
-
+                    Logger.debug("----------------EVENT_ERROR======");
                     break;
                 case AIUIConstant.EVENT_WAKEUP:
                     Logger.debug("----------------EVENT_WAKEUP======");
