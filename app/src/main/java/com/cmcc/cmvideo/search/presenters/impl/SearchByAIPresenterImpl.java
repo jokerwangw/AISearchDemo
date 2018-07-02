@@ -58,7 +58,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private IAIUIService aiuiService;
     private Gson gson;
     private String lastResponseVideoTitle = "";
-    private String lastRequestVideoText = "";
+    private String lastVideoData = "";
     private SearchByAIBean lastVideoSearchByAIBean = null;
     //是否是在投屏状态或者插入耳机状态
 
@@ -212,7 +212,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
         AiResponse.Response responseTts = null;
         Map<String, String> map = formatSlotsToMap(nlpData.semantic.get(0).slots);
-        lastRequestVideoText = nlpData.text;
+        lastVideoData =result;
         lastResponseVideoTitle = makeCardTitle(map);
         String msg = nlpData.answer != null ? nlpData.answer.text : "";
         switch (nlpData.semantic.get(0).intent) {
@@ -502,7 +502,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             switch (nlpData.semantic.get(0).slots.get(0).name) {
                 case "LOOK_MORE":
                     Intent intent = new Intent(mContext, LookMoreActivity.class);
-                    intent.putExtra(LookMoreActivity.KEY_MORE_DATE_SPEECH_TEXT, lastRequestVideoText);
+                    intent.putExtra(LookMoreActivity.KEY_MORE_DATE, lastVideoData);
                     intent.putExtra(LookMoreActivity.KEY_TITLE, lastResponseVideoTitle);
                     mContext.startActivity(intent);
                     break;
@@ -705,7 +705,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             syncSpeakableData(searchByAIBean.getMessageType(), videoList);
         }
         List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
-        searchByAIBean.setSpeechText(lastRequestVideoText);
+        searchByAIBean.setDeailsJson(lastVideoData);
         messageList.add(searchByAIBean);
         EventBus.getDefault().post(new SearchByAIEventBean(messageList));
     }

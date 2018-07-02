@@ -25,11 +25,9 @@ import java.util.Random;
  * Describe:
  */
 
-public class LookMorePresenterImpl extends AbstractPresenter implements AIUIService.AIUIEventListener, LookMorePresenter {
+public class LookMorePresenterImpl extends AbstractPresenter implements LookMorePresenter {
     private LookMorePresenter.View mView;
     private Context mContext;
-    private IAIUIService aiuiService;
-    private String speechText = "";
     private Gson gson;
 
     public LookMorePresenterImpl(Executor executor, MainThread mainThread, LookMorePresenter.View view, Context context) {
@@ -53,7 +51,6 @@ public class LookMorePresenterImpl extends AbstractPresenter implements AIUIServ
 
     @Override
     public void destroy() {
-        aiuiService.removeAIUIEventListener(this);
     }
 
     @Override
@@ -61,31 +58,13 @@ public class LookMorePresenterImpl extends AbstractPresenter implements AIUIServ
     }
 
     @Override
-    public void setAIUIService(IAIUIService service) {
-        aiuiService = service;
-        aiuiService.addAIUIEventListener(this);
-        if (!TextUtils.isEmpty(speechText)) {
-            aiuiService.getLookMorePage(speechText, 1, 40);
-        }
+    public void setDetailsJson(String text) {
+        onTppResult(text);
     }
 
-    @Override
-    public void setSpeechText(String text) {
-        speechText = text;
-    }
-
-    @Override
-    public void onResult(String iatResult, String nlpReslult, String tppResult) {
-        onTppResult(tppResult);
-    }
-
-    @Override
-    public void onEvent(AIUIEvent event) {
-
-    }
 
     public void onTppResult(String result) {
-        if (TextUtils.isEmpty(result) || !aiuiService.isLookMorePageData()){
+        if (TextUtils.isEmpty(result)){
             return;
         }
 

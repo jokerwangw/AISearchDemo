@@ -34,7 +34,7 @@ import butterknife.OnClick;
  */
 
 public class LookMoreActivity extends AppCompatActivity implements LookMorePresenter.View {
-    public static final String KEY_MORE_DATE_SPEECH_TEXT = "more_data_speech_text";
+    public static final String KEY_MORE_DATE = "more_data";
     public static final String KEY_TITLE = "more_data_title";
     @BindView(R.id.look_more_recyclerView)
     RecyclerView mLookMoreRecyclerView;
@@ -60,8 +60,8 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
                 MainThreadImpl.getInstance(),
                 this,
                 this);
-        bindService(new Intent(this, AIUIService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
         initCustomView();
+        lookMorePresenter.setDetailsJson(getIntent().getStringExtra(KEY_MORE_DATE));
     }
 
     private void initCustomView() {
@@ -72,19 +72,6 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         mLookMoreRecyclerView.setAdapter(mLookMoreAdapter);
         titleTv.setText(getIntent().getStringExtra(KEY_TITLE));
     }
-
-    private ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            aiuiService = (IAIUIService) service;
-            lookMorePresenter.setSpeechText(getIntent().getStringExtra(KEY_MORE_DATE_SPEECH_TEXT));
-            lookMorePresenter.setAIUIService(aiuiService);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-        }
-    };
 
     @Override
     public void showProgress() {
@@ -107,7 +94,6 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
     protected void onDestroy() {
         super.onDestroy();
         lookMorePresenter.destroy();
-        unbindService(connection);
     }
 
     /**

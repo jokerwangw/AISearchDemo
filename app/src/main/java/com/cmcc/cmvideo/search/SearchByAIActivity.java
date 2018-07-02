@@ -156,10 +156,10 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         }
 
         @Override
-        public void clickItemSearchByAIEveryoneISWatching(boolean isClickMore, int position, String speechText, String titleText) {
+        public void clickItemSearchByAIEveryoneISWatching(boolean isClickMore, int position, String deailsJson, String titleText) {
             if (isClickMore) {
                 Intent intent = new Intent(mContext, LookMoreActivity.class);
-                intent.putExtra(LookMoreActivity.KEY_MORE_DATE_SPEECH_TEXT, speechText);
+                intent.putExtra(LookMoreActivity.KEY_MORE_DATE, deailsJson);
                 intent.putExtra(LookMoreActivity.KEY_TITLE, titleText);
                 startActivity(intent);
             } else {

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class SearchByAIBean {
     private String message;
-    private String speechText;
+    private String deailsJson;
     private int messageType;
     private String messageFrom;
     private List<TppData.DetailsListBean> videoList;
@@ -30,12 +30,12 @@ public class SearchByAIBean {
         this.videoList = videoList;
     }
 
-    public String getSpeechText() {
-        return speechText;
+    public String getDeailsJson() {
+        return deailsJson;
     }
 
-    public void setSpeechText(String speechText) {
-        this.speechText = speechText;
+    public void setDeailsJson(String deailsJson) {
+        this.deailsJson = deailsJson;
     }
 
     public String getMessage() {

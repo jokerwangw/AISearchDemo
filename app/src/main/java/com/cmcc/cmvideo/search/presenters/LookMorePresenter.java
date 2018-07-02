@@ -26,16 +26,9 @@ public interface LookMorePresenter extends BasePresenter {
     }
 
     /**
-     * setAIUIService
-     *
-     * @param service
-     */
-    void setAIUIService(IAIUIService service);
-
-    /**
      * setSpeechText
      *
      * @param text
      */
-    void setSpeechText(String text);
+    void setDetailsJson(String text);
 }
