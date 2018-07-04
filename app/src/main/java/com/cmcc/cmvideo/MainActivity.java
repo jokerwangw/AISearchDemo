@@ -8,18 +8,21 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.cmcc.cmvideo.search.PlayVideoActivity;
 import com.cmcc.cmvideo.search.SearchByAIActivity;
 import com.cmcc.cmvideo.search.aiui.AIUIService;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
+import com.cmcc.cmvideo.util.AppUtil;
 import com.cmcc.cmvideo.util.ServiceUtils;
 import com.cmcc.cmvideo.util.SharedPreferencesHelper;
 import com.iflytek.aiui.AIUIConstant;
@@ -33,6 +36,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
+    @BindView(R.id.tv_current_version)
+    TextView tvCurrentVersion;
     @BindView(R.id.turn_to_ai_search)
     Button btTurnToAISearch;
     @BindView(R.id.open_aiui_helper)
@@ -71,6 +76,14 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferencesHelper.setValue(KEY_IS_AI_HELPER_OPEN, ServiceUtils.isServiceRunning(MainActivity.this, AIUIService.AIUI_SERVICE_NAME));
         setViewVisible(sharedPreferencesHelper.getBoolean(KEY_IS_AI_HELPER_OPEN, false));
 
+        int versionCode = AppUtil.getVersionCode(this);
+        String versionName = AppUtil.getVersionName(this);
+        if (!TextUtils.isEmpty(versionName)) {
+            tvCurrentVersion.setVisibility(View.VISIBLE);
+            tvCurrentVersion.setText("当前版本号:" + versionName);
+        } else {
+            tvCurrentVersion.setVisibility(View.GONE);
+        }
     }
 
     @OnClick(R.id.turn_to_player)
