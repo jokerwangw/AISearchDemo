@@ -38,6 +38,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -93,7 +94,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     @Override
     public void analysisDefaultData(final String jsonData) {
-        if(!TextUtils.isEmpty(jsonData)) {
+        if (!TextUtils.isEmpty(jsonData)) {
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -135,7 +136,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     }
 
 
-    private void onNlpResult(String nlpResult){
+    private void onNlpResult(String nlpResult) {
         NlpData mData = gson.fromJson(nlpResult, NlpData.class);
         if (mData.rc == 4) return;
         String service = mData.service;
@@ -159,12 +160,13 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     int index = Integer.parseInt(solts.get(AiuiConstants.VIDEO_INDEX)) - 1;
                     if (lastVideoSearchByAIBean != null && lastVideoSearchByAIBean.getVideoList() != null && lastVideoSearchByAIBean.getVideoList().size() > 0) {
                         List<TppData.SubserialsBean> subserials = lastVideoSearchByAIBean.getVideoList().get(0).subserials;
+                        Collections.reverse(subserials);
                         if (index >= 0 && index < subserials.size()) {
                             String id = subserials.get(index).id;
                             String name = subserials.get(index).name;
                             //TODO 猜你喜欢 选剧集
                             Logger.debug("猜你喜欢 选择 id 【" + id + "】 name 【" + name + "】");
-                            aiuiService.tts("正在为你打开"+mData.text);
+                            aiuiService.tts("正在为你打开" + name);
                         }
                     }
                 }
@@ -383,6 +385,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     /**
      * 判断是否存在视频数据
+     *
      * @param nlpData
      * @return
      */
@@ -628,10 +631,10 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     public void onResult(String iatResult, String nlpReslult, String tppResult) {
         //onIatResult(iatResult);
         if (!aiuiService.isLookMorePageData()) {
-            if(!TextUtils.isEmpty(nlpReslult)) {
+            if (!TextUtils.isEmpty(nlpReslult)) {
                 onNlpResult(nlpReslult);
             }
-            if(!TextUtils.isEmpty(tppResult)) {
+            if (!TextUtils.isEmpty(tppResult)) {
                 onTppResult(tppResult);
             }
         }
@@ -651,13 +654,13 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     // TODO 网络有点问题 ，超时
                 }
                 break;
-            default: break;
+            default:
+                break;
         }
         if (null != event) {
             EventBus.getDefault().post(new SearchByAIRefreshUIEventBean(event));
         }
     }
-
 
 
     //取消录音

@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cmcc.cmvideo.R;
 import com.cmcc.cmvideo.base.MainThreadImpl;
@@ -18,10 +19,12 @@ import com.cmcc.cmvideo.base.ThreadExecutor;
 import com.cmcc.cmvideo.search.adapter.LookMoreAdapter;
 import com.cmcc.cmvideo.search.aiui.AIUIService;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
+import com.cmcc.cmvideo.search.aiui.Logger;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.presenters.LookMorePresenter;
 import com.cmcc.cmvideo.search.presenters.impl.LookMorePresenterImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -33,7 +36,8 @@ import butterknife.OnClick;
  * Describe:
  */
 
-public class LookMoreActivity extends AppCompatActivity implements LookMorePresenter.View {
+
+public class LookMoreActivity extends AppCompatActivity implements LookMorePresenter.View, LookMoreAdapter.OnLookMoreItemClick {
     public static final String KEY_MORE_DATE = "more_data";
     public static final String KEY_TITLE = "more_data_title";
     @BindView(R.id.look_more_recyclerView)
@@ -44,11 +48,13 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
     private LookMorePresenterImpl lookMorePresenter;
     private LookMoreAdapter mLookMoreAdapter;
     private IAIUIService aiuiService;
+    private List<TppData.DetailsListBean> detailsList;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
+        detailsList = new ArrayList<>();
         setContentView(R.layout.activity_look_more);
         ButterKnife.bind(this);
         initData();
@@ -65,7 +71,7 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
     }
 
     private void initCustomView() {
-        mLookMoreAdapter = new LookMoreAdapter(mContext);
+        mLookMoreAdapter = new LookMoreAdapter(mContext, this);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, 3);
         mLookMoreRecyclerView.setHasFixedSize(true);
         mLookMoreRecyclerView.setLayoutManager(gridLayoutManager);
@@ -102,8 +108,13 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
     @Override
     public void showInitList(List<TppData.DetailsListBean> detailsListBeanArrayList) {
         if (null != detailsListBeanArrayList && null != mLookMoreAdapter) {
+            detailsList = detailsListBeanArrayList;
             mLookMoreAdapter.bindData(detailsListBeanArrayList, true);
         }
     }
 
+    @Override
+    public void onClickItemVideo(int position) {
+        Toast.makeText(mContext, "查看更多==" + position + "===" + detailsList.get(position).name, Toast.LENGTH_SHORT).show();
+    }
 }

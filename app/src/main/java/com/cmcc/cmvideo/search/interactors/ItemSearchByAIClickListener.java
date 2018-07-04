@@ -62,4 +62,5 @@ public interface ItemSearchByAIClickListener {
      * 点击了类型为MESSAGE_TYPE_THE_LATEST_VIDEO的条目
      */
     public void clickItemSearchByAITheLatestVideo();
+
 }
