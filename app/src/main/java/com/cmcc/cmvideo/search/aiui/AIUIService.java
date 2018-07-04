@@ -379,7 +379,8 @@ public class AIUIService extends Service {
                     }
                 }
                 break;
-                case AIUIConstant.CMD_START_RECORD:
+                case AIUIConstant.EVENT_START_RECORD:
+                    Logger.debug("================EVENT_START_RECORD================");
 
                     break;
                 case AIUIConstant.EVENT_ERROR:
