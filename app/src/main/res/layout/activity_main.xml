@@ -24,7 +24,6 @@
         android:layout_marginBottom="@dimen/dimen_8dp"
         android:text="@string/page_player"
         />
-
     <ToggleButton
         android:id="@+id/open_aiui_helper"
         android:layout_width="wrap_content"

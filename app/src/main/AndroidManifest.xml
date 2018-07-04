@@ -47,7 +47,6 @@
         <activity android:name=".search.LookMoreActivity"/>
         <activity android:name=".search.PlayVideoActivity"/>
         <activity android:name=".search.CastScreenActivity"/>
-
         <service android:name=".search.aiui.AIUIService"/>
     </application>
 

@@ -1,5 +1,6 @@
 package com.cmcc.cmvideo.search.aiui;
 
+import com.iflytek.aiui.AIUIMessage;
 import com.iflytek.cloud.SynthesizerListener;
 
 import java.util.Map;

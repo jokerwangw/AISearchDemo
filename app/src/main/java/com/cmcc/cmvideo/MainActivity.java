@@ -22,6 +22,8 @@ import com.cmcc.cmvideo.search.aiui.AIUIService;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.util.ServiceUtils;
 import com.cmcc.cmvideo.util.SharedPreferencesHelper;
+import com.iflytek.aiui.AIUIConstant;
+import com.iflytek.aiui.AIUIMessage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -217,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
+    IAIUIService aiuiService = null;
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -226,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
                 put("user_id", "553782460");
                 put("client_id", "897ddadc222ec9c20651da355daee9cc");
             }};
-            IAIUIService aiuiService = (IAIUIService) service;
+            aiuiService = (IAIUIService) service;
             aiuiService.setUserParam(map);
         }
 
@@ -239,6 +241,5 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(connection);
     }
 }
