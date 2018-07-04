@@ -93,8 +93,9 @@ public class AIUIService extends Service {
         if (mAIUIAgent != null) {
             mAIUIAgent.destroy();
         }
-        if(SpeechUtility.getUtility()!=null)
-            SpeechUtility.getUtility().destroy();
+
+
+        SpeechUtility.getUtility().destroy();
         if (null != mReceiver) {
             unregisterReceiver(mReceiver);
         }
@@ -107,7 +108,7 @@ public class AIUIService extends Service {
         //AIUI初始化
         mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
         //MSC初始化（登陆）
-        SpeechUtility.createUtility(AIUIService.this, String.format("engine_start=ivw,delay_init=0,appid=%s", "5aceb703"));
+        SpeechUtility.createUtility(this, "appid=5aceb703");
         //注册耳机是否插入广播
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
@@ -116,6 +117,10 @@ public class AIUIService extends Service {
 
     private void ivwMode() {
         try {
+            if (SpeechUtility.getUtility() != null) {
+                SpeechUtility.getUtility().destroy();
+            }
+            SpeechUtility.createUtility(AIUIService.this, String.format("engine_start=ivw,delay_init=0,appid=%s", "5aceb703"));
             if (mAIUIAgent == null) {
                 mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
             }
@@ -125,11 +130,22 @@ public class AIUIService extends Service {
             paramJson.put("wakeup_mode", "ivw");
             paramJson.put("interact_mode", "continuous");
             objectJson.put("speech", paramJson);
-            mAIUIAgent.sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
-            //mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
-            //mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_RESET_WAKEUP, 0, 0, "", null));
-            mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
-            isIvwModel = true;
+            sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
+            mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //延时启动保障完全停止后 能够重新启动
+                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START, 0, 0, "", null));
+                    //根据需求文档直接进入working 状态sendMessage中会再发送CMD_WEAKUP
+                    //正常应该发送mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
+                    //进入的是等待说出“咪咕咪咕” 的带唤醒状态
+                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
+                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
+                    isIvwModel = true;
+                }
+            }, 500);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -147,8 +163,17 @@ public class AIUIService extends Service {
             paramJson.put("wakeup_mode", "off");
             paramJson.put("interact_mode", "oneshot");
             objectJson.put("speech", paramJson);
-            mAIUIAgent.sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
-            isIvwModel = false;
+            sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
+            mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //延时启动保障完全停止后 能够重新启动
+                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START, 0, 0, "", null));
+                    isIvwModel = false;
+                }
+            }, 500);
+            SpeechUtility.createUtility(this, "appid=5aceb703");
             Logger.debug("已启动标准模式");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -189,6 +214,7 @@ public class AIUIService extends Service {
         public void cancelTts() {
             //取消语音合成
             AIUIService.this.cancelTts();
+
         }
 
         @Override
@@ -199,14 +225,14 @@ public class AIUIService extends Service {
                     setPageInfo("1", "20");
                     hasSetLookMorePageSize = false;
                 }
-                AIUIService.this.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
+                sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
             }
         }
 
         @Override
         public void stopRecordAudio() {
             if (!isIvwModel) {
-                AIUIService.this.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
+                sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
             }
         }
 
@@ -379,8 +405,7 @@ public class AIUIService extends Service {
                     }
                 }
                 break;
-                case AIUIConstant.EVENT_START_RECORD:
-                    Logger.debug("================EVENT_START_RECORD================");
+                case AIUIConstant.CMD_START_RECORD:
 
                     break;
                 case AIUIConstant.EVENT_ERROR:
@@ -620,14 +645,13 @@ public class AIUIService extends Service {
 
     //发送AIUI消息
     private void sendMessage(AIUIMessage message) {
-        if (mAIUIAgent != null&&!isIvwModel) {
+        if (mAIUIAgent != null) {
             //确保AIUI处于唤醒状态
             if (mCurrentState != AIUIConstant.STATE_WORKING) {
                 mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
             }
             mAIUIAgent.sendMessage(message);
         }
-        mAIUIAgent.sendMessage(message);
     }
 
     //同步用户数据
