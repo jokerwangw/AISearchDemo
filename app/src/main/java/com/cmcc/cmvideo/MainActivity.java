@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private int widthPixels, heightPixels;
     private SharedPreferencesHelper sharedPreferencesHelper;
     private Intent service;
+    private boolean isBind = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -218,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
     private void startAIService(boolean isChecked) {
         if (isChecked) {
             if (!ServiceUtils.isServiceRunning(MainActivity.this, AIUIService.AIUI_SERVICE_NAME)) {
+                isBind = true;
                 startService(service);
                 bindService(new Intent(this, AIUIService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
                 setViewVisible(isChecked);
@@ -225,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             if (ServiceUtils.isServiceRunning(MainActivity.this, AIUIService.AIUI_SERVICE_NAME)) {
-                unbindService(connection);
+                destoryService();
                 stopService(service);
                 setViewVisible(isChecked);
                 sharedPreferencesHelper.setValue(KEY_IS_AI_HELPER_OPEN, isChecked);
@@ -253,6 +255,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        destoryService();
         super.onDestroy();
+    }
+    private void destoryService()
+    {
+        if(isBind){
+            unbindService(connection);
+            isBind = false;
+        }
     }
 }
