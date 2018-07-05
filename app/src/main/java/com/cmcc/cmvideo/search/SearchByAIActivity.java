@@ -57,6 +57,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_EVERYONE_IS_WATCHING;
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
+import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
+
 /**
  * Created by Yyw on 2018/5/21.
  * Describe:
@@ -224,7 +229,9 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                 intent.putExtra(LookMoreActivity.KEY_TITLE, titleText);
                 startActivity(intent);
             } else {
-                Toast.makeText(mContext, "查看==" + position, Toast.LENGTH_SHORT).show();
+                int i = position + 1;
+                Toast.makeText(mContext, "查看==" + i, Toast.LENGTH_SHORT).show();
+                mSearchByAIPresenter.turnToPlayVideo(MESSAGE_TYPE_EVERYONE_IS_WATCHING, false, null, deailsJson, position);
             }
         }
 
@@ -239,6 +246,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                     aiuiService.textUnderstander("换一个");
                 } else {
                     Toast.makeText(mContext, "查看==" + detailsListBean.name, Toast.LENGTH_SHORT).show();
+                    mSearchByAIPresenter.turnToPlayVideo(MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE, false, detailsListBean, null, -1);
                 }
             }
         }
@@ -250,9 +258,11 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                     aiuiService.textUnderstander("换一个");
                 } else if (isClickLookMore) {
                     Toast.makeText(mContext, "查看更多", Toast.LENGTH_SHORT).show();
+                    mSearchByAIPresenter.turnToPlayVideo(MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL, true, detailsListBean, null, position);
                 } else {
                     int pos = position + 1;
                     Toast.makeText(mContext, "查看第" + pos + "集", Toast.LENGTH_SHORT).show();
+                    mSearchByAIPresenter.turnToPlayVideo(MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL, false, detailsListBean, null, position);
                 }
             }
         }
@@ -264,9 +274,11 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                     aiuiService.textUnderstander("换一个");
                 } else if (isClickLookMore) {
                     Toast.makeText(mContext, "查看更多", Toast.LENGTH_SHORT).show();
+                    mSearchByAIPresenter.turnToPlayVideo(MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL, true, detailsListBean, null, position);
                 } else {
                     int pos = position + 1;
                     Toast.makeText(mContext, "查看第" + pos + "条", Toast.LENGTH_SHORT).show();
+                    mSearchByAIPresenter.turnToPlayVideo(MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL, false, detailsListBean, null, position);
                 }
             }
         }

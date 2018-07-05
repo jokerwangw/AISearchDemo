@@ -222,7 +222,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                     @Override
                     public void onClick(View v) {
                         if (null != ItemSearchByAIClickListener) {
-                            ItemSearchByAIClickListener.clickItemSearchByAIEveryoneISWatching(false, 1, searchByAIBean.getDeailsJson(), itemSearchByAIEveryoneISWatchingViewHolder.title.getText().toString().trim());
+                            ItemSearchByAIClickListener.clickItemSearchByAIEveryoneISWatching(false, 0, searchByAIBean.getDeailsJson(), itemSearchByAIEveryoneISWatchingViewHolder.title.getText().toString().trim());
                         }
                     }
                 });
@@ -231,7 +231,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                     @Override
                     public void onClick(View v) {
                         if (null != ItemSearchByAIClickListener) {
-                            ItemSearchByAIClickListener.clickItemSearchByAIEveryoneISWatching(false, 2, searchByAIBean.getDeailsJson(), itemSearchByAIEveryoneISWatchingViewHolder.title.getText().toString().trim());
+                            ItemSearchByAIClickListener.clickItemSearchByAIEveryoneISWatching(false, 1, searchByAIBean.getDeailsJson(), itemSearchByAIEveryoneISWatchingViewHolder.title.getText().toString().trim());
                         }
                     }
                 });
@@ -240,7 +240,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                     @Override
                     public void onClick(View v) {
                         if (null != ItemSearchByAIClickListener) {
-                            ItemSearchByAIClickListener.clickItemSearchByAIEveryoneISWatching(false, 3, searchByAIBean.getDeailsJson(), itemSearchByAIEveryoneISWatchingViewHolder.title.getText().toString().trim());
+                            ItemSearchByAIClickListener.clickItemSearchByAIEveryoneISWatching(false, 2, searchByAIBean.getDeailsJson(), itemSearchByAIEveryoneISWatchingViewHolder.title.getText().toString().trim());
                         }
                     }
                 });

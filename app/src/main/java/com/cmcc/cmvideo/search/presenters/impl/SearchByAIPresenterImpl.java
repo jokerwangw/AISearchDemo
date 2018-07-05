@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.cmcc.cmvideo.BuildConfig;
 import com.cmcc.cmvideo.MainActivity;
@@ -738,13 +739,20 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         aiuiService.syncSpeakableData(aiuiService.getLastNlpState(), syncMap);
     }
 
-    //取消录音
+    /**
+     * 取消录音
+     */
     @Override
     public void cancelRecordAudio() {
         aiuiService.cancelRecordAudio();
     }
 
-    //SlotsBean key-value 数据转换成Map 类型数据方便查找
+    /**
+     * SlotsBean key-value 数据转换成Map 类型数据方便查找
+     *
+     * @param slotsBeans
+     * @return
+     */
     private Map<String, String> formatSlotsToMap(List<NlpData.SlotsBean> slotsBeans) {
         Map<String, String> map = new HashMap<>();
         if (slotsBeans == null || slotsBeans.size() == 0) {
@@ -754,6 +762,95 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             map.put(slot.name, slot.value);
         }
         return map;
+    }
+
+    @Override
+    public void turnToPlayVideo(int type, boolean isClickLookMore, TppData.DetailsListBean detailsListBean, String deailsJson, int position) {
+        switch (type) {
+            case MESSAGE_TYPE_EVERYONE_IS_WATCHING:
+                if (TextUtils.isEmpty(deailsJson)) {
+                    return;
+                }
+                NlpData nlpData = gson.fromJson(deailsJson, NlpData.class);
+                //判断是否解出了语义，并且当前技能是video
+                if (nlpData.rc == 4
+                        || !("video".equals(nlpData.service)
+                        || "LINGXI2018.user_video".equals(nlpData.service))) {
+                    if (nlpData.moreResults == null) {
+                        return;
+                    }
+                    nlpData = nlpData.moreResults.get(0);
+                    if (nlpData.rc == 4
+                            || !("video".equals(nlpData.service)
+                            || "LINGXI2018.user_video".equals(nlpData.service))) {
+                        return;
+                    }
+                }
+                //语义后处理没有返回数据则直接退出
+                if (nlpData.data == null
+                        || nlpData.data.lxresult == null
+                        || nlpData.data.lxresult.data.detailslist.size() == 0
+                        || nlpData.data.lxresult.data.detailslist.size() < position) {
+                    return;
+                }
+
+                playVideo(nlpData.data.lxresult.data.detailslist.get(position).id);
+                break;
+            case MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE:
+                if (null != detailsListBean) {
+                    playVideo(detailsListBean.id);
+                }
+                break;
+            case MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL:
+                if (isClickLookMore) {
+                    Toast.makeText(mContext, "查看更多", Toast.LENGTH_SHORT).show();
+                } else {
+                    playVideo(getContentID(detailsListBean, position));
+                }
+                break;
+            case MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL:
+                if (isClickLookMore) {
+                    Toast.makeText(mContext, "查看更多", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (null != detailsListBean.subserials && detailsListBean.subserials.size() > position) {
+                        playVideo(detailsListBean.subserials.get(position).id);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 播放视频
+     *
+     * @param contentID
+     */
+    private void playVideo(String contentID) {
+        if (!TextUtils.isEmpty(contentID)) {
+        }
+    }
+
+    /**
+     * 得到剧集id
+     *
+     * @param detailsListBean
+     * @param pos
+     * @return
+     */
+    public String getContentID(TppData.DetailsListBean detailsListBean, int pos) {
+        String contentID = "";
+        if (null != detailsListBean) {
+            List<TppData.SubserialsBean> subserials = detailsListBean.subserials;
+            if (null != subserials && subserials.size() > pos) {
+                int position = subserials.size() - pos - 1;
+                if (position > 0 && position < subserials.size()) {
+                    contentID = subserials.get(position).id;
+                }
+            }
+        }
+        return contentID;
     }
 
     /**
