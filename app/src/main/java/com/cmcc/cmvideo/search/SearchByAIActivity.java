@@ -39,7 +39,7 @@ import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
 import com.cmcc.cmvideo.search.model.SearchByAIRefreshUIEventBean;
 import com.cmcc.cmvideo.search.presenters.SearchByAIPresenter;
 import com.cmcc.cmvideo.search.presenters.impl.SearchByAIPresenterImpl;
-import com.cmcc.cmvideo.weight.VoiceLineView;
+import com.cmcc.cmvideo.widget.VoiceLineView;
 import com.iflytek.aiui.AIUIConstant;
 import com.iflytek.aiui.AIUIEvent;
 
@@ -63,7 +63,6 @@ import butterknife.OnClick;
  */
 
 public class SearchByAIActivity extends AppCompatActivity implements SearchByAIPresenter.View {
-
     @BindView(R.id.search_by_ai_recyclerView)
     RecyclerView mSearchRecyclerView;
     @BindView(R.id.rl_search_voice_input_ring)
@@ -137,6 +136,68 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         if (null != audioManager) {
             isOpenSpeaker = audioManager.isSpeakerphoneOn();
             vSpekaker.setVisibility(isOpenSpeaker ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    /**
+     * 显示AI初始化数据
+     *
+     * @param searchByAIBeanList
+     */
+    @Override
+    public void showInitList(List<SearchByAIBean> searchByAIBeanList) {
+        setAdapterData(true, searchByAIBeanList);
+    }
+
+    /**
+     * 更新list数据
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(SearchByAIEventBean event) {
+        if (null != event) {
+            setAdapterData(false, event.getSearchByAIBeanList());
+        }
+    }
+
+    /**
+     * 根据相关事件更新UI
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageRefreshUIEvent(SearchByAIRefreshUIEventBean event) {
+        if (null != event) {
+            AIUIEvent aiuiEvent = event.getAiuiEvent();
+            switch (aiuiEvent.eventType) {
+                case AIUIConstant.EVENT_WAKEUP:
+                    //TODO AIUI 被唤醒
+                    break;
+                case AIUIConstant.EVENT_SLEEP:
+                    //TODO AIUI 进入休眠 ，可以更新UI
+                    closeSearch();
+                    break;
+                case AIUIConstant.EVENT_ERROR:
+                    if (aiuiEvent.arg1 == 10120) {
+                        // TODO 网络有点问题 ，超时
+                        closeSearch();
+                    }
+                    break;
+                case AIUIConstant.EVENT_START_RECORD:
+                    break;
+                case AIUIConstant.EVENT_STOP_RECORD:
+                    break;
+                case AIUIConstant.EVENT_VAD:
+                    if (aiuiEvent.arg1 == 1) {
+                        //VAD事件当检测到输入音频的前端点后，会抛出该事件，用arg1标识前后端点或者音量信息:0(前端点)、1(音量)、2(后端点)、3（前端点超时）。
+                        //当arg1取值为1时，arg2为音量大小。
+                        updateVoiceAnimation(aiuiEvent.arg2);
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -240,63 +301,6 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         }
     };
 
-    private ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            aiuiService = (IAIUIService) service;
-            mSearchByAIPresenter.setAIUIService(aiuiService);
-            mSearchByAIPresenter.analysisDefaultData(getIntent().getStringExtra("TPP_DATA"));
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-        }
-    };
-
-    /**
-     * 区分用户搜索的点击事件类型
-     *
-     * @param clickTime
-     */
-    private void checkClickType(long clickTime, float moveValue) {
-        if (clickTime <= MAX_CLICK_TIME && moveValue > -MAX_CLICK_MOVE_VALUE && moveValue < MAX_CLICK_MOVE_VALUE) {
-            //点击事件
-            closeViewAnimation();
-            tvCancelSearch.setVisibility(View.VISIBLE);
-            rlSearchVoiceInputRing.setVisibility(View.GONE);
-            tvSlideCancelSearch.setVisibility(View.GONE);
-            rlSearchVoiceInput.setVisibility(View.GONE);
-            setViewAnimation(true);
-        } else {
-            //长按事件
-            if (moveValue >= MIN_MOVE_VALUE) {
-                mSearchByAIPresenter.cancelRecordAudio();
-            }
-            //长按事件
-            closeSearch();
-
-        }
-    }
-
-    /**
-     * 长按状态下手指滑动得操作
-     *
-     * @param downY
-     * @param moveY
-     */
-    private void fingerStartMove(float downY, float moveY) {
-        float moveValue = downY - moveY;
-        if (moveValue >= 50) {
-            tvSlideCancelSearch.setVisibility(View.GONE);
-            imReleaseFinger.setVisibility(View.VISIBLE);
-            tvReleaseFingerCancelSearch.setVisibility(View.VISIBLE);
-        } else {
-            tvSlideCancelSearch.setVisibility(View.VISIBLE);
-            imReleaseFinger.setVisibility(View.GONE);
-            tvReleaseFingerCancelSearch.setVisibility(View.GONE);
-        }
-    }
-
     /**
      * 标题栏关闭事件
      */
@@ -351,68 +355,6 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     }
 
     /**
-     * 显示AI初始化数据
-     *
-     * @param searchByAIBeanList
-     */
-    @Override
-    public void showInitList(List<SearchByAIBean> searchByAIBeanList) {
-        setAdapterData(true, searchByAIBeanList);
-    }
-
-    /**
-     * 更新list数据
-     *
-     * @param event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(SearchByAIEventBean event) {
-        if (null != event) {
-            setAdapterData(false, event.getSearchByAIBeanList());
-        }
-    }
-
-    /**
-     * 根据相关事件更新UI
-     *
-     * @param event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageRefreshUIEvent(SearchByAIRefreshUIEventBean event) {
-        if (null != event) {
-            AIUIEvent aiuiEvent = event.getAiuiEvent();
-            switch (aiuiEvent.eventType) {
-                case AIUIConstant.EVENT_WAKEUP:
-                    //TODO AIUI 被唤醒
-                    break;
-                case AIUIConstant.EVENT_SLEEP:
-                    //TODO AIUI 进入休眠 ，可以更新UI
-                    closeSearch();
-                    break;
-                case AIUIConstant.EVENT_ERROR:
-                    if (aiuiEvent.arg1 == 10120) {
-                        // TODO 网络有点问题 ，超时
-                        closeSearch();
-                    }
-                    break;
-                case AIUIConstant.EVENT_START_RECORD:
-                    break;
-                case AIUIConstant.EVENT_STOP_RECORD:
-                    break;
-                case AIUIConstant.EVENT_VAD:
-                    if (aiuiEvent.arg1 == 1) {
-                        //VAD事件当检测到输入音频的前端点后，会抛出该事件，用arg1标识前后端点或者音量信息:0(前端点)、1(音量)、2(后端点)、3（前端点超时）。
-                        //当arg1取值为1时，arg2为音量大小。
-                        updateVoiceAnimation(aiuiEvent.arg2);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    /**
      * 设置适配器
      *
      * @param isInit
@@ -426,6 +368,49 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                 mSearchByAIAdapter.addItems(searchByAIBeanList);
             }
             mSearchRecyclerView.scrollToPosition(mSearchByAIAdapter.getItemCount() - 1);
+        }
+    }
+
+    /**
+     * 区分用户搜索的点击事件类型
+     *
+     * @param clickTime
+     */
+    private void checkClickType(long clickTime, float moveValue) {
+        if (clickTime <= MAX_CLICK_TIME && moveValue > -MAX_CLICK_MOVE_VALUE && moveValue < MAX_CLICK_MOVE_VALUE) {
+            //点击事件
+            closeViewAnimation();
+            tvCancelSearch.setVisibility(View.VISIBLE);
+            rlSearchVoiceInputRing.setVisibility(View.GONE);
+            tvSlideCancelSearch.setVisibility(View.GONE);
+            rlSearchVoiceInput.setVisibility(View.GONE);
+            setViewAnimation(true);
+        } else {
+            //长按事件
+            if (moveValue >= MIN_MOVE_VALUE) {
+                mSearchByAIPresenter.cancelRecordAudio();
+            }
+            //长按事件
+            closeSearch();
+        }
+    }
+
+    /**
+     * 长按状态下手指滑动得操作
+     *
+     * @param downY
+     * @param moveY
+     */
+    private void fingerStartMove(float downY, float moveY) {
+        float moveValue = downY - moveY;
+        if (moveValue >= 50) {
+            tvSlideCancelSearch.setVisibility(View.GONE);
+            imReleaseFinger.setVisibility(View.VISIBLE);
+            tvReleaseFingerCancelSearch.setVisibility(View.VISIBLE);
+        } else {
+            tvSlideCancelSearch.setVisibility(View.VISIBLE);
+            imReleaseFinger.setVisibility(View.GONE);
+            tvReleaseFingerCancelSearch.setVisibility(View.GONE);
         }
     }
 
@@ -496,6 +481,19 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private void updateVoiceAnimation(int arg2) {
         mVoiceLineView.setVolume(arg2 + 120);
     }
+
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            aiuiService = (IAIUIService) service;
+            mSearchByAIPresenter.setAIUIService(aiuiService);
+            mSearchByAIPresenter.analysisDefaultData(getIntent().getStringExtra("TPP_DATA"));
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+        }
+    };
 
     @Override
     protected void onStart() {

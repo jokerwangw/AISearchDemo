@@ -87,7 +87,7 @@
                 android:layout_marginLeft="@dimen/dimen_20dp"
                 android:background="@color/appointment_movie_list"/>
 
-            <com.cmcc.cmvideo.weight.VoiceLineView
+            <com.cmcc.cmvideo.widget.VoiceLineView
                 android:id="@+id/voicLine"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

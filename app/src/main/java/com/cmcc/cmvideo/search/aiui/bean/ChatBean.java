@@ -7,7 +7,6 @@ package com.cmcc.cmvideo.search.aiui.bean;
  */
 public class ChatBean {
 
-
     /**
      * answer : {"answerType":"openQA","emotion":"default","question":{"question":"我好无聊啊","question_ws":"我/NP// 好/VI// 无聊/AA// 啊/UE//"},"text":"有我陪你，你就不会感到无聊啦。","topicID":"32184159073720340","type":"T"}
      * man_intv :

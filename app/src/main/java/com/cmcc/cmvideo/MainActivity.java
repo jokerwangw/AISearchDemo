@@ -73,7 +73,8 @@ public class MainActivity extends AppCompatActivity {
 
         service = new Intent(this, AIUIService.class);
         sharedPreferencesHelper = SharedPreferencesHelper.getInstance(MainActivity.this);
-        sharedPreferencesHelper.setValue(KEY_IS_AI_HELPER_OPEN, ServiceUtils.isServiceRunning(MainActivity.this, AIUIService.AIUI_SERVICE_NAME));
+        boolean serviceRunning = ServiceUtils.isServiceRunning(MainActivity.this, AIUIService.AIUI_SERVICE_NAME);
+        sharedPreferencesHelper.setValue(KEY_IS_AI_HELPER_OPEN, serviceRunning);
         setViewVisible(sharedPreferencesHelper.getBoolean(KEY_IS_AI_HELPER_OPEN, false));
 
         int versionCode = AppUtil.getVersionCode(this);
@@ -209,9 +210,11 @@ public class MainActivity extends AppCompatActivity {
         if (isOpen) {
             btTurnToAISearch.setVisibility(View.VISIBLE);
             btOpenAIHelper.setChecked(true);
+            sharedPreferencesHelper.setValue(KEY_IS_AI_HELPER_OPEN, true);
         } else {
             btTurnToAISearch.setVisibility(View.GONE);
             btOpenAIHelper.setChecked(false);
+            sharedPreferencesHelper.setValue(KEY_IS_AI_HELPER_OPEN, false);
         }
     }
 
@@ -221,14 +224,12 @@ public class MainActivity extends AppCompatActivity {
                 startService(service);
                 bindService(new Intent(this, AIUIService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
                 setViewVisible(isChecked);
-                sharedPreferencesHelper.setValue(KEY_IS_AI_HELPER_OPEN, isChecked);
             }
         } else {
             if (ServiceUtils.isServiceRunning(MainActivity.this, AIUIService.AIUI_SERVICE_NAME)) {
                 unbindService(connection);
                 stopService(service);
                 setViewVisible(isChecked);
-                sharedPreferencesHelper.setValue(KEY_IS_AI_HELPER_OPEN, isChecked);
             }
         }
     }

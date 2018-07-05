@@ -39,16 +39,18 @@ public class LookMoreAdapter extends BaseRecyclerAdapter<TppData.DetailsListBean
 
     @Override
     public void onBindHoder(RecyclerView.ViewHolder holder, TppData.DetailsListBean detailsListBean, final int position) {
-        ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-        itemViewHolder.itemWatchNum.setVisibility(View.GONE);
-        itemViewHolder.itemName.setText(detailsListBean.name);
-        itemViewHolder.itemImg.setImageURI(getImageUrl(detailsListBean.image));
-        itemViewHolder.itemLineLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onLookMoreItemClick.onClickItemVideo(position);
-            }
-        });
+        if (null != holder && null != detailsListBean) {
+            ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+            itemViewHolder.itemWatchNum.setVisibility(View.GONE);
+            itemViewHolder.itemName.setText(detailsListBean.name);
+            itemViewHolder.itemImg.setImageURI(getImageUrl(detailsListBean.image));
+            itemViewHolder.itemContain.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onLookMoreItemClick.onClickItemVideo(position);
+                }
+            });
+        }
     }
 
     @Override
@@ -59,17 +61,17 @@ public class LookMoreAdapter extends BaseRecyclerAdapter<TppData.DetailsListBean
     }
 
     public class ItemViewHolder extends BaseViewHolder {
+        LinearLayout itemContain;
         MGSimpleDraweeView itemImg;
         TextView itemWatchNum;
         TextView itemName;
-        LinearLayout itemLineLayout;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
+            itemContain = (LinearLayout) itemView.findViewById(R.id.item_contian);
             itemImg = (MGSimpleDraweeView) itemView.findViewById(R.id.item_img);
             itemWatchNum = (TextView) itemView.findViewById(R.id.item_watch_num);
             itemName = (TextView) itemView.findViewById(R.id.item_name);
-            itemLineLayout = (LinearLayout) itemView.findViewById(R.id.item_linelayout);
         }
     }
 

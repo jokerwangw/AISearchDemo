@@ -43,16 +43,15 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
     private Map<String, String> solts = null;
     private String controlVdoTimeHour = null, controlVdoTimeMinu = null, controlVdoTimeSecon = null;
     private boolean isAvailableVideo = false;
-
-    public String getLastNlpState() {
-        return lastNlpState;
-    }
-
     //最后一次语义的状态
     private String lastNlpState = "";
     private Gson gson;
     private IAIUIService aiuiService;
     private android.os.Handler mHandler;
+
+    public String getLastNlpState() {
+        return lastNlpState;
+    }
 
     public AIUISemanticProcessor(IAIUIService service) {
         aiuiService = service;
@@ -60,7 +59,6 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
         gson = new Gson();
         mHandler = new android.os.Handler(Looper.getMainLooper());
     }
-
 
     /**
      * 耳机接入状态
@@ -71,14 +69,13 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
         isAvailableVideo = isConnect;
     }
 
-
     @Override
     public void onResult(String iatResult, String nlpReslult, String tppResult) {
         if (!aiuiService.isLookMorePageData()) {
-            if(!TextUtils.isEmpty(nlpReslult)) {
+            if (!TextUtils.isEmpty(nlpReslult)) {
                 onNlpResult(nlpReslult);
             }
-            if(!TextUtils.isEmpty(tppResult)) {
+            if (!TextUtils.isEmpty(tppResult)) {
                 onTppResult(tppResult);
             }
         }
@@ -210,9 +207,9 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
         }
     }
 
-    private void onTppResult(String tppResult){
+    private void onTppResult(String tppResult) {
         NlpData mData = gson.fromJson(tppResult, NlpData.class);
-        if(AiuiConstants.VIDEO_SERVICE.equals(mData.service)){
+        if (AiuiConstants.VIDEO_SERVICE.equals(mData.service)) {
             aiuiService.showAiUi(tppResult);
         }
     }
@@ -446,6 +443,8 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
                 break;
             case AiuiConstants.WORLD_CUP_I_LIKE_TEAM:
                 break;
+            default:
+                break;
         }
 
         if ((nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text))) {
@@ -608,5 +607,4 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
     public void cancelRecordAudio() {
         mHandler.removeCallbacks(runnable);
     }
-
 }

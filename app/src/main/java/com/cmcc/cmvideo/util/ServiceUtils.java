@@ -17,14 +17,14 @@ public class ServiceUtils {
      *
      * @return
      */
-    public static boolean isServiceRunning(Context context, String ServiceName) {
-        if (TextUtils.isEmpty(ServiceName)) {
+    public static boolean isServiceRunning(Context context, String serviceName) {
+        if (TextUtils.isEmpty(serviceName)) {
             return false;
         }
         ActivityManager myManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        ArrayList<ActivityManager.RunningServiceInfo> runningService = (ArrayList<ActivityManager.RunningServiceInfo>) myManager.getRunningServices(30);
+        ArrayList<ActivityManager.RunningServiceInfo> runningService = (ArrayList<ActivityManager.RunningServiceInfo>) myManager.getRunningServices(Integer.MAX_VALUE);
         for (int i = 0; i < runningService.size(); i++) {
-            if (runningService.get(i).service.getClassName().toString().equals(ServiceName)) {
+            if (runningService.get(i).service.getClassName().toString().equals(serviceName)) {
                 return true;
             }
         }
