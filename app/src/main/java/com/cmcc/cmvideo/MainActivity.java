@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferencesHelper sharedPreferencesHelper;
     private Intent service;
     private boolean isBind = false;
+    private IAIUIService aiuiService = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
             return false;
-
         }
     };
 
@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    IAIUIService aiuiService = null;
+
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -259,9 +259,9 @@ public class MainActivity extends AppCompatActivity {
         destoryService();
         super.onDestroy();
     }
-    private void destoryService()
-    {
-        if(isBind){
+
+    private void destoryService() {
+        if (isBind) {
             unbindService(connection);
             isBind = false;
         }
