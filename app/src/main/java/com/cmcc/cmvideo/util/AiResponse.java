@@ -9,8 +9,17 @@ public class AiResponse {
     private static AiResponse instance = null;
     private Random random = new Random();
 
-    private AiResponse() {
+    public enum RespType {
+        //做下注释
+        NORMAL,
+        VIDEO_TYPE,
+        VIDEO_NAME,
+        USER_NAME,
+        NETWORK,
+        RESULTERROMSG
+    }
 
+    private AiResponse() {
     }
 
     public static synchronized AiResponse getInstance() {
@@ -34,7 +43,6 @@ public class AiResponse {
             new Response("我好像没听明白，再说一次呗", RespType.RESULTERROMSG)
     ));
 
-
     /**
      * 网络不好 类似后台查询异常反馈语
      */
@@ -51,6 +59,7 @@ public class AiResponse {
             new Response("现在比较流行这些%s", RespType.VIDEO_TYPE),
             new Response("emm，可能是这些吧", RespType.NORMAL)
     ));
+
     private List<Response> guessWhatYouLikeList = new ArrayList<Response>(Arrays.asList(
             new Response("这部%s怎么样", RespType.VIDEO_TYPE),
             new Response("我想你会喜欢这部%s", RespType.VIDEO_TYPE),
@@ -62,6 +71,7 @@ public class AiResponse {
             new Response("最近流行%s", RespType.VIDEO_NAME),
             new Response("最近%s还不错哟", RespType.VIDEO_NAME)
     ));
+
     private List<Response> newVideoList = new ArrayList<Response>(Arrays.asList(
             new Response("最近流行%s", RespType.VIDEO_NAME),
             new Response("最近%还不错", RespType.VIDEO_NAME),
@@ -78,10 +88,10 @@ public class AiResponse {
             new Response("找到了，你想要的是不是这些？", RespType.NORMAL),
             new Response("只找到这么多，表示已经尽力了", RespType.NORMAL)
     ));
+
     private List<Response> sleepList = new ArrayList<Response>(Arrays.asList(
             new Response("念动咒语咪咕咪咕我会回来", RespType.NORMAL)
     ));
-
 
     private List<Response> changeList = new ArrayList<Response>(Arrays.asList(
             new Response("我的墨水被榨干了呢", RespType.NORMAL),
@@ -91,21 +101,20 @@ public class AiResponse {
 
     ));
 
-
     /**
      * 换一个 没有数据了 反馈语
+     *
      * @return
      */
-    public Response getChangeResponse(){
+    public Response getChangeResponse() {
         Response target = null;
-        try{
-            target = (Response)changeList.get(random.nextInt(changeList.size())).clone();
-        }catch (CloneNotSupportedException c){
+        try {
+            target = (Response) changeList.get(random.nextInt(changeList.size())).clone();
+        } catch (CloneNotSupportedException c) {
             c.printStackTrace();
         }
         return target;
     }
-
 
     /**
      * rc等于4随机反馈一条反馈语
@@ -114,15 +123,13 @@ public class AiResponse {
      */
     public Response getResultResponse() {
         Response target = null;
-        try{
-            target = (Response)errorRcMsgList.get(random.nextInt(errorRcMsgList.size())).clone();
-        }catch (CloneNotSupportedException c){
+        try {
+            target = (Response) errorRcMsgList.get(random.nextInt(errorRcMsgList.size())).clone();
+        } catch (CloneNotSupportedException c) {
             c.printStackTrace();
         }
         return target;
     }
-
-
 
     /**
      * 随机获取一条网络超时反馈语
@@ -131,9 +138,9 @@ public class AiResponse {
      */
     public Response getNetWorkStatus() {
         Response target = null;
-        try{
-            target = (Response)networkResponseList.get(random.nextInt(networkResponseList.size())).clone();
-        }catch (CloneNotSupportedException c){
+        try {
+            target = (Response) networkResponseList.get(random.nextInt(networkResponseList.size())).clone();
+        } catch (CloneNotSupportedException c) {
             c.printStackTrace();
         }
         return target;
@@ -146,9 +153,9 @@ public class AiResponse {
      */
     public Response getEveryoneSee() {
         Response target = null;
-        try{
-            target = (Response)everyoneSeeList.get(random.nextInt(everyoneSeeList.size())).clone();
-        }catch (CloneNotSupportedException c){
+        try {
+            target = (Response) everyoneSeeList.get(random.nextInt(everyoneSeeList.size())).clone();
+        } catch (CloneNotSupportedException c) {
             c.printStackTrace();
         }
         return target;
@@ -161,9 +168,9 @@ public class AiResponse {
      */
     public Response getGuessWhatYouLike() {
         Response target = null;
-        try{
-            target = (Response)guessWhatYouLikeList.get(random.nextInt(guessWhatYouLikeList.size())).clone();
-        }catch (CloneNotSupportedException c){
+        try {
+            target = (Response) guessWhatYouLikeList.get(random.nextInt(guessWhatYouLikeList.size())).clone();
+        } catch (CloneNotSupportedException c) {
             c.printStackTrace();
         }
         return target;
@@ -176,9 +183,9 @@ public class AiResponse {
      */
     public Response getNewVideo() {
         Response target = null;
-        try{
-            target = (Response)newVideoList.get(random.nextInt(newVideoList.size())).clone();
-        }catch (CloneNotSupportedException c){
+        try {
+            target = (Response) newVideoList.get(random.nextInt(newVideoList.size())).clone();
+        } catch (CloneNotSupportedException c) {
             c.printStackTrace();
         }
         return target;
@@ -191,9 +198,9 @@ public class AiResponse {
      */
     public Response getAlbum() {
         Response target = null;
-        try{
-            target = (Response)albumList.get(random.nextInt(albumList.size())).clone();
-        }catch (CloneNotSupportedException c){
+        try {
+            target = (Response) albumList.get(random.nextInt(albumList.size())).clone();
+        } catch (CloneNotSupportedException c) {
             c.printStackTrace();
         }
         return target;
@@ -201,12 +208,12 @@ public class AiResponse {
 
     /**
      * 获取休眠反馈语
+     *
      * @return
      */
-    public Response getSleep(){
-        return  sleepList.get(0);
+    public Response getSleep() {
+        return sleepList.get(0);
     }
-
 
     public class Response implements Cloneable {
         public Response() {
@@ -224,14 +231,5 @@ public class AiResponse {
         public Object clone() throws CloneNotSupportedException {
             return super.clone();
         }
-    }
-
-    public enum RespType {
-        NORMAL,
-        VIDEO_TYPE,
-        VIDEO_NAME,
-        USER_NAME,
-        NETWORK,
-        RESULTERROMSG
     }
 }

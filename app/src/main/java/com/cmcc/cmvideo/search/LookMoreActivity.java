@@ -38,35 +38,36 @@ import butterknife.OnClick;
 
 
 public class LookMoreActivity extends AppCompatActivity implements LookMorePresenter.View, LookMoreAdapter.OnLookMoreItemClick {
-    public static final String KEY_MORE_DATE = "more_data";
-    public static final String KEY_TITLE = "more_data_title";
     @BindView(R.id.look_more_recyclerView)
     RecyclerView mLookMoreRecyclerView;
     @BindView(R.id.tv_title)
     TextView titleTv;
+    public static final String KEY_MORE_DATE = "more_data";
+    public static final String KEY_TITLE = "more_data_title";
     private Context mContext;
     private LookMorePresenterImpl lookMorePresenter;
     private LookMoreAdapter mLookMoreAdapter;
-    private IAIUIService aiuiService;
     private List<TppData.DetailsListBean> detailsList;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-        detailsList = new ArrayList<>();
+
         setContentView(R.layout.activity_look_more);
         ButterKnife.bind(this);
+
+        initCustomView();
         initData();
     }
 
     private void initData() {
+        detailsList = new ArrayList<>();
         lookMorePresenter = new LookMorePresenterImpl(
                 ThreadExecutor.getInstance(),
                 MainThreadImpl.getInstance(),
                 this,
                 this);
-        initCustomView();
         lookMorePresenter.setDetailsJson(getIntent().getStringExtra(KEY_MORE_DATE));
     }
 
@@ -77,6 +78,22 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         mLookMoreRecyclerView.setLayoutManager(gridLayoutManager);
         mLookMoreRecyclerView.setAdapter(mLookMoreAdapter);
         titleTv.setText(getIntent().getStringExtra(KEY_TITLE));
+    }
+
+    /**
+     * 显示数据
+     */
+    @Override
+    public void showInitList(List<TppData.DetailsListBean> detailsListBeanArrayList) {
+        if (null != detailsListBeanArrayList && null != mLookMoreAdapter) {
+            detailsList = detailsListBeanArrayList;
+            mLookMoreAdapter.bindData(detailsListBeanArrayList, true);
+        }
+    }
+
+    @Override
+    public void onClickItemVideo(int position) {
+        Toast.makeText(mContext, "查看更多==" + position + "===" + detailsList.get(position).name, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -100,21 +117,5 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
     protected void onDestroy() {
         super.onDestroy();
         lookMorePresenter.destroy();
-    }
-
-    /**
-     * 显示数据
-     */
-    @Override
-    public void showInitList(List<TppData.DetailsListBean> detailsListBeanArrayList) {
-        if (null != detailsListBeanArrayList && null != mLookMoreAdapter) {
-            detailsList = detailsListBeanArrayList;
-            mLookMoreAdapter.bindData(detailsListBeanArrayList, true);
-        }
-    }
-
-    @Override
-    public void onClickItemVideo(int position) {
-        Toast.makeText(mContext, "查看更多==" + position + "===" + detailsList.get(position).name, Toast.LENGTH_SHORT).show();
     }
 }

@@ -1,4 +1,4 @@
-package com.cmcc.cmvideo.weight;
+package com.cmcc.cmvideo.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;

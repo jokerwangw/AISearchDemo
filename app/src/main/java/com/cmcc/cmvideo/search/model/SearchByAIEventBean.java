@@ -16,5 +16,4 @@ public class SearchByAIEventBean extends EventBusMessage{
     public List<SearchByAIBean> getSearchByAIBeanList() {
         return searchByAIBeanList;
     }
-
 }

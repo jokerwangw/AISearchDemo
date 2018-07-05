@@ -16,14 +16,14 @@ public class SearchByAIBean {
     private String messageFrom;
     private List<TppData.DetailsListBean> videoList;
 
-
     public SearchByAIBean() {
     }
+
     public SearchByAIBean(String message, int messageType, String messageFrom) {
-        this(message,messageType,messageFrom,null);
+        this(message, messageType, messageFrom, null);
     }
 
-    public SearchByAIBean(String message, int messageType, String messageFrom,List<TppData.DetailsListBean> videoList) {
+    public SearchByAIBean(String message, int messageType, String messageFrom, List<TppData.DetailsListBean> videoList) {
         this.message = message;
         this.messageType = messageType;
         this.messageFrom = messageFrom;
