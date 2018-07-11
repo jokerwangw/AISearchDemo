@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.AssetManager;
-import android.media.AudioManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -15,17 +14,9 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.cmcc.cmvideo.search.SearchByAIActivity;
-import com.cmcc.cmvideo.search.aiui.bean.ControlEventBean;
 import com.cmcc.cmvideo.search.aiui.bean.IatBean;
-import com.cmcc.cmvideo.search.aiui.bean.MicBean;
-import com.cmcc.cmvideo.search.aiui.bean.NlpData;
-import com.cmcc.cmvideo.search.aiui.bean.TppData;
-import com.cmcc.cmvideo.search.model.SearchByAIBean;
-import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
-import com.cmcc.cmvideo.search.presenters.impl.SearchByAIPresenterImpl;
 import com.cmcc.cmvideo.util.AiResponse;
 import com.cmcc.cmvideo.util.AiuiConstants;
-import com.cmcc.cmvideo.util.LogUtil;
 import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIAgent;
 import com.iflytek.aiui.AIUIConstant;
@@ -33,26 +24,17 @@ import com.iflytek.aiui.AIUIEvent;
 import com.iflytek.aiui.AIUIListener;
 import com.iflytek.aiui.AIUIMessage;
 import com.iflytek.cloud.SpeechUtility;
-import com.iflytek.cloud.SynthesizerListener;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_FROM_AI;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_FROM_USER;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_CAN_ASK_AI;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_NORMAL;
 import static com.iflytek.aiui.AIUIConstant.CMD_SET_PARAMS;
 
 public class AIUIService extends Service {

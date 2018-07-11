@@ -1,12 +1,9 @@
 package com.cmcc.cmvideo.search.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -17,28 +14,25 @@ import android.widget.TextView;
 import com.cmcc.cmvideo.R;
 import com.cmcc.cmvideo.base.BaseRecyclerAdapter;
 import com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView;
-import com.cmcc.cmvideo.search.LookMoreActivity;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.interactors.ItemSearchByAIClickListener;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static com.cmcc.cmvideo.util.Constants.IMG_BASE_URL;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_FROM_AI;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_APPOINTMENT;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_CAN_ASK_AI;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_EVERYONE_IS_WATCHING;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_I_WANT_TO_SEE;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_NORMAL;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_THE_LATEST_VIDEO;
+import static com.cmcc.cmvideo.util.AiuiConstants.IMG_BASE_URL;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageFrom.MESSAGE_FROM_AI;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_APPOINTMENT;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_CAN_ASK_AI;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_EVERYONE_IS_WATCHING;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_I_WANT_TO_SEE;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_NORMAL;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_THE_LATEST_VIDEO;
 
 /**
  * Created by Yyw on 2018/5/21.

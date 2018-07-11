@@ -3,15 +3,10 @@ package com.cmcc.cmvideo.search.aiui;
 import android.os.Looper;
 import android.text.TextUtils;
 
-import com.cmcc.cmvideo.base.BasePresenter;
-import com.cmcc.cmvideo.base.MainThread;
 import com.cmcc.cmvideo.search.aiui.bean.ControlEventBean;
-import com.cmcc.cmvideo.search.aiui.bean.MicBean;
 import com.cmcc.cmvideo.search.aiui.bean.NlpData;
-import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
-import com.cmcc.cmvideo.search.model.SearchByAIRefreshUIEventBean;
 import com.cmcc.cmvideo.util.AiResponse;
 import com.cmcc.cmvideo.util.AiuiConstants;
 import com.google.gson.Gson;
@@ -19,8 +14,6 @@ import com.iflytek.aiui.AIUIConstant;
 import com.iflytek.aiui.AIUIEvent;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,10 +23,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_FROM_AI;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_FROM_USER;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_CAN_ASK_AI;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_NORMAL;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageFrom.MESSAGE_FROM_AI;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageFrom.MESSAGE_FROM_USER;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_CAN_ASK_AI;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_NORMAL;
 
 public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
     private long startTime = 0;

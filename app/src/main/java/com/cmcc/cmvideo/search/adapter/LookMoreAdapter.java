@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -14,13 +13,11 @@ import com.cmcc.cmvideo.R;
 import com.cmcc.cmvideo.base.BaseRecyclerAdapter;
 import com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
-import com.cmcc.cmvideo.search.model.SearchByAIBean;
 
 import org.json.JSONObject;
 
-import java.util.List;
+import static com.cmcc.cmvideo.util.AiuiConstants.IMG_BASE_URL;
 
-import static com.cmcc.cmvideo.util.Constants.IMG_BASE_URL;
 
 /**
  * Created by Yyw on 2018/6/11.
