@@ -12,16 +12,9 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-
 import com.cmcc.cmvideo.search.SearchByAIActivity;
 import com.cmcc.cmvideo.search.aiui.bean.IatBean;
-import com.cmcc.cmvideo.search.aiui.bean.MicBean;
-import com.cmcc.cmvideo.search.aiui.bean.NlpData;
-import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.aiui.impl.NavigationImpl;
-import com.cmcc.cmvideo.search.model.SearchByAIBean;
-import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
-import com.cmcc.cmvideo.search.presenters.impl.SearchByAIPresenterImpl;
 import com.cmcc.cmvideo.util.AiResponse;
 import com.cmcc.cmvideo.util.AiuiConstants;
 import com.google.gson.Gson;
@@ -31,18 +24,14 @@ import com.iflytek.aiui.AIUIEvent;
 import com.iflytek.aiui.AIUIListener;
 import com.iflytek.aiui.AIUIMessage;
 import com.iflytek.cloud.SpeechUtility;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import static com.iflytek.aiui.AIUIConstant.CMD_SET_PARAMS;
 
 public class AIUIService extends Service {
     public static final String AIUI_SERVICE_NAME = "com.cmcc.cmvideo.search.aiui.AIUIService";
@@ -123,7 +112,7 @@ public class AIUIService extends Service {
             paramJson.put("wakeup_mode", "ivw");
             paramJson.put("interact_mode", "continuous");
             objectJson.put("speech", paramJson);
-            sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
+            sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
             mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
@@ -156,7 +145,7 @@ public class AIUIService extends Service {
             paramJson.put("wakeup_mode", "off");
             paramJson.put("interact_mode", "oneshot");
             objectJson.put("speech", paramJson);
-            sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
+            sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
             mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
@@ -189,11 +178,11 @@ public class AIUIService extends Service {
         public void setInteractMode(boolean isOnShot) {
             if (isOnShot) {
                 String setParams = "{\"speech\":{\"interact_mode\":\"oneshot\"}}";
-                AIUIMessage setMsg = new AIUIMessage(CMD_SET_PARAMS, 0, 0, setParams, null);
+                AIUIMessage setMsg = new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, setParams, null);
                 mAIUIAgent.sendMessage(setMsg);
             } else {
                 String setParams = "{\"speech\":{\"interact_mode\":\"continuous\"}}";
-                AIUIMessage setMsg = new AIUIMessage(CMD_SET_PARAMS, 0, 0, setParams, null);
+                AIUIMessage setMsg = new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, setParams, null);
                 mAIUIAgent.sendMessage(setMsg);
             }
         }
@@ -543,7 +532,7 @@ public class AIUIService extends Service {
             JSONObject audioParams = new JSONObject();
             audioParams.put("pers_param", "{\"uid\":\"\"}");
             params.put("audioparams", audioParams);
-            AIUIMessage setMsg = new AIUIMessage(CMD_SET_PARAMS, 0, 0, params.toString(), null);
+            AIUIMessage setMsg = new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, params.toString(), null);
             mAIUIAgent.sendMessage(setMsg);
         } catch (JSONException e) {
         }
@@ -696,7 +685,7 @@ public class AIUIService extends Service {
                     paramJson.put(item.getKey(), item.getValue());
                 }
                 objectJson.put("userparams", paramJson);
-                sendMessage(new AIUIMessage(CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
+                sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
