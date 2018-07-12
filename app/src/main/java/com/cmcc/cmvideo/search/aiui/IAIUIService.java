@@ -113,4 +113,10 @@ public interface IAIUIService {
      * @return
      */
     String getLastNlpState();
+
+    /**
+     * 获取页面跳转的导航对象
+     * @return 导航对象
+     */
+    INavigation getNavigation();
 }

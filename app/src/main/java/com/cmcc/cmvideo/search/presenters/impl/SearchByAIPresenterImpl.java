@@ -18,6 +18,7 @@ import com.cmcc.cmvideo.search.aiui.AIUIService;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.aiui.Logger;
 import com.cmcc.cmvideo.search.aiui.bean.MicBean;
+import com.cmcc.cmvideo.search.aiui.bean.NavigationBean;
 import com.cmcc.cmvideo.search.aiui.bean.NlpData;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.interactors.InitSearchByAIListInteractor;
@@ -116,8 +117,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         aiuiService = service;
         aiuiService.setAttached(true);
         aiuiService.addAIUIEventListener(this);
-        //上传用户数据
-        //TODO  暂时就这么做吧
+        //暂时就这么做吧
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -142,21 +142,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     @Override
     public void onEvent(AIUIEvent event) {
-        switch (event.eventType) {
-            case AIUIConstant.EVENT_WAKEUP:
-                //TODO AIUI 被唤醒
-                break;
-            case AIUIConstant.EVENT_SLEEP:
-                //TODO AIUI 进入休眠 ，可以更新UI
-                break;
-            case AIUIConstant.EVENT_ERROR:
-                if (event.arg1 == 10120) {
-                    // TODO 网络有点问题 ，超时
-                }
-                break;
-            default:
-                break;
-        }
         if (null != event) {
             EventBus.getDefault().post(new SearchByAIRefreshUIEventBean(event));
         }
@@ -261,9 +246,10 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 */
 
                 // 判断意图是使用哪个卡片展示
-                if (isCategory(map)) { //猜你喜欢
+                if (isCategory(map)) {
                     AiResponse.Response response = AiResponse.getInstance().getGuessWhatYouLike();
-                    boolean hasSubserials = true;//hasSubserials(nlpData);
+                    //hasSubserials(nlpData);
+                    boolean hasSubserials = true;
                     if (checkCategory(map, CategoryType.MOVIE)) {
                         messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
                     } else if ((checkCategory(map, CategoryType.TV) || checkCategory(map, CategoryType.DOC) || checkCategory(map, CategoryType.CARTOON)) && hasSubserials) {
@@ -296,7 +282,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         }
                     }
                     responseTts = response;
-
                 }
                 if (messageType == MESSAGE_TYPE_NORMAL
                         && nlpData.answer != null
@@ -342,10 +327,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         List<TppData.SubserialsBean> subserials = lastVideoSearchByAIBean.getVideoList().get(0).subserials;
                         Collections.reverse(subserials);
                         if (index >= 0 && index < subserials.size()) {
-                            String id = subserials.get(index).id;
                             String name = subserials.get(index).name;
-                            //TODO 猜你喜欢 选剧集
-                            Logger.debug("猜你喜欢 选择 id 【" + id + "】 name 【" + name + "】");
+                            aiuiService.getNavigation().playEpisode(new NavigationBean(subserials.get(index)));
                             aiuiService.tts("正在为你打开" + name);
                         }
                     }
@@ -609,6 +592,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                             Logger.debug("name【" + subNames[i] + "】beanName【" + sub.name + "】");
                             if (sub.name.contains(subNames[i])) {
                                 // 找到多个匹配结果
+                                // 找到多个匹配结果
                                 selectedSubserialsList.add(sub);
                                 break;
                             }
@@ -617,7 +601,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     if (selectedSubserialsList.size() == 0) {
                         return;
                     }
-                    //TODO 打开当前影片
+                    aiuiService.getNavigation().playEpisode(new NavigationBean(selectedSubserialsList.get(0)));
                     aiuiService.tts("正在为你打开," + selectedSubserialsList.get(0).name);
                     break;
                 case "VIDEO_NAME":
@@ -647,7 +631,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         return;
                     }
                     if (selectedVideoList.size() == 1) {
-                        //TODO 打开当前影片
+                        aiuiService.getNavigation().playEpisode(new NavigationBean(selectedVideoList.get(0)));
                         aiuiService.tts("正在为你打开," + selectedVideoList.get(0).name);
                     } else {
                         lastVideoSearchByAIBean.setVideoList(selectedVideoList);
@@ -659,10 +643,10 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 case "FIRST":
                     TppData.DetailsListBean detail1 = lastVideoSearchByAIBean.getVideoList().get(0);
                     if (lastSearchIsGuessWhatYouLike() && hasSubserials(detail1)) {
-                        //TODO 打开第1 集 detail1.subserials.get(0).id
+                        aiuiService.getNavigation().playEpisode(new NavigationBean(detail1.subserials.get(0)));
                         aiuiService.tts("正在为你打开," + detail1.subserials.get(0).name);
                     } else {
-                        //TODO 打开第1 个电影 lastVideoSearchByAIBean.getVideoList().get(0).id
+                        aiuiService.getNavigation().playVideo(new NavigationBean(lastVideoSearchByAIBean.getVideoList().get(0)));
                         aiuiService.tts("正在为你打开," + lastVideoSearchByAIBean.getVideoList().get(0).name);
                     }
 
@@ -670,20 +654,20 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 case "SECOND":
                     TppData.DetailsListBean detail2 = lastVideoSearchByAIBean.getVideoList().get(0);
                     if (lastSearchIsGuessWhatYouLike() && hasSubserials(detail2) && detail2.subserials.size() >= 2) {
-                        //TODO 打开第2 集 detail2.subserials.get(1).id
+                        aiuiService.getNavigation().playEpisode(new NavigationBean(detail2.subserials.get(1)));
                         aiuiService.tts("正在为你打开," + detail2.subserials.get(1).name);
                     } else {
-                        //TODO 打开第2 个电影
+                        aiuiService.getNavigation().playVideo(new NavigationBean(lastVideoSearchByAIBean.getVideoList().get(1)));
                         aiuiService.tts("正在为你打开," + lastVideoSearchByAIBean.getVideoList().get(1).name);
                     }
                     break;
                 case "THIRD":
                     TppData.DetailsListBean detail3 = lastVideoSearchByAIBean.getVideoList().get(0);
                     if (lastSearchIsGuessWhatYouLike() && hasSubserials(detail3) && detail3.subserials.size() >= 3) {
-                        //TODO 打开第3 集 detail2.subserials.get(2).id
+                        aiuiService.getNavigation().playEpisode(new NavigationBean(detail3.subserials.get(2)));
                         aiuiService.tts("正在为你打开," + detail3.subserials.get(2).name);
                     } else {
-                        //TODO 打开第3 个电影
+                        aiuiService.getNavigation().playVideo(new NavigationBean(lastVideoSearchByAIBean.getVideoList().get(2)));
                         aiuiService.tts("正在为你打开," + lastVideoSearchByAIBean.getVideoList().get(2).name);
                     }
                     break;

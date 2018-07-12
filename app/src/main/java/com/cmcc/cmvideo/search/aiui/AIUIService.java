@@ -20,6 +20,7 @@ import com.cmcc.cmvideo.search.aiui.bean.IatBean;
 import com.cmcc.cmvideo.search.aiui.bean.MicBean;
 import com.cmcc.cmvideo.search.aiui.bean.NlpData;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
+import com.cmcc.cmvideo.search.aiui.impl.NavigationImpl;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
 import com.cmcc.cmvideo.search.presenters.impl.SearchByAIPresenterImpl;
@@ -59,6 +60,7 @@ public class AIUIService extends Service {
     public static final String AIUI_SERVICE_NAME = "com.cmcc.cmvideo.search.aiui.AIUIService";
     private static final String TAG = "AIUIService";
     private AIUIServiceImpl aiuiService;
+    private INavigation navigation;
     private AIUIAgent mAIUIAgent;
     private int mCurrentState = AIUIConstant.STATE_IDLE;
     private AIUIEventListenerManager eventListenerManager;
@@ -77,6 +79,7 @@ public class AIUIService extends Service {
     public void onCreate() {
         super.onCreate();
         aiuiService = new AIUIServiceImpl();
+        navigation = new NavigationImpl();
         eventListenerManager = new AIUIEventListenerManager();
         semanticProcessor = new AIUISemanticProcessor(aiuiService);
         eventListenerManager.addAIUIEventListener(semanticProcessor);
@@ -321,6 +324,11 @@ public class AIUIService extends Service {
         @Override
         public String getLastNlpState() {
             return semanticProcessor.getLastNlpState();
+        }
+
+        @Override
+        public INavigation getNavigation() {
+            return navigation;
         }
 
         @Override

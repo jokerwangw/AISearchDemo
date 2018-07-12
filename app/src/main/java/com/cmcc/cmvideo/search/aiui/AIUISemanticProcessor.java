@@ -3,15 +3,11 @@ package com.cmcc.cmvideo.search.aiui;
 import android.os.Looper;
 import android.text.TextUtils;
 
-import com.cmcc.cmvideo.base.BasePresenter;
-import com.cmcc.cmvideo.base.MainThread;
 import com.cmcc.cmvideo.search.aiui.bean.ControlEventBean;
-import com.cmcc.cmvideo.search.aiui.bean.MicBean;
 import com.cmcc.cmvideo.search.aiui.bean.NlpData;
-import com.cmcc.cmvideo.search.aiui.bean.TppData;
+import com.cmcc.cmvideo.search.aiui.impl.LiveEnum;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
-import com.cmcc.cmvideo.search.model.SearchByAIRefreshUIEventBean;
 import com.cmcc.cmvideo.util.AiResponse;
 import com.cmcc.cmvideo.util.AiuiConstants;
 import com.google.gson.Gson;
@@ -19,8 +15,6 @@ import com.iflytek.aiui.AIUIConstant;
 import com.iflytek.aiui.AIUIEvent;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,9 +33,6 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
     private long startTime = 0;
     private final int TIME_OUT = 5000;
     private int mCurrentState = AIUIConstant.STATE_IDLE;
-    //是否是在投屏状态或者插入耳机状态
-    private Map<String, String> solts = null;
-    private String controlVdoTimeHour = null, controlVdoTimeMinu = null, controlVdoTimeSecon = null;
     private boolean isAvailableVideo = false;
     //最后一次语义的状态
     private String lastNlpState = "";
@@ -84,17 +75,6 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
     @Override
     public void onEvent(AIUIEvent event) {
         switch (event.eventType) {
-            case AIUIConstant.EVENT_WAKEUP:
-                //TODO AIUI 被唤醒
-                break;
-            case AIUIConstant.EVENT_SLEEP:
-                //TODO AIUI 进入休眠 ，可以更新UI
-                break;
-            case AIUIConstant.EVENT_ERROR:
-                if (event.arg1 == 10120) {
-                    // TODO 网络有点问题 ，超时
-                }
-                break;
             case AIUIConstant.EVENT_START_RECORD:
                 if (mCurrentState == AIUIConstant.STATE_WORKING) {
                     // 录音开始就发送延时消息，当五秒内在sendMessage()方法中都没有移除消息时就说明 5秒超时了
@@ -250,7 +230,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
         String intent = mData.semantic.get(0).intent;
         switch (intent) {
             case AiuiConstants.CONTROL_INTENT:
-                // TODO: 2018/5/30 控制指令跳转
+                //控制指令跳转
                 if (null != mData.semantic && null != mData.semantic.get(0) && null != mData.semantic.get(0).getSlots()) {
                     if (mData.semantic.get(0).getSlots().size() == 1) {
                         String norMalValue = mData.semantic.get(0).getSlots().get(0).normValue;
@@ -266,7 +246,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
                 aiuiService.tts("正在为您" + mData.text);
                 break;
             case AiuiConstants.SREEN_INTENT:
-                // TODO: 2018/5/30 投屏跳转
+                // 投屏跳转
                 isAvailableVideo = true;
                 EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_SCREEN));
                 aiuiService.tts("正在为您" + mData.text);
@@ -283,7 +263,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
     private void intentVideoControl(NlpData mData) {
         String intent = mData.semantic.get(0).intent;
         if (AiuiConstants.VIDEO_CMD_INTENT.equals(intent)) {
-            solts = formatSlotsToMap(mData.semantic.get(0).slots);
+            Map<String, String> solts = formatSlotsToMap(mData.semantic.get(0).slots);
             if (solts.containsKey(AiuiConstants.VIDEO_INSTYPE)) {
                 switch (solts.get(AiuiConstants.VIDEO_INSTYPE)) {
                     case AiuiConstants.VIDEO_PAUSE:
@@ -342,7 +322,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
      * @param mData
      */
     private void swControl(NlpData mData) {
-        solts = formatSlotsToMap(mData.semantic.get(0).slots);
+        Map<String, String> solts = formatSlotsToMap(mData.semantic.get(0).slots);
         if (solts.containsKey(AiuiConstants.VIDEO_INSTYPE)) {
             //快进 or 快退
             if (solts.size() == 1) {
@@ -368,9 +348,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
      * 控制视频时间
      */
     private void formatControlTime(Map<String, String> solts) {
-        controlVdoTimeHour = null;
-        controlVdoTimeMinu = null;
-        controlVdoTimeSecon = null;
+        String controlVdoTimeHour = null, controlVdoTimeMinu = null, controlVdoTimeSecon = null;
 
         if (null != solts.get(AiuiConstants.HOURS)
                 && solts.containsKey(AiuiConstants.HOURS)) {
@@ -467,13 +445,14 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
                         + mData.text
                         + mData.semantic.get(0).getSlots().get(0).normValue
                         + mData.semantic.get(0).getSlots().get(0).value);
+                aiuiService.getNavigation().toLive(mData.semantic.get(0).getSlots().get(0).normValue,mData.semantic.get(0).getSlots().get(0).value);
                 break;
             case AiuiConstants.VIDEO_VERITY_INTENT:
                 //多样直播视频查询 如：我要看直播 、体育直播
                 if (!TextUtils.isEmpty(mData.text)) {
                     if ("我要看直播".equals(mData.text)) {
                         //直接跳转到直播模块
-                        Logger.debug("我要看直播===================");
+                        aiuiService.getNavigation().toLive(LiveEnum.UNKNOWN);
                     } else {
                         //跳转到直播内各大类模块
                         String tx = mData.semantic.get(0).getSlots().get(0).normValue;
@@ -490,36 +469,37 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
      * 直播模块分类  跳转
      */
     private void intentToVerity(String textNormal) {
+        Logger.debug("直播模块分类："+textNormal);
         switch (textNormal) {
             case AiuiConstants.CCTV:
-                //央视
-                Logger.debug("央视==========");
+                aiuiService.getNavigation().toLive(LiveEnum.CCTV);
                 break;
             case AiuiConstants.START_TV:
-                Logger.debug("卫视==========");
+                aiuiService.getNavigation().toLive(LiveEnum.START_TV);
                 break;
             case AiuiConstants.FILMS:
-                Logger.debug("影视==========");
+                aiuiService.getNavigation().toLive(LiveEnum.FILMS);
                 break;
             case AiuiConstants.CHILDREN:
-                Logger.debug("少儿==========");
+                aiuiService.getNavigation().toLive(LiveEnum.CHILDREN);
                 break;
             case AiuiConstants.NEWS:
-                Logger.debug("新闻==========");
+                aiuiService.getNavigation().toLive(LiveEnum.NEWS);
                 break;
             case AiuiConstants.DOCUMENTARY:
-                Logger.debug("纪录片========");
+                aiuiService.getNavigation().toLive(LiveEnum.DOCUMENTARY);
                 break;
             case AiuiConstants.TURN_TV:
-                Logger.debug("地方台========");
+                aiuiService.getNavigation().toLive(LiveEnum.TURN_TV);
                 break;
             case AiuiConstants.AREA_TV:
-                Logger.debug("地方台========");
+                aiuiService.getNavigation().toLive(LiveEnum.AREA_TV);
+                break;
             case AiuiConstants.FEATURE_TV:
-                Logger.debug("特色台========");
+                aiuiService.getNavigation().toLive(LiveEnum.FEATURE_TV);
                 break;
             case AiuiConstants.SPORTS_TV:
-                Logger.debug("体育==========");
+                aiuiService.getNavigation().toLive(LiveEnum.SPORTS_TV);
                 break;
             default:
                 break;
@@ -533,28 +513,27 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
      */
     private void intentQuery(NlpData mData) {
         String intent = mData.semantic.get(0).intent;
+        Logger.debug("查询指令：" + intent);
         switch (intent) {
-            // TODO: 2018/5/31 跳转页面操作
             case AiuiConstants.MEMBER_INTENT:
                 //会员业务
-                Logger.debug("会员业务意图===" + intent);
+                aiuiService.getNavigation().toMember();
                 break;
             case AiuiConstants.INTERNET_INTENT:
                 //流量业务
-                Logger.debug("流量意图===" + intent);
+                aiuiService.getNavigation().toInternet();
                 break;
             case AiuiConstants.TICKET_INTENT:
                 //购票业务
-                Logger.debug("购票意图===" + intent);
+                aiuiService.getNavigation().toTicket();
                 break;
             case AiuiConstants.ACYIVITY_INTENT:
                 //活动打折业务
-                Logger.debug("活动意图===" + intent);
-
+                aiuiService.getNavigation().toActivity();
                 break;
             case AiuiConstants.GCUSTOMER_INTENT:
                 //G客业务，如：上传视频
-                Logger.debug("G客意图===" + intent);
+                aiuiService.getNavigation().toGcustomer();
                 break;
             default:
                 break;
@@ -599,7 +578,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            // TODO 显示功能引导页面
+            //显示功能引导页面
             sendMessage("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI);
         }
     };
