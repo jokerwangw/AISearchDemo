@@ -1,11 +1,19 @@
 package com.cmcc.cmvideo.search.aiui.impl;
 
+import android.content.Context;
+
 import com.cmcc.cmvideo.search.aiui.INavigation;
 import com.cmcc.cmvideo.search.aiui.bean.NavigationBean;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 
 public class NavigationImpl implements INavigation {
-
+    /**
+     * 上下文
+     */
+    private Context mContext;
+    public NavigationImpl(Context context) {
+        mContext = context;
+    }
     /**
      * 播放电影
      * @param videoBean 电影数据

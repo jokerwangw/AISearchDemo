@@ -56,7 +56,7 @@ public class AIUIService extends Service {
     public void onCreate() {
         super.onCreate();
         aiuiService = new AIUIServiceImpl();
-        navigation = new NavigationImpl();
+        navigation = new NavigationImpl(this);
         eventListenerManager = new AIUIEventListenerManager();
         semanticProcessor = new AIUISemanticProcessor(aiuiService);
         eventListenerManager.addAIUIEventListener(semanticProcessor);
