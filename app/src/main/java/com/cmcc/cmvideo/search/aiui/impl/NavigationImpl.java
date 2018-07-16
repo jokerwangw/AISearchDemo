@@ -11,11 +11,14 @@ public class NavigationImpl implements INavigation {
      * 上下文
      */
     private Context mContext;
+
     public NavigationImpl(Context context) {
         mContext = context;
     }
+
     /**
      * 播放电影
+     *
      * @param videoBean 电影数据
      */
     @Override
@@ -25,6 +28,7 @@ public class NavigationImpl implements INavigation {
 
     /**
      * 播放剧集
+     *
      * @param epiSodeBean 剧集数据
      */
     @Override
@@ -74,7 +78,8 @@ public class NavigationImpl implements INavigation {
 
     /**
      * 频道查询 如：我要看CCTV5体育 / 湖南卫视
-     * @param liveId 频道ID
+     *
+     * @param liveId   频道ID
      * @param liveName 频道名称
      */
     @Override
@@ -84,11 +89,12 @@ public class NavigationImpl implements INavigation {
 
     /**
      * Live模块分类跳转
+     *
      * @param liveType 直播台类型
      */
     @Override
     public void toLive(LiveEnum liveType) {
-        switch (liveType){
+        switch (liveType) {
             case CCTV:
                 //跳转 到 央视
                 break;
@@ -121,6 +127,8 @@ public class NavigationImpl implements INavigation {
                 break;
             case UNKNOWN:
                 //跳转到直播大类页面
+                break;
+            default:
                 break;
         }
     }

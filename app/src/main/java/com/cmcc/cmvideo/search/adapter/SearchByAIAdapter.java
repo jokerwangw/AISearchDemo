@@ -499,10 +499,10 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.llVideoList.setVisibility(View.VISIBLE);
                         itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.llVideoList.removeAllViews();
                         if (detailsListBean.subserials.size() > 5) {
-                            for (int i = 0; i < 3; i++) {
+                            for (int i = detailsListBean.subserials.size() - 1; i > detailsListBean.subserials.size() - 4; i--) {
                                 final int pos = i;
                                 View root = LayoutInflater.from(holder.itemView.getContext()).inflate(R.layout.item_search_by_ai_horizontal_item, null, false);
-                                if (2 == i) {
+                                if (detailsListBean.subserials.size() - 3 == i) {
                                     ((TextView) root.findViewById(R.id.tv_release_num)).setText("...");
                                 } else {
                                     int num = i + 1;
@@ -513,13 +513,13 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                                     @Override
                                     public void onClick(View v) {
                                         if (null != ItemSearchByAIClickListener) {
-                                            ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLikeListHorizontal(false, pos == 2 ? true : false, detailsListBean, pos);
+                                            ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLikeListHorizontal(false, pos == detailsListBean.subserials.size() - 3, detailsListBean, pos);
                                         }
                                     }
                                 });
                             }
 
-                            for (int i = detailsListBean.subserials.size() - 2; i < detailsListBean.subserials.size(); i++) {
+                            for (int i = 1; i >= 0; i--) {
                                 int num = i + 1;
                                 final int pos = i;
                                 View root = LayoutInflater.from(holder.itemView.getContext()).inflate(R.layout.item_search_by_ai_horizontal_item, null, false);
@@ -535,7 +535,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                                 });
                             }
                         } else {
-                            for (int i = 0; i < detailsListBean.subserials.size(); i++) {
+                            for (int i = 4; i >= 0; i--) {
                                 final int pos = i;
                                 View root = LayoutInflater.from(holder.itemView.getContext()).inflate(R.layout.item_search_by_ai_horizontal_item, null, false);
                                 int num = i + 1;
