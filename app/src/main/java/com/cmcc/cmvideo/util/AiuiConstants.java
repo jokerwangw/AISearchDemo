@@ -6,7 +6,7 @@ import retrofit2.http.PUT;
  * @Author lhluo
  * @description Aiui常量
  * @date 2018/5/30
- */2728000
+ */
 public class AiuiConstants {
     public static class MessageFrom {
         /*** 消息来自AI*/
