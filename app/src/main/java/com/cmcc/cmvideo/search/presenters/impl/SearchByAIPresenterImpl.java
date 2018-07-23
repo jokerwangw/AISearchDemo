@@ -801,10 +801,11 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         if (null != detailsListBean) {
             List<TppData.SubserialsBean> subserials = detailsListBean.subserials;
             if (null != subserials && subserials.size() > pos) {
-                int position = subserials.size() - pos - 1;
-                if (position > 0 && position < subserials.size()) {
-                    contentID = subserials.get(position).id;
-                }
+                contentID = subserials.get(pos).id;
+                //int position = subserials.size() - pos - 1;
+                //if (position > -1 && position < subserials.size()) {
+                //contentID = subserials.get(position).id;
+                //}
             }
         }
         return contentID;
