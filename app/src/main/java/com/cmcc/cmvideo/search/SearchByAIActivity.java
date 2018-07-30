@@ -325,18 +325,12 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
             if (isOpenSpeaker) {
                 //关闭扬声器
                 if (audioManager != null) {
-                    audioManager.setSpeakerphoneOn(false);
-                    audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, currVolume, AudioManager.STREAM_VOICE_CALL);
+                    setAudioMode(AudioManager.MODE_IN_COMMUNICATION);
                 }
             } else {
                 //打开扬声器
                 if (audioManager != null) {
-                    audioManager.setMode(AudioManager.ROUTE_SPEAKER);
-                    currVolume = audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL);
-                    //setSpeakerphoneOn() only work when audio mode set to MODE_IN_CALL.
-                    audioManager.setMode(AudioManager.MODE_IN_CALL);
-                    audioManager.setSpeakerphoneOn(true);
-                    audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL), AudioManager.STREAM_VOICE_CALL);
+                    setAudioMode(AudioManager.MODE_NORMAL);
                 }
             }
             isOpenSpeaker = !isOpenSpeaker;
@@ -344,6 +338,26 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 设置语音播放的模式
+     *
+     * @param mode
+     */
+    public void setAudioMode(int mode) throws Exception {
+        if (mode != AudioManager.MODE_NORMAL && mode != AudioManager.MODE_IN_COMMUNICATION) {
+            return;
+        }
+        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        if (mode == AudioManager.MODE_NORMAL) {
+            //打开扬声器
+            audioManager.setSpeakerphoneOn(true);
+        } else if (mode == AudioManager.MODE_IN_COMMUNICATION) {
+            //关闭扬声器
+            audioManager.setSpeakerphoneOn(false);
+        }
+        audioManager.setMode(mode);
     }
 
     /**
