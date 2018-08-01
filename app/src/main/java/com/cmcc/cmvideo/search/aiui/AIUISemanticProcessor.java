@@ -174,10 +174,10 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
                 //视频播放、暂停、下一集、上一集
                 controlCmdIntent(mData);
                 break;
-            case AiuiConstants.VIDEO_ON_SERVICE:
-                //直播模块
-                intentOnLive(mData);
-                break;
+//            case AiuiConstants.VIDEO_ON_SERVICE:
+//                //直播模块
+//                intentOnLive(mData);
+//                break;
             case AiuiConstants.WORLD_CUP_SERVICE:
                 //伪球迷必备
                 intentWorldCup(mData);
@@ -192,6 +192,13 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
         if (AiuiConstants.VIDEO_SERVICE.equals(mData.service)) {
             aiuiService.showAiUi(tppResult);
         }
+
+        //如果是直播技能LINGXI2018.onlive并且意图是channel_query的就解析
+        if (AiuiConstants.VIDEO_ON_SERVICE.equals(mData.service)) {
+            //直播模块
+            intentOnLive(mData);
+        }
+
     }
     //============================================================================================================================================
 
@@ -387,44 +394,6 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
      * @param nlpData
      */
     private void intentWorldCup(NlpData nlpData) {
-
-        switch (nlpData.semantic.get(0).intent) {
-            case AiuiConstants.WORLD_CUP_QUERY_OPEN:
-                break;
-            case AiuiConstants.WORLD_CUP_SERCH_BY_DATE:
-                break;
-            case AiuiConstants.WORLD_CUP_QUERY_TEAMS:
-                break;
-            case AiuiConstants.WORLD_CUP_QUERY_WITH_SESSION:
-                break;
-            case AiuiConstants.WORLD_CUP_QUERY_IMPTGAME:
-                break;
-            case AiuiConstants.WORLD_CUP_TEAM_PLAYERS:
-                break;
-            case AiuiConstants.WORLD_CUP_SEARCH_BY_TEAM_INTENT:
-                break;
-            case AiuiConstants.WORLD_CUP_QUERY_FIRST_GAME:
-                break;
-            case AiuiConstants.WORLD_CUP_QUERY_GROUPS:
-                break;
-            case AiuiConstants.WORLD_CUP_QUERY_GPGM_OVER:
-                break;
-            case AiuiConstants.WORLD_CUP_QUERY_TEAM_GROUP:
-                break;
-            case AiuiConstants.WORLD_CUP_SERCH_BY_TEAMS_INTENT:
-                break;
-            case AiuiConstants.WORLD_CUP_QUERY_WITH_GROUP:
-                break;
-            case AiuiConstants.WORLD_CUP_QUERY_ALLINFO:
-                break;
-            case AiuiConstants.WORLD_CUP_QUERY_CHAMPION:
-                break;
-            case AiuiConstants.WORLD_CUP_I_LIKE_TEAM:
-                break;
-            default:
-                break;
-        }
-
         if ((nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text))) {
             aiuiService.tts(nlpData.getAnswer().text);
             sendMessage(nlpData.getAnswer().text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
@@ -441,15 +410,14 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
         switch (intent) {
             case AiuiConstants.VIDEO_CHANNEL_INTENT:
                 //频道查询 如：我要看CCTV5体育 / 湖南卫视
-                Logger.debug("VIDEO_CHANNEL_INTENT=================="
-                        + mData.text
-                        + mData.semantic.get(0).getSlots().get(0).normValue
-                        + mData.semantic.get(0).getSlots().get(0).value);
-                aiuiService.getNavigation().toLive(mData.semantic.get(0).getSlots().get(0).normValue,mData.semantic.get(0).getSlots().get(0).value);
+                Logger.debug("VIDEO_CHANNEL_INTENT==================" + mData);
+                aiuiService.getNavigation().toLive(mData);
                 break;
             case AiuiConstants.VIDEO_VERITY_INTENT:
                 //多样直播视频查询 如：我要看直播 、体育直播
                 if (!TextUtils.isEmpty(mData.text)) {
+                    Logger.debug("VIDEO_CHANNEL_INTENT=====我要看直播=============" + mData);
+
                     if ("我要看直播".equals(mData.text)) {
                         //直接跳转到直播模块
                         aiuiService.getNavigation().toLive(LiveEnum.UNKNOWN);
@@ -469,7 +437,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
      * 直播模块分类  跳转
      */
     private void intentToVerity(String textNormal) {
-        Logger.debug("直播模块分类："+textNormal);
+        Logger.debug("直播模块分类：" + textNormal);
         switch (textNormal) {
             case AiuiConstants.CCTV:
                 aiuiService.getNavigation().toLive(LiveEnum.CCTV);

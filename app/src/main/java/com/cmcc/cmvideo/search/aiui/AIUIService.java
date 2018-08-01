@@ -6,17 +6,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.AssetManager;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
+import android.media.MediaRecorder;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
 import com.cmcc.cmvideo.search.SearchByAIActivity;
 import com.cmcc.cmvideo.search.aiui.bean.IatBean;
 import com.cmcc.cmvideo.search.aiui.impl.NavigationImpl;
 import com.cmcc.cmvideo.util.AiResponse;
 import com.cmcc.cmvideo.util.AiuiConstants;
+import com.cmcc.cmvideo.util.FileUtil;
 import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIAgent;
 import com.iflytek.aiui.AIUIConstant;
@@ -24,14 +29,18 @@ import com.iflytek.aiui.AIUIEvent;
 import com.iflytek.aiui.AIUIListener;
 import com.iflytek.aiui.AIUIMessage;
 import com.iflytek.cloud.SpeechUtility;
+import com.iflytek.util.IflyRecorder;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AIUIService extends Service {
     public static final String AIUI_SERVICE_NAME = "com.cmcc.cmvideo.search.aiui.AIUIService";
@@ -50,7 +59,7 @@ public class AIUIService extends Service {
     private boolean isAvailableVideo = false;
     private AIUISemanticProcessor semanticProcessor;
     private boolean uiAttached = false;
-    private static Gson mGson;
+
 
     @Override
     public void onCreate() {
@@ -61,7 +70,6 @@ public class AIUIService extends Service {
         semanticProcessor = new AIUISemanticProcessor(aiuiService);
         eventListenerManager.addAIUIEventListener(semanticProcessor);
         init();
-        Logger.debug("AIUIService has onCreated!");
     }
 
     @Override
@@ -75,6 +83,7 @@ public class AIUIService extends Service {
             mAIUIAgent.destroy();
         }
 
+
         SpeechUtility.getUtility().destroy();
         if (null != mReceiver) {
             unregisterReceiver(mReceiver);
@@ -83,9 +92,7 @@ public class AIUIService extends Service {
         Logger.debug("AIUIService has onDestroy!");
     }
 
-    /**
-     * SDK 初始化
-     */
+    //SDK 初始化
     private void init() {
         //AIUI初始化
         mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
@@ -95,10 +102,14 @@ public class AIUIService extends Service {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
         registerReceiver(mReceiver, intentFilter);
+        // 初始化录音机
+        IflyRecorder.getInstance().initRecoder(16000, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, MediaRecorder.AudioSource.MIC);
     }
 
     private void ivwMode() {
         try {
+            //开启录音并通过回调的方式获取音频数据
+            IflyRecorder.getInstance().startRecoder(mRecorderListener);
             if (SpeechUtility.getUtility() != null) {
                 SpeechUtility.getUtility().destroy();
             }
@@ -111,22 +122,26 @@ public class AIUIService extends Service {
             JSONObject paramJson = new JSONObject();
             paramJson.put("wakeup_mode", "ivw");
             paramJson.put("interact_mode", "continuous");
+            paramJson.put("data_source", "user");
             objectJson.put("speech", paramJson);
             sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
             mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            //延时启动保障完全停止后 能够重新启动
+            new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    //延时启动保障完全停止后 能够重新启动
                     mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START, 0, 0, "", null));
-                    //根据需求文档直接进入working 状态sendMessage中会再发送CMD_WEAKUP
+//                    //根据需求文档直接进入working 状态sendMessage中会再发送CMD_WEAKUP
                     //正常应该发送mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
                     //进入的是等待说出“咪咕咪咕” 的带唤醒状态
                     mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
-                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
+//                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
+                    byte[] fileData = FileUtil.readFileFromAssets(AIUIService.this, "wav/migumigu.wav");
+                    AIUIMessage writeMsg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, "data_type=audio,sample_rate=16000", fileData);
+                    mAIUIAgent.sendMessage(writeMsg);
                     isIvwModel = true;
                 }
-            }, 500);
+            }, 50);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -136,6 +151,8 @@ public class AIUIService extends Service {
 
     private void standardMode() {
         try {
+            //开启录音并通过回调的方式获取音频数据
+            IflyRecorder.getInstance().stopRecorder();
             if (mAIUIAgent == null) {
                 mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
             }
@@ -144,6 +161,7 @@ public class AIUIService extends Service {
             JSONObject paramJson = new JSONObject();
             paramJson.put("wakeup_mode", "off");
             paramJson.put("interact_mode", "oneshot");
+            paramJson.put("data_source", "sdk");
             objectJson.put("speech", paramJson);
             sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
             mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
@@ -353,9 +371,7 @@ public class AIUIService extends Service {
                                 if (!TextUtils.isEmpty(json)) {
                                     cntJson = new JSONObject(json);
                                 }
-                                if (cntJson == null) {
-                                    return;
-                                }
+                                if (cntJson == null) return;
                                 if ("iat".equals(sub)) {
                                     String iat = cntJson.optString("text");
                                     if (iat.equals("{}") || iat.isEmpty()) {
@@ -395,13 +411,16 @@ public class AIUIService extends Service {
                 }
                 break;
                 case AIUIConstant.CMD_START_RECORD:
-
+                    enableRecord = true;
                     break;
+                case AIUIConstant.CMD_STOP_RECORD: {
+                    enableRecord = false;
+                }
+                break;
                 case AIUIConstant.EVENT_ERROR:
                     Logger.debug("----------------EVENT_ERROR======");
                     break;
                 case AIUIConstant.EVENT_WAKEUP:
-                    Logger.debug("----------------EVENT_WAKEUP======");
                     if (isIvwModel) {
                         tts(AiuiConstants.MICRO_MESSAGE);
                     }
@@ -413,7 +432,6 @@ public class AIUIService extends Service {
                     }
                     break;
                 case AIUIConstant.EVENT_VAD:
-                    Logger.debug("----------------EVENT_VAD======");
 
                     //                Logger.debug("arg【" + event.arg1 + "】【" + event.arg2 + "】");
                     //用arg1标识前后端点或者音量信息:0(前端点)、1(音量)、2(后端点)、3（前端点超时）。
@@ -432,8 +450,7 @@ public class AIUIService extends Service {
                     if (event1.arg1 == AIUIConstant.CMD_SYNC) {
                         int dtype = event.data.getInt("sync_dtype");
                         //arg2表示结果
-                        if (0 == event.arg2) {
-                            // 同步成功
+                        if (0 == event.arg2) {          // 同步成功
                             Logger.debug("sync_dtype is " + dtype);
                             switch (dtype) {
                                 case AIUIConstant.SYNC_DATA_SPEAKABLE:
@@ -457,13 +474,25 @@ public class AIUIService extends Service {
                 case AIUIConstant.EVENT_TTS: {
                     switch (event.arg1) {
                         case AIUIConstant.TTS_SPEAK_BEGIN:
+                            inTTs = true;
+                            Logger.debug("==========TTS_SPEAK_BEGIN");
                             // 停止后台音频播放
                             FuncAdapter.Lock(AIUIService.this, null);
                             break;
                         case AIUIConstant.TTS_SPEAK_COMPLETED:
+                            inTTs = false;
+                            Logger.debug("=============TTS_SPEAK_COMPLETED");
                             // 开启后台音频播放
                             FuncAdapter.UnLock(AIUIService.this, null);
                             break;
+                        case AIUIConstant.TTS_SPEAK_PAUSED:
+                            Logger.debug("暂停播放");
+                            break;
+
+                        case AIUIConstant.TTS_SPEAK_RESUMED:
+                            Logger.debug("恢复播放");
+                            break;
+
                         default:
                             break;
                     }
@@ -477,9 +506,11 @@ public class AIUIService extends Service {
         }
     };
 
+
     private void cancelTts() {
         sendMessage(new AIUIMessage(AIUIConstant.CMD_TTS, AIUIConstant.CANCEL, 0, "", null));
     }
+
 
     private void tts(String ttsText) {
         if (TextUtils.isEmpty(ttsText)) {
@@ -492,29 +523,19 @@ public class AIUIService extends Service {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        //构建合成参数
-        StringBuffer params = new StringBuffer();
-        //合成发音人
-        params.append("vcn=jiajia");
-        //合成速度
-        params.append(",speed=85");
-        //合成音调
-        params.append(",pitch=30");
-        //合成音量
-        params.append(",volume=100");
-        //引擎，默认aisound，如果需要较好的效果，可设置成xtts
-        params.append(",ent=xtts");
+
+        StringBuffer params = new StringBuffer();  //构建合成参数
+        params.append("vcn=jiajia");  //合成发音人
+        params.append(",speed=85");  //合成速度
+        params.append(",pitch=30");  //合成音调
+        params.append(",volume=100");  //合成音量
+        params.append(",ent=xtts");//引擎，默认aisound，如果需要较好的效果，可设置成xtts
         //开始合成
         Logger.debug("合成参数【" + params.toString() + "】");
         sendMessage(new AIUIMessage(AIUIConstant.CMD_TTS, AIUIConstant.START, 0, params.toString(), ttsData));
     }
 
-    /**
-     * 设置页码
-     *
-     * @param pageIndex
-     * @param pageSize
-     */
+    //设置页码
     private void setPageInfo(String pageIndex, String pageSize) {
         if (userInfoMap != null) {
             userInfoMap.put("pageindex", pageIndex);
@@ -523,9 +544,7 @@ public class AIUIService extends Service {
         }
     }
 
-    /**
-     * 生效动态实体
-     */
+    //生效动态实体
     public void effectDynamicEntity() {
         try {
             JSONObject params = new JSONObject();
@@ -538,9 +557,7 @@ public class AIUIService extends Service {
         }
     }
 
-    /**
-     * 清除所见即可说
-     */
+    //清除所见即可说
     public void clearSpeakableData() {
         try {
             JSONObject data = new JSONObject();
@@ -567,12 +584,7 @@ public class AIUIService extends Service {
         }
     }
 
-    /**
-     * 同步所见即可说
-     *
-     * @param stateKey
-     * @param hotInfo
-     */
+    //同步所见即可说
     public void syncSpeakableData(String stateKey, String hotInfo) {
         try {
             if (TextUtils.isEmpty(stateKey) && TextUtils.isEmpty(hotInfo)) {
@@ -609,12 +621,7 @@ public class AIUIService extends Service {
         }
     }
 
-    /**
-     * 同步所见即可说
-     *
-     * @param stateKey
-     * @param hotInfo
-     */
+    //同步所见即可说
     public void syncSpeakableData(String stateKey, Map<String, String> hotInfo) {
         try {
             if (TextUtils.isEmpty(stateKey) && (hotInfo == null || hotInfo.size() == 0)) {
@@ -655,11 +662,7 @@ public class AIUIService extends Service {
         }
     }
 
-    /**
-     * 发送AIUI消息
-     *
-     * @param message
-     */
+    //发送AIUI消息
     private void sendMessage(AIUIMessage message) {
         if (mAIUIAgent != null) {
             //确保AIUI处于唤醒状态
@@ -670,9 +673,7 @@ public class AIUIService extends Service {
         }
     }
 
-    /**
-     * 同步用户数据
-     */
+    //同步用户数据
     private void setUserParam() {
         if (userInfoMap != null && userInfoMap.size() > 0) {
             try {
@@ -692,11 +693,7 @@ public class AIUIService extends Service {
         }
     }
 
-    /**
-     * 获取AIUI参数
-     *
-     * @return
-     */
+    //获取AIUI参数
     private String getAIUIParams() {
         String params = "";
         AssetManager assetManager = getResources().getAssets();
@@ -721,6 +718,8 @@ public class AIUIService extends Service {
 
         void onEvent(AIUIEvent event);
     }
+
+    private static Gson mGson;
 
     private String getIatTxt(String iat) {
         if (mGson == null) {
@@ -751,6 +750,7 @@ public class AIUIService extends Service {
                 if (intent.hasExtra("state")) {
                     if (intent.getIntExtra("state", 0) == 0) {
                         semanticProcessor.setIsMicConnect(false);
+                        navigation.isHeadset(false);
                         //切换为外放模式
                         //PlayerManager.getInstance().changeToReceiver();
                         if (isIvwModel) {
@@ -758,6 +758,7 @@ public class AIUIService extends Service {
                         }
                     } else if (intent.getIntExtra("state", 0) == 1) {
                         isAvailableVideo = true;
+                        navigation.isHeadset(true);
                         semanticProcessor.setIsMicConnect(true);
                         //切换为耳机模式
                         //PlayerManager.getInstance().changeToHeadset();
@@ -769,4 +770,59 @@ public class AIUIService extends Service {
             }
         }
     };
+
+    private boolean inTTs = false;
+
+    private boolean enableRecord = true;
+
+    private int wakeupMode = 0;
+
+    //实时音频回调listener
+    private IRecorderListener mRecorderListener = new IRecorderListener() {
+        // 录音缓存队列，用于录音回放和文件保存
+        private ConcurrentLinkedQueue<byte[]> mRecordBuffer = new ConcurrentLinkedQueue<>();
+        private boolean startSave = false;
+        private String save_path;
+        private String audio_format;
+
+        @Override
+        public void startSave(String path, String audioFormat) {
+            save_path = path;
+            audio_format = audioFormat;
+            mRecordBuffer.clear();
+            startSave = true;
+
+        }
+
+        @Override
+        public void stopSave(boolean canSave) {
+            startSave = false;
+            if (canSave && mRecordBuffer.size() > 0) {
+                boolean saveResult = FileUtil.saveFile(mRecordBuffer, save_path);
+                if ("wav".equals(audio_format) && saveResult) {
+                    FileUtil.formatPcm(audio_format, save_path, 16000);
+                }
+            } else {
+                mRecordBuffer.clear();
+            }
+        }
+
+        @Override
+        public void OnReceiveBytes(final byte[] data, final int length) {
+            if (enableRecord && !inTTs && null != data && data.length != 0) {
+                byte[] audio = new byte[data.length];
+                System.arraycopy(data, 0, audio, 0, data.length);
+                if (startSave) {
+                    byte[] buff = new byte[data.length];
+                    System.arraycopy(data, 0, buff, 0, data.length);
+                    mRecordBuffer.add(buff);
+                }
+                if (null != mAIUIAgent) {
+                    AIUIMessage writeMsg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, "data_type=audio,sample_rate=16000", audio);
+                    mAIUIAgent.sendMessage(writeMsg);
+                }
+            }
+        }
+    };
+
 }

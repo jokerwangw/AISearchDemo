@@ -41,6 +41,8 @@ public class AiuiConstants {
 
     public final static String MICRO_MESSAGE = "小咪为您服务";
     public final static String MICRO_ENTER_MESSAGE = "主淫，主淫，需要我为你做什么";
+    public final static String MICRO_DISABLE_MESSAGE = "主淫，没有麦，臣妾办不到啊";
+
 
     /**
      * 技能名(闲聊、频道、跳转充值页、展示流量、购票页、系统设置、投屏播放)

@@ -3,6 +3,7 @@ package com.cmcc.cmvideo.search.aiui;
 import android.content.Context;
 
 import com.cmcc.cmvideo.search.aiui.bean.NavigationBean;
+import com.cmcc.cmvideo.search.aiui.bean.NlpData;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.aiui.impl.LiveEnum;
 
@@ -50,8 +51,12 @@ public interface INavigation {
 
     /**
      * Live模块分类跳转
-     * @param liveId 频道ID
-     * @param liveName 频道名称
+     * 直播模块详情
      */
-    void toLive(String liveId,String liveName);
+    void toLive(NlpData mData);
+
+    /**
+     * 是否插入耳机
+     */
+    void isHeadset(boolean isConnectEarphone);
 }

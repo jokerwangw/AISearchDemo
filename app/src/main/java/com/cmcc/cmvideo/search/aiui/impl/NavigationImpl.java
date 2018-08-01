@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.cmcc.cmvideo.search.aiui.INavigation;
 import com.cmcc.cmvideo.search.aiui.bean.NavigationBean;
+import com.cmcc.cmvideo.search.aiui.bean.NlpData;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 
 public class NavigationImpl implements INavigation {
@@ -79,11 +80,19 @@ public class NavigationImpl implements INavigation {
     /**
      * 频道查询 如：我要看CCTV5体育 / 湖南卫视
      *
-     * @param liveId   频道ID
-     * @param liveName 频道名称
      */
     @Override
-    public void toLive(String liveId, String liveName) {
+    public void toLive(NlpData mData) {
+
+    }
+
+    /**
+     * 是否插入耳机 true表示接入耳机  false表示没有接入耳机
+     * @param isConnectEarphone
+     */
+    @Override
+    public void isHeadset(boolean isConnectEarphone) {
+        //耳机模式下
 
     }
 
