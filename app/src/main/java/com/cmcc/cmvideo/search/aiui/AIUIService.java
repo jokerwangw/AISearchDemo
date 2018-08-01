@@ -23,6 +23,7 @@ import com.cmcc.cmvideo.util.AiResponse;
 import com.cmcc.cmvideo.util.AiuiConstants;
 import com.cmcc.cmvideo.util.FileUtil;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.iflytek.aiui.AIUIAgent;
 import com.iflytek.aiui.AIUIConstant;
 import com.iflytek.aiui.AIUIEvent;
@@ -120,10 +121,14 @@ public class AIUIService extends Service {
 
             JSONObject objectJson = new JSONObject();
             JSONObject paramJson = new JSONObject();
+            JSONObject timeJson = new JSONObject();
+            timeJson.put("interact_timeout", "5000");
+            timeJson.put("result_timeout", "5000");
             paramJson.put("wakeup_mode", "ivw");
             paramJson.put("interact_mode", "continuous");
             paramJson.put("data_source", "user");
             objectJson.put("speech", paramJson);
+            objectJson.put("interact", timeJson);
             sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
             mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
             //延时启动保障完全停止后 能够重新启动
@@ -159,10 +164,14 @@ public class AIUIService extends Service {
 
             JSONObject objectJson = new JSONObject();
             JSONObject paramJson = new JSONObject();
+            JSONObject timeJson = new JSONObject();
+            timeJson.put("interact_timeout", "60000");
+            timeJson.put("result_timeout", "5000");
             paramJson.put("wakeup_mode", "off");
             paramJson.put("interact_mode", "oneshot");
             paramJson.put("data_source", "sdk");
             objectJson.put("speech", paramJson);
+            objectJson.put("interact", timeJson);
             sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
             mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
@@ -791,7 +800,6 @@ public class AIUIService extends Service {
             audio_format = audioFormat;
             mRecordBuffer.clear();
             startSave = true;
-
         }
 
         @Override

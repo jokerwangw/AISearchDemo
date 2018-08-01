@@ -23,6 +23,9 @@
     <!--location 权限-->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!-- 录音权限 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
 
     <!--监听耳机连接状态权限-->
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
