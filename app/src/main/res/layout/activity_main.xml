@@ -34,6 +34,7 @@
         android:layout_marginBottom="@dimen/dimen_8dp"
         android:text="@string/page_player"
         />
+
     <ToggleButton
         android:id="@+id/open_aiui_helper"
         android:layout_width="wrap_content"
@@ -47,6 +48,7 @@
         android:paddingRight="@dimen/dimen_8dp"
         android:textColor="#333333"
         android:textOff="开启语音助手"
-        android:textOn="关闭语音助手"/>
+        android:textOn="关闭语音助手"
+        android:visibility="gone"/>
 
 </RelativeLayout>

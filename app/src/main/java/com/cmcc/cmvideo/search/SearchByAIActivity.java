@@ -35,6 +35,7 @@ import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
 import com.cmcc.cmvideo.search.model.SearchByAIRefreshUIEventBean;
 import com.cmcc.cmvideo.search.presenters.SearchByAIPresenter;
 import com.cmcc.cmvideo.search.presenters.impl.SearchByAIPresenterImpl;
+import com.cmcc.cmvideo.util.AIUIUtils;
 import com.cmcc.cmvideo.widget.VoiceLineView;
 import com.cmcc.cmvideo.widget.WrapContentLinearLayoutManager;
 import com.iflytek.aiui.AIUIConstant;
@@ -113,8 +114,6 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
 
     private void initView() {
         mSearchByAIAdapter = new SearchByAIAdapter(mContext, itemSearchByAIClickListener);
-        //LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
-        //layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         WrapContentLinearLayoutManager wrapContentLinearLayoutManager = new WrapContentLinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mSearchRecyclerView.setHasFixedSize(true);
         mSearchRecyclerView.setItemViewCacheSize(mViewCacheSize);
@@ -325,39 +324,19 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
             if (isOpenSpeaker) {
                 //关闭扬声器
                 if (audioManager != null) {
-                    setAudioMode(AudioManager.MODE_IN_COMMUNICATION);
+                    AIUIUtils.setAudioMode(SearchByAIActivity.this, AudioManager.MODE_IN_COMMUNICATION);
                 }
             } else {
                 //打开扬声器
                 if (audioManager != null) {
-                    setAudioMode(AudioManager.MODE_NORMAL);
+                    AIUIUtils.setAudioMode(SearchByAIActivity.this, AudioManager.MODE_NORMAL);
                 }
             }
-            isOpenSpeaker = !isOpenSpeaker;
+            isOpenSpeaker = audioManager.isSpeakerphoneOn();
             vSpekaker.setVisibility(isOpenSpeaker ? View.VISIBLE : View.GONE);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * 设置语音播放的模式
-     *
-     * @param mode
-     */
-    public void setAudioMode(int mode) throws Exception {
-        if (mode != AudioManager.MODE_NORMAL && mode != AudioManager.MODE_IN_COMMUNICATION) {
-            return;
-        }
-        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        if (mode == AudioManager.MODE_NORMAL) {
-            //打开扬声器
-            audioManager.setSpeakerphoneOn(true);
-        } else if (mode == AudioManager.MODE_IN_COMMUNICATION) {
-            //关闭扬声器
-            audioManager.setSpeakerphoneOn(false);
-        }
-        audioManager.setMode(mode);
     }
 
     /**

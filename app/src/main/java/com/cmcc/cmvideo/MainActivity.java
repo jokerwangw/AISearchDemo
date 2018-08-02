@@ -42,15 +42,6 @@ public class MainActivity extends AppCompatActivity {
     Button btTurnToAISearch;
     @BindView(R.id.open_aiui_helper)
     ToggleButton btOpenAIHelper;
-    private static final String KEY_IS_AI_HELPER_OPEN = "key_is_ai_helper_open";
-    private int downX, downY, btLeft, btRight, btBottom, btTop;
-    private long downTime = 0;
-    private int MAX_CLICK_TIME = 500;
-    private int widthPixels, heightPixels;
-    private SharedPreferencesHelper sharedPreferencesHelper;
-    private Intent service;
-    private boolean isBind = false;
-    private IAIUIService aiuiService = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,23 +54,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        btTurnToAISearch.setOnTouchListener(btTouchListener);
-        btOpenAIHelper.setOnCheckedChangeListener(btOpenAIHelperCheckedChangeListener);
     }
 
     private void initData() {
-        DisplayMetrics dm = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(dm);
-        widthPixels = dm.widthPixels;
-        heightPixels = dm.heightPixels;
-
-        service = new Intent(this, AIUIService.class);
-        sharedPreferencesHelper = SharedPreferencesHelper.getInstance(MainActivity.this);
-        boolean serviceRunning = ServiceUtils.isServiceRunning(MainActivity.this, AIUIService.AIUI_SERVICE_NAME);
-        sharedPreferencesHelper.setValue(KEY_IS_AI_HELPER_OPEN, serviceRunning);
-        setViewVisible(sharedPreferencesHelper.getBoolean(KEY_IS_AI_HELPER_OPEN, false));
-
-        int versionCode = AppUtil.getVersionCode(this);
         String versionName = AppUtil.getVersionName(this);
         if (!TextUtils.isEmpty(versionName)) {
             tvCurrentVersion.setVisibility(View.VISIBLE);
@@ -87,6 +64,16 @@ public class MainActivity extends AppCompatActivity {
         } else {
             tvCurrentVersion.setVisibility(View.GONE);
         }
+
+        //开启智能语音服务
+        Intent aiService = new Intent(this, AIUIService.class);
+        startService(aiService);
+    }
+
+    @OnClick(R.id.turn_to_ai_search)
+    public void turnSearchByAI() {
+        Intent intent = new Intent(MainActivity.this, SearchByAIActivity.class);
+        startActivity(intent);
     }
 
     @OnClick(R.id.turn_to_player)
@@ -95,175 +82,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private CompoundButton.OnCheckedChangeListener btOpenAIHelperCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            startAIService(isChecked);
-        }
-    };
-
-    private View.OnTouchListener btTouchListener = new View.OnTouchListener() {
-        @SuppressLint("ClickableViewAccessibility")
-        @Override
-        public boolean onTouch(View view, MotionEvent event) {
-            if (R.id.turn_to_ai_search == view.getId()) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        downTime = System.currentTimeMillis();
-                        btLeft = view.getLeft();
-                        btRight = view.getRight();
-                        btTop = view.getTop();
-                        btBottom = view.getBottom();
-                        downX = (int) event.getRawX();
-                        downY = (int) event.getRawY();
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        long moveTime = System.currentTimeMillis() - downTime;
-                        int moveX = (int) event.getRawX();
-                        int moveY = (int) event.getRawY();
-                        showMoveDrag(moveTime > MAX_CLICK_TIME, moveX - downX, moveY - downY);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        long upTime = System.currentTimeMillis() - downTime;
-                        int upX = (int) event.getRawX();
-                        int upY = (int) event.getRawY();
-                        dragSearchBt(upTime <= MAX_CLICK_TIME, upX - downX, upY - downY);
-                        break;
-                    default:
-                        break;
-                }
-                return true;
-            }
-            return false;
-        }
-    };
-
-    private void dragSearchBt(boolean isClick, int dx, int dy) {
-        if (isClick) {
-            Intent intent = new Intent(MainActivity.this, SearchByAIActivity.class);
-            startActivity(intent);
-        } else {
-            showUpDrag(dx, dy);
-        }
-    }
-
-    private void showMoveDrag(boolean beginMove, int dx, int dy) {
-        if (beginMove) {
-            int l = btLeft + dx;
-            int t = btTop + dy;
-            int r = btRight + dx;
-            int b = btBottom + dy;
-            // 判断超出屏幕
-            if (l < 0) {
-                l = 0;
-                r = l + btTurnToAISearch.getWidth();
-            }
-            if (t < 0) {
-                t = 0;
-                b = t + btTurnToAISearch.getHeight();
-            }
-            if (r > widthPixels) {
-                r = widthPixels;
-                l = r - btTurnToAISearch.getWidth();
-            }
-            if (b > heightPixels) {
-                b = heightPixels;
-                t = b - btTurnToAISearch.getHeight();
-            }
-
-            if (null != btTurnToAISearch) {
-                btTurnToAISearch.layout(l, t, r, b);
-                btTurnToAISearch.postInvalidate();
-            }
-        }
-    }
-
-    private void showUpDrag(int dx, int dy) {
-        int left = btTurnToAISearch.getLeft();
-
-        int l = btLeft + dx;
-        int t = btTop + dy;
-        int r = btRight + dx;
-        int b = btBottom + dy;
-        if (t < 0) {
-            t = 0;
-            b = t + btTurnToAISearch.getHeight();
-        }
-        if (b > heightPixels) {
-            b = heightPixels;
-            t = b - btTurnToAISearch.getHeight();
-        }
-        if (left * 2 < widthPixels) {
-            l = 0;
-            r = l + btTurnToAISearch.getWidth();
-        } else {
-            r = widthPixels;
-            l = r - btTurnToAISearch.getWidth();
-        }
-
-        if (null != btTurnToAISearch) {
-            btTurnToAISearch.layout(l, t, r, b);
-            btTurnToAISearch.postInvalidate();
-        }
-    }
-
-    private void setViewVisible(Boolean isOpen) {
-        if (isOpen) {
-            btTurnToAISearch.setVisibility(View.VISIBLE);
-            btOpenAIHelper.setChecked(true);
-            sharedPreferencesHelper.setValue(KEY_IS_AI_HELPER_OPEN, true);
-        } else {
-            btTurnToAISearch.setVisibility(View.GONE);
-            btOpenAIHelper.setChecked(false);
-            sharedPreferencesHelper.setValue(KEY_IS_AI_HELPER_OPEN, false);
-        }
-    }
-
-    private void startAIService(boolean isChecked) {
-        if (isChecked) {
-            if (!ServiceUtils.isServiceRunning(MainActivity.this, AIUIService.AIUI_SERVICE_NAME)) {
-                isBind = true;
-                startService(service);
-                bindService(new Intent(this, AIUIService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
-                setViewVisible(isChecked);
-            }
-        } else {
-            if (ServiceUtils.isServiceRunning(MainActivity.this, AIUIService.AIUI_SERVICE_NAME)) {
-                destoryService();
-                stopService(service);
-                setViewVisible(isChecked);
-            }
-        }
-    }
-
-    private ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Map<String, String> map = new HashMap<String, String>() {{
-                put("msisdn", "13764279837");
-                put("user_id", "553782460");
-                put("client_id", "897ddadc222ec9c20651da355daee9cc");
-            }};
-            aiuiService = (IAIUIService) service;
-            aiuiService.setUserParam(map);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-
-        }
-    };
-
     @Override
     protected void onDestroy() {
-        destoryService();
         super.onDestroy();
     }
 
-    private void destoryService() {
-        if (isBind) {
-            unbindService(connection);
-            isBind = false;
-        }
-    }
 }

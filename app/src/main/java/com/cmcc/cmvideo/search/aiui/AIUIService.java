@@ -19,6 +19,7 @@ import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.cmcc.cmvideo.base.ApplicationContext;
 import com.cmcc.cmvideo.search.SearchByAIActivity;
 import com.cmcc.cmvideo.search.aiui.bean.IatBean;
 import com.cmcc.cmvideo.search.aiui.impl.NavigationImpl;
@@ -41,6 +42,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -99,11 +101,13 @@ public class AIUIService extends Service {
 
     //SDK 初始化
     private void init() {
+        //初始化用户信息
+        setUserData();
         //AIUI初始化
         mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
         //MSC初始化（登陆）
         SpeechUtility.createUtility(this, "appid=5aceb703");
-        
+
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
         registerReceiver(mReceiver, intentFilter);
@@ -112,6 +116,16 @@ public class AIUIService extends Service {
         // 初始化录音机
         IflyRecorder.getInstance().initRecoder(16000, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, MediaRecorder.AudioSource.MIC);
 
+    }
+
+    private void setUserData() {
+        Map<String, String> map = new HashMap<String, String>() {{
+            put("msisdn", "13764279837");
+            put("user_id", "553782460");
+            put("client_id", "897ddadc222ec9c20651da355daee9cc");
+        }};
+        userInfoMap = map;
+        AIUIService.this.setUserParam();
     }
 
     private void ivwMode() {
@@ -144,11 +158,11 @@ public class AIUIService extends Service {
                 @Override
                 public void run() {
                     mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START, 0, 0, "", null));
-//                    //根据需求文档直接进入working 状态sendMessage中会再发送CMD_WEAKUP
+                    //                    //根据需求文档直接进入working 状态sendMessage中会再发送CMD_WEAKUP
                     //正常应该发送mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
                     //进入的是等待说出“咪咕咪咕” 的带唤醒状态
                     mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
-//                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
+                    //                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
                     byte[] fileData = FileUtil.readFileFromAssets(AIUIService.this, "wav/migumigu.wav");
                     AIUIMessage writeMsg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, "data_type=audio,sample_rate=16000", fileData);
                     mAIUIAgent.sendMessage(writeMsg);
@@ -388,7 +402,8 @@ public class AIUIService extends Service {
                                 if (!TextUtils.isEmpty(json)) {
                                     cntJson = new JSONObject(json);
                                 }
-                                if (cntJson == null) return;
+                                if (cntJson == null)
+                                    return;
                                 if ("iat".equals(sub)) {
                                     String iat = cntJson.optString("text");
                                     if (iat.equals("{}") || iat.isEmpty()) {
