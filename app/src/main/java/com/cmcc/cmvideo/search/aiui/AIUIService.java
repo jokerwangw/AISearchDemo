@@ -9,10 +9,13 @@ import android.content.res.AssetManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -84,7 +87,6 @@ public class AIUIService extends Service {
             mAIUIAgent.destroy();
         }
 
-
         SpeechUtility.getUtility().destroy();
         if (null != mReceiver) {
             unregisterReceiver(mReceiver);
@@ -93,24 +95,28 @@ public class AIUIService extends Service {
         Logger.debug("AIUIService has onDestroy!");
     }
 
+    private boolean qx = false;
+
     //SDK 初始化
     private void init() {
         //AIUI初始化
         mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
         //MSC初始化（登陆）
         SpeechUtility.createUtility(this, "appid=5aceb703");
-        //注册耳机是否插入广播
+        
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
         registerReceiver(mReceiver, intentFilter);
+
+
         // 初始化录音机
         IflyRecorder.getInstance().initRecoder(16000, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, MediaRecorder.AudioSource.MIC);
+
     }
 
     private void ivwMode() {
         try {
-            //开启录音并通过回调的方式获取音频数据
-            IflyRecorder.getInstance().startRecoder(mRecorderListener);
+
             if (SpeechUtility.getUtility() != null) {
                 SpeechUtility.getUtility().destroy();
             }
@@ -118,6 +124,8 @@ public class AIUIService extends Service {
             if (mAIUIAgent == null) {
                 mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
             }
+            //开启录音并通过回调的方式获取音频数据
+            IflyRecorder.getInstance().startRecoder(mRecorderListener);
 
             JSONObject objectJson = new JSONObject();
             JSONObject paramJson = new JSONObject();
@@ -430,6 +438,8 @@ public class AIUIService extends Service {
                     Logger.debug("----------------EVENT_ERROR======");
                     break;
                 case AIUIConstant.EVENT_WAKEUP:
+                    Logger.debug("----------------EVENT_wakeup======");
+
                     if (isIvwModel) {
                         tts(AiuiConstants.MICRO_MESSAGE);
                     }
@@ -832,5 +842,6 @@ public class AIUIService extends Service {
             }
         }
     };
+
 
 }

@@ -102,12 +102,16 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
     }
 
     private void onNlpResult(String nlpResult) {
+        String service = null;
         NlpData mData = gson.fromJson(nlpResult, NlpData.class);
-        String service = mData.service;
-        if (!AiuiConstants.VIEWCMD_SERVICE.equals(service)) {
-            Logger.debug("听写用户输入数据=====" + mData.text);
-            sendMessage(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
+        Logger.debug("听写用户输入数据=====" + mData.text);
+        if (null != mData.service) {
+            service = mData.service;
+            if (!AiuiConstants.VIEWCMD_SERVICE.equals(service)) {
+                sendMessage(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
+            }
         }
+
 
         //如 我想看电影 是开放问答的技能，此时会返回moreResults字段，但是这个是要走后处理，所以moreResults里面如果是video就直接返回
         //如果包含moreResults且service是video则直接返回，如果是viewCmd则要发送消息
@@ -125,14 +129,24 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
         }
 
         if (mData.rc == 4) {
+            Logger.debug("rc===4", ">>>>>>>>>>>4" + mData.rc);
+
             //播报
-            if ((System.currentTimeMillis() - startTime) > TIME_OUT) {
-                // 超过5秒表示 且rc=4（无法解析出语义） ，可显示推荐说法卡片
-                sendMessage("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI);
-            } else {
+            if (isAvailableVideo) {
                 AiResponse.Response response = AiResponse.getInstance().getResultResponse();
                 aiuiService.tts(response.response);
+                Logger.debug("rc===4", "==========4" + mData.rc);
                 sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
+            } else {
+                if ((System.currentTimeMillis() - startTime) > TIME_OUT) {
+                    // 超过5秒表示 且rc=4（无法解析出语义） ，可显示推荐说法卡片
+                    sendMessage("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI);
+                } else {
+                    AiResponse.Response response = AiResponse.getInstance().getResultResponse();
+                    aiuiService.tts(response.response);
+                    Logger.debug("rc===4", "==========4" + mData.rc);
+                    sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
+                }
             }
             return;
         }
@@ -189,7 +203,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
 
     private void onTppResult(String tppResult) {
         NlpData mData = gson.fromJson(tppResult, NlpData.class);
-        if (AiuiConstants.VIDEO_SERVICE.equals(mData.service)) {
+        if (AiuiConstants.VIDEO_SERVICE.equals(mData.service) || AiuiConstants.VIDEO_SERVICE.equals(mData.moreResults.get(0).service)) {
             aiuiService.showAiUi(tppResult);
         }
 
