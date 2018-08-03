@@ -53,25 +53,38 @@ public class AiResponse {
             new Response("我已经尽力了，但是没有找到结果", RespType.NETWORK)
     ));
 
+    /**
+     * 大家都在看什么电视剧
+     */
     private List<Response> everyoneSeeList = new ArrayList<Response>(Arrays.asList(
-            new Response("小咪为你找到了一些%s", RespType.VIDEO_TYPE),
-            new Response("你觉得这些%s怎么样", RespType.VIDEO_TYPE),
-            new Response("现在比较流行这些%s", RespType.VIDEO_TYPE),
-            new Response("emm，可能是这些吧", RespType.NORMAL)
+            new Response("小咪为你找到了一些%s", RespType.VIDEO_TYPE)
+//            new Response("你觉得这些%s怎么样", RespType.VIDEO_TYPE),
+//            new Response("现在比较流行这些%s", RespType.VIDEO_TYPE),
+//            new Response("看看这些是不是你想要的", RespType.VIDEO_TYPE),
+//            new Response("小case，那，挑个喜欢的吧", RespType.VIDEO_TYPE),
+//            new Response("找到了，你想要的是不是这些？", RespType.VIDEO_TYPE),
+//            new Response("只找到这么多，表示已经尽力了", RespType.VIDEO_TYPE),
+//            new Response("emm，可能是这些吧", RespType.NORMAL)
     ));
 
+    /**
+     * 给我推荐个综艺、综艺节目，娱乐节目  动漫  动画片  纪实
+     */
     private List<Response> guessWhatYouLikeList = new ArrayList<Response>(Arrays.asList(
-            new Response("这部%s怎么样", RespType.VIDEO_TYPE),
-            new Response("我想你会喜欢这部%s", RespType.VIDEO_TYPE),
-            new Response("我觉得这个不错", RespType.NORMAL),
-            new Response("我翻了翻抽屉，只找到这个", RespType.NORMAL),
-            new Response("咱俩这么熟了，为你推荐个好看的", RespType.NORMAL),
-            new Response("%s怎么样？", RespType.VIDEO_NAME),
-            new Response("emm，我个人比较喜欢这个", RespType.NORMAL),
-            new Response("最近流行%s", RespType.VIDEO_NAME),
-            new Response("最近%s还不错哟", RespType.VIDEO_NAME)
+            new Response("这部%s怎么样", RespType.VIDEO_TYPE)
+//            new Response("我想你会喜欢这部%s", RespType.VIDEO_TYPE),
+//            new Response("我觉得这个不错", RespType.NORMAL),
+//            new Response("我翻了翻抽屉，只找到这个", RespType.NORMAL),
+//            new Response("咱俩这么熟了，为你推荐个好看的", RespType.NORMAL),
+//            new Response("%s怎么样？", RespType.VIDEO_NAME),
+//            new Response("emm，我个人比较喜欢这个", RespType.NORMAL),
+//            new Response("最近流行%s", RespType.VIDEO_NAME),
+//            new Response("最近%s还不错哟", RespType.VIDEO_NAME)
     ));
 
+    /**
+     * 有什么热门电视剧  流行电视剧    everyoneSeeList
+     */
     private List<Response> newVideoList = new ArrayList<Response>(Arrays.asList(
             new Response("最近流行%s", RespType.VIDEO_NAME),
             new Response("最近%还不错", RespType.VIDEO_NAME),
@@ -80,10 +93,14 @@ public class AiResponse {
             new Response("这几部%s还可以", RespType.VIDEO_TYPE)
     ));
 
+
+    /**
+     * 演员名字 + 片名
+     */
     private List<Response> albumList = new ArrayList<Response>(Arrays.asList(
             new Response("好的，%s的视频", RespType.USER_NAME),
             new Response("%s的不错，我也很喜欢", RespType.USER_NAME),
-            new Response("看看这些视频是不是你想要的", RespType.USER_NAME),
+            new Response("看看这些是不是你想要的", RespType.USER_NAME),
             new Response("小case，那，挑个喜欢的吧", RespType.VIDEO_TYPE),
             new Response("找到了，你想要的是不是这些？", RespType.NORMAL),
             new Response("只找到这么多，表示已经尽力了", RespType.NORMAL)

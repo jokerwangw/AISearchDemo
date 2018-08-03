@@ -88,6 +88,9 @@ public class AIUIService extends Service {
         if (mAIUIAgent != null) {
             mAIUIAgent.destroy();
         }
+        if (null != IflyRecorder.getInstance()) {
+            IflyRecorder.getInstance().stopRecorder();
+        }
 
         SpeechUtility.getUtility().destroy();
         if (null != mReceiver) {
@@ -97,12 +100,12 @@ public class AIUIService extends Service {
         Logger.debug("AIUIService has onDestroy!");
     }
 
-    private boolean qx = false;
 
     //SDK 初始化
     private void init() {
         //初始化用户信息
-        setUserData();
+
+        Logger.debug("上传用户信息===>>>>>>>>>>>>>>>>>>>>>>>>>>");
         //AIUI初始化
         mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
         //MSC初始化（登陆）
@@ -112,6 +115,8 @@ public class AIUIService extends Service {
         intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
         registerReceiver(mReceiver, intentFilter);
 
+
+        setUserData();
 
         // 初始化录音机
         IflyRecorder.getInstance().initRecoder(16000, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, MediaRecorder.AudioSource.MIC);
@@ -138,75 +143,87 @@ public class AIUIService extends Service {
             if (mAIUIAgent == null) {
                 mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
             }
-            //开启录音并通过回调的方式获取音频数据
-            IflyRecorder.getInstance().startRecoder(mRecorderListener);
 
-            JSONObject objectJson = new JSONObject();
-            JSONObject paramJson = new JSONObject();
-            JSONObject timeJson = new JSONObject();
-            timeJson.put("interact_timeout", "5000");
-            timeJson.put("result_timeout", "5000");
-            paramJson.put("wakeup_mode", "ivw");
-            paramJson.put("interact_mode", "continuous");
-            paramJson.put("data_source", "user");
-            objectJson.put("speech", paramJson);
-            objectJson.put("interact", timeJson);
-            sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
             mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
             //延时启动保障完全停止后 能够重新启动
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START, 0, 0, "", null));
+                    setParam("5000", "ivw", "continuous", "user");
+
                     //                    //根据需求文档直接进入working 状态sendMessage中会再发送CMD_WEAKUP
                     //正常应该发送mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
                     //进入的是等待说出“咪咕咪咕” 的带唤醒状态
-                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
-                    //                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
+//                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
+                    //mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
+                    //开启录音并通过回调的方式获取音频数据
+                    IflyRecorder.getInstance().startRecoder(mRecorderListener);
                     byte[] fileData = FileUtil.readFileFromAssets(AIUIService.this, "wav/migumigu.wav");
                     AIUIMessage writeMsg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, "data_type=audio,sample_rate=16000", fileData);
-                    mAIUIAgent.sendMessage(writeMsg);
+                    sendMessage(writeMsg);
                     isIvwModel = true;
                 }
-            }, 50);
+            }, 500);
 
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         Logger.debug("已启动唤醒模式");
     }
 
+
+    /**
+     * 设置模式参数
+     *
+     * @param interactTime
+     * @param wakeupMode
+     * @param interactMode
+     * @param dataSource
+     */
+    private void setParam(String interactTime, String wakeupMode, String interactMode, String dataSource) {
+
+        try {
+            JSONObject objectJson = new JSONObject();
+            JSONObject paramJson = new JSONObject();
+            JSONObject timeJson = new JSONObject();
+
+            timeJson.put("interact_timeout", interactTime);
+            timeJson.put("result_timeout", "5000");
+            paramJson.put("wakeup_mode", wakeupMode);
+            paramJson.put("interact_mode", interactMode);
+            paramJson.put("data_source", dataSource);
+            objectJson.put("speech", paramJson);
+            objectJson.put("interact", timeJson);
+            sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
     private void standardMode() {
         try {
-            //开启录音并通过回调的方式获取音频数据
-            IflyRecorder.getInstance().stopRecorder();
             if (mAIUIAgent == null) {
                 mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
             }
 
-            JSONObject objectJson = new JSONObject();
-            JSONObject paramJson = new JSONObject();
-            JSONObject timeJson = new JSONObject();
-            timeJson.put("interact_timeout", "60000");
-            timeJson.put("result_timeout", "5000");
-            paramJson.put("wakeup_mode", "off");
-            paramJson.put("interact_mode", "oneshot");
-            paramJson.put("data_source", "sdk");
-            objectJson.put("speech", paramJson);
-            objectJson.put("interact", timeJson);
-            sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
             mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     //延时启动保障完全停止后 能够重新启动
                     mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START, 0, 0, "", null));
+                    setParam("60000", "off", "oneshot", "sdk");
+
                     isIvwModel = false;
                 }
             }, 500);
             SpeechUtility.createUtility(this, "appid=5aceb703");
             Logger.debug("已启动标准模式");
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -697,13 +714,18 @@ public class AIUIService extends Service {
     }
 
     //发送AIUI消息
-    private void sendMessage(AIUIMessage message) {
+    private void sendMessage(final AIUIMessage message) {
         if (mAIUIAgent != null) {
             //确保AIUI处于唤醒状态
             if (mCurrentState != AIUIConstant.STATE_WORKING) {
                 mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
             }
-            mAIUIAgent.sendMessage(message);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mAIUIAgent.sendMessage(message);
+                }
+            }, 100);
         }
     }
 
@@ -785,6 +807,10 @@ public class AIUIService extends Service {
                     if (intent.getIntExtra("state", 0) == 0) {
                         semanticProcessor.setIsMicConnect(false);
                         navigation.isHeadset(false);
+                        //开启录音并通过回调的方式获取音频数据
+                        if (null != IflyRecorder.getInstance()) {
+                            IflyRecorder.getInstance().stopRecorder();
+                        }
                         //切换为外放模式
                         //PlayerManager.getInstance().changeToReceiver();
                         if (isIvwModel) {

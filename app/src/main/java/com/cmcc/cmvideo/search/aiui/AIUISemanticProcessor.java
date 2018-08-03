@@ -2,6 +2,7 @@ package com.cmcc.cmvideo.search.aiui;
 
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.cmcc.cmvideo.search.aiui.bean.ControlEventBean;
 import com.cmcc.cmvideo.search.aiui.bean.NlpData;
@@ -46,7 +47,6 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
 
     public AIUISemanticProcessor(IAIUIService service) {
         aiuiService = service;
-        isAvailableVideo = false;
         gson = new Gson();
         mHandler = new android.os.Handler(Looper.getMainLooper());
     }
@@ -202,8 +202,19 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
     }
 
     private void onTppResult(String tppResult) {
+        Log.d("tianrongchuang", tppResult);
         NlpData mData = gson.fromJson(tppResult, NlpData.class);
-        if (AiuiConstants.VIDEO_SERVICE.equals(mData.service) || AiuiConstants.VIDEO_SERVICE.equals(mData.moreResults.get(0).service)) {
+
+        if (AiuiConstants.VIDEO_SERVICE.equals(mData.service)) {
+            aiuiService.showAiUi(tppResult);
+        }
+
+        if (mData.moreResults!=null&&mData.moreResults.size()>0&&
+                AiuiConstants.VIDEO_SERVICE.equals(mData.moreResults.get(0).service)) {
+            aiuiService.showAiUi(tppResult);
+        }
+
+        if ( AiuiConstants.USER_VIDEO_SERVICE.equals(mData.service)) {
             aiuiService.showAiUi(tppResult);
         }
 

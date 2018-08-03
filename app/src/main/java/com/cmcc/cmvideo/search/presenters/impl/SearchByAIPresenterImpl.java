@@ -245,6 +245,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
                 // 判断意图是使用哪个卡片展示
                 if (isCategory(map)) {
+                    Logger.debug("map=====" + map.toString());
                     AiResponse.Response response = AiResponse.getInstance().getGuessWhatYouLike();
                     //hasSubserials(nlpData);
                     boolean hasSubserials = true;
@@ -255,14 +256,34 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     } else if (checkCategory(map, CategoryType.VARIETY) && hasSubserials) {
                         messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
                     }
+
+                    // 电影，电视剧，记录片，卡通，综艺
+                    //MOVIE, TV, DOC, CARTOON, VARIETY
                     //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
                     if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.MOVIE)) {
                         response.response = String.format(response.response, "电影");
                     }
-                    //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
-                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && !checkCategory(map, CategoryType.MOVIE)) {
-                        response.response = String.format(response.response, "视频");
+                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.TV)) {
+                        response.response = String.format(response.response, "电视剧");
                     }
+
+                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.DOC)) {
+                        response.response = String.format(response.response, "纪录片");
+                    }
+
+                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.CARTOON)) {
+                        response.response = String.format(response.response, "动漫");
+                    }
+
+                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.VARIETY)) {
+                        response.response = String.format(response.response, "综艺");
+                    }
+
+
+                    //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
+//                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && !checkCategory(map, CategoryType.MOVIE)) {
+//                        response.response = String.format(response.response, "视频");
+//                    }
                     //播报电影名称的反馈语
                     if (response.respType == AiResponse.RespType.VIDEO_NAME) {
                         response.response = String.format(response.response, nlpData.data.lxresult.data.detailslist.get(0).name);
@@ -276,7 +297,18 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "电影".equals(map.get(AiuiConstants.VIDEO_CATEGORY))) {
                             response.response = String.format(response.response, "电影");
                         } else {
-                            response.response = String.format(response.response, "视频");
+                            if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "电视剧".equals(map.get(AiuiConstants.VIDEO_CATEGORY))) {
+                                response.response = String.format(response.response, "电视剧");
+                            } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && ("综艺".equals(map.get(AiuiConstants.VIDEO_CATEGORY)) ||"综艺".equals(map.get(AiuiConstants.VIDEO_TAG)))) {
+                                response.response = String.format(response.response, "综艺");
+                            } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "动漫".equals(map.get(AiuiConstants.VIDEO_CATEGORY))) {
+                                response.response = String.format(response.response, "动漫");
+                            } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "纪实".equals(map.get(AiuiConstants.VIDEO_CATEGORY))) {
+
+                            } else {
+                                response.response = String.format(response.response, "视频");
+                            }
+
                         }
                     }
                     responseTts = response;
@@ -296,10 +328,24 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "电影".equals(map.get(AiuiConstants.VIDEO_CATEGORY))) {
                         response.response = String.format(response.response, "电影");
                     } else {
-                        response.response = String.format(response.response, "视频");
+
+                        if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "电视剧".equals(map.get(AiuiConstants.VIDEO_CATEGORY))) {
+                            response.response = String.format(response.response, "电视剧");
+                        } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "综艺".equals(map.get(AiuiConstants.VIDEO_CATEGORY))) {
+                            response.response = String.format(response.response, "综艺");
+                        } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "动漫".equals(map.get(AiuiConstants.VIDEO_CATEGORY))) {
+                            response.response = String.format(response.response, "动漫");
+                        } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "纪实".equals(map.get(AiuiConstants.VIDEO_CATEGORY))) {
+
+                        } else {
+                            response.response = String.format(response.response, "视频");
+                        }
+
                     }
                 }
+
                 responseTts = response;
+
                 if (hasVideoData(nlpData)) {
                     msg = lastResponseVideoTitle;
                 }
@@ -309,6 +355,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 break;
         }
         if (responseTts != null) {
+            Logger.debug("反馈语=====" + responseTts.response);
             aiuiService.tts(responseTts.response);
         }
     }
@@ -469,7 +516,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
      * @return
      */
     private boolean isCategory(Map<String, String> solts) {
-        if (solts == null || solts.size() > 2) {
+        if (solts == null || solts.size() > 3) {
             return false;
         }
 
@@ -480,6 +527,13 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         if (solts.size() == 2) {
             reslult = solts.containsKey(AiuiConstants.VIDEO_CATEGORY) && solts.containsKey(AiuiConstants.VIDEO_TAG);
         }
+
+        if (solts.size() == 3) {
+            reslult = solts.containsKey(AiuiConstants.VIDEO_CATEGORY)
+                    && solts.containsKey(AiuiConstants.VIDEO_TAG)
+                    && solts.containsKey(AiuiConstants.VIDEO_POPULAR);
+        }
+
         if (reslult) {
             String cate = "";
             if (solts.size() == 1) {
@@ -494,7 +548,13 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 if ("片".equals(category) || "节目".equals(category) || "影视".equals(category)) {
                     cate = solts.get(AiuiConstants.VIDEO_TAG);
                 }
+            }else if (solts.size() == 3){
+                String category = solts.get(AiuiConstants.VIDEO_CATEGORY);
+                if ("片".equals(category) || "节目".equals(category) || "影视".equals(category)) {
+                    cate = solts.get(AiuiConstants.VIDEO_TAG);
+                }
             }
+
             return !TextUtils.isEmpty(cate) && "电视剧,纪录,纪实,电影,影视,片,卡通,动漫,综艺".contains(cate);
         }
         return false;

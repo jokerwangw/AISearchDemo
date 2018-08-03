@@ -49,6 +49,7 @@ public class AiuiConstants {
      */
     public final static String QA_SERVICE = "openQA";
     public final static String VIDEO_SERVICE = "video";
+    public final static String USER_VIDEO_SERVICE = "LINGXI2018.user_video";
     public final static String VIEWCMD_SERVICE = "viewCmd";
     //指令控制技能名  如：开启/关闭语音助手、投屏指令
     public final static String CONTROL_MIGU = "LINGXI2018.control_migu";
