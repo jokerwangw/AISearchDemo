@@ -202,19 +202,18 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
     }
 
     private void onTppResult(String tppResult) {
-        Log.d("tianrongchuang", tppResult);
         NlpData mData = gson.fromJson(tppResult, NlpData.class);
 
         if (AiuiConstants.VIDEO_SERVICE.equals(mData.service)) {
             aiuiService.showAiUi(tppResult);
         }
 
-        if (mData.moreResults!=null&&mData.moreResults.size()>0&&
+        if (mData.moreResults != null && mData.moreResults.size() > 0 &&
                 AiuiConstants.VIDEO_SERVICE.equals(mData.moreResults.get(0).service)) {
             aiuiService.showAiUi(tppResult);
         }
 
-        if ( AiuiConstants.USER_VIDEO_SERVICE.equals(mData.service)) {
+        if (AiuiConstants.USER_VIDEO_SERVICE.equals(mData.service)) {
             aiuiService.showAiUi(tppResult);
         }
 

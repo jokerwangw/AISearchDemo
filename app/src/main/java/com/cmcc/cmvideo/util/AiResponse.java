@@ -57,29 +57,29 @@ public class AiResponse {
      * 大家都在看什么电视剧
      */
     private List<Response> everyoneSeeList = new ArrayList<Response>(Arrays.asList(
-            new Response("小咪为你找到了一些%s", RespType.VIDEO_TYPE)
-//            new Response("你觉得这些%s怎么样", RespType.VIDEO_TYPE),
-//            new Response("现在比较流行这些%s", RespType.VIDEO_TYPE),
-//            new Response("看看这些是不是你想要的", RespType.VIDEO_TYPE),
-//            new Response("小case，那，挑个喜欢的吧", RespType.VIDEO_TYPE),
-//            new Response("找到了，你想要的是不是这些？", RespType.VIDEO_TYPE),
-//            new Response("只找到这么多，表示已经尽力了", RespType.VIDEO_TYPE),
-//            new Response("emm，可能是这些吧", RespType.NORMAL)
+            new Response("小咪为你找到了一些%s", RespType.VIDEO_TYPE),
+            new Response("你觉得这些%s怎么样", RespType.VIDEO_TYPE),
+            new Response("现在比较流行这些%s", RespType.VIDEO_TYPE),
+            new Response("看看这些是不是你想要的", RespType.VIDEO_TYPE),
+            new Response("小case，那，挑个喜欢的吧", RespType.VIDEO_TYPE),
+            new Response("找到了，你想要的是不是这些？", RespType.VIDEO_TYPE),
+            new Response("只找到这么多，表示已经尽力了", RespType.VIDEO_TYPE),
+            new Response("emm，可能是这些吧", RespType.NORMAL)
     ));
 
     /**
      * 给我推荐个综艺、综艺节目，娱乐节目  动漫  动画片  纪实
      */
     private List<Response> guessWhatYouLikeList = new ArrayList<Response>(Arrays.asList(
-            new Response("这部%s怎么样", RespType.VIDEO_TYPE)
-//            new Response("我想你会喜欢这部%s", RespType.VIDEO_TYPE),
-//            new Response("我觉得这个不错", RespType.NORMAL),
-//            new Response("我翻了翻抽屉，只找到这个", RespType.NORMAL),
-//            new Response("咱俩这么熟了，为你推荐个好看的", RespType.NORMAL),
-//            new Response("%s怎么样？", RespType.VIDEO_NAME),
-//            new Response("emm，我个人比较喜欢这个", RespType.NORMAL),
-//            new Response("最近流行%s", RespType.VIDEO_NAME),
-//            new Response("最近%s还不错哟", RespType.VIDEO_NAME)
+            new Response("这部%s怎么样", RespType.VIDEO_TYPE),
+            new Response("我想你会喜欢这部%s", RespType.VIDEO_TYPE),
+            new Response("我觉得这个不错", RespType.NORMAL),
+            new Response("我翻了翻抽屉，只找到这个", RespType.NORMAL),
+            new Response("咱俩这么熟了，为你推荐个好看的", RespType.NORMAL),
+            new Response("%s怎么样？", RespType.VIDEO_NAME),
+            new Response("emm，我个人比较喜欢这个", RespType.NORMAL),
+            new Response("最近流行%s", RespType.VIDEO_NAME),
+            new Response("最近%s还不错哟", RespType.VIDEO_NAME)
     ));
 
     /**

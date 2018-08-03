@@ -135,7 +135,6 @@ public class AIUIService extends Service {
 
     private void ivwMode() {
         try {
-
             if (SpeechUtility.getUtility() != null) {
                 SpeechUtility.getUtility().destroy();
             }
@@ -149,16 +148,17 @@ public class AIUIService extends Service {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    //开启录音并通过回调的方式获取音频数据
+                    IflyRecorder.getInstance().startRecoder(mRecorderListener);
                     mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START, 0, 0, "", null));
+                    setUserData();
                     setParam("5000", "ivw", "continuous", "user");
 
-                    //                    //根据需求文档直接进入working 状态sendMessage中会再发送CMD_WEAKUP
+                    //根据需求文档直接进入working 状态sendMessage中会再发送CMD_WEAKUP
                     //正常应该发送mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
                     //进入的是等待说出“咪咕咪咕” 的带唤醒状态
 //                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
                     //mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
-                    //开启录音并通过回调的方式获取音频数据
-                    IflyRecorder.getInstance().startRecoder(mRecorderListener);
                     byte[] fileData = FileUtil.readFileFromAssets(AIUIService.this, "wav/migumigu.wav");
                     AIUIMessage writeMsg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, "data_type=audio,sample_rate=16000", fileData);
                     sendMessage(writeMsg);
@@ -216,8 +216,8 @@ public class AIUIService extends Service {
                 public void run() {
                     //延时启动保障完全停止后 能够重新启动
                     mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START, 0, 0, "", null));
+                    setUserData();
                     setParam("60000", "off", "oneshot", "sdk");
-
                     isIvwModel = false;
                 }
             }, 500);
@@ -483,7 +483,6 @@ public class AIUIService extends Service {
                     }
                     break;
                 case AIUIConstant.EVENT_VAD:
-
                     //                Logger.debug("arg【" + event.arg1 + "】【" + event.arg2 + "】");
                     //用arg1标识前后端点或者音量信息:0(前端点)、1(音量)、2(后端点)、3（前端点超时）。
                     //当arg1取值为1时，arg2为音量大小。

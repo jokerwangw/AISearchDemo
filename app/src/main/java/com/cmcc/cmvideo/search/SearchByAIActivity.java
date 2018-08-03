@@ -45,7 +45,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -490,6 +492,14 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         public void onServiceConnected(ComponentName name, IBinder service) {
             aiuiService = (IAIUIService) service;
             mSearchByAIPresenter.setAIUIService(aiuiService);
+
+            Map<String, String> map = new HashMap<String, String>() {{
+                put("msisdn", "13764279837");
+                put("user_id", "553782460");
+                put("client_id", "897ddadc222ec9c20651da355daee9cc");
+            }};
+            aiuiService.setUserParam(map);
+
             mSearchByAIPresenter.analysisDefaultData(getIntent().getStringExtra("TPP_DATA"));
         }
 

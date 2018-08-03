@@ -218,6 +218,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         AiResponse.Response responseTts = null;
         Map<String, String> map = formatSlotsToMap(nlpData.semantic.get(0).slots);
         lastVideoData = result;
+        Logger.debug("查看更多的数据====" + lastVideoData);
         lastResponseVideoTitle = makeCardTitle(map);
         String msg = nlpData.answer != null ? nlpData.answer.text : "";
         switch (nlpData.semantic.get(0).intent) {
@@ -299,12 +300,16 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         } else {
                             if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "电视剧".equals(map.get(AiuiConstants.VIDEO_CATEGORY))) {
                                 response.response = String.format(response.response, "电视剧");
-                            } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && ("综艺".equals(map.get(AiuiConstants.VIDEO_CATEGORY)) ||"综艺".equals(map.get(AiuiConstants.VIDEO_TAG)))) {
+                            } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && ("综艺".equals(map.get(AiuiConstants.VIDEO_CATEGORY)) || "综艺".equals(map.get(AiuiConstants.VIDEO_TAG)))) {
                                 response.response = String.format(response.response, "综艺");
                             } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "动漫".equals(map.get(AiuiConstants.VIDEO_CATEGORY))) {
                                 response.response = String.format(response.response, "动漫");
-                            } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "纪实".equals(map.get(AiuiConstants.VIDEO_CATEGORY))) {
-
+                            } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "片".equals(map.get(AiuiConstants.VIDEO_CATEGORY))
+                                    && "纪录".equals(map.get(AiuiConstants.VIDEO_TAG))) {
+                                response.response = String.format(response.response, "纪录片");
+                            } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "片".equals(map.get(AiuiConstants.VIDEO_CATEGORY))
+                                    && "动画".equals(map.get(AiuiConstants.VIDEO_TAG))) {
+                                response.response = String.format(response.response, "动画片");
                             } else {
                                 response.response = String.format(response.response, "视频");
                             }
@@ -548,7 +553,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 if ("片".equals(category) || "节目".equals(category) || "影视".equals(category)) {
                     cate = solts.get(AiuiConstants.VIDEO_TAG);
                 }
-            }else if (solts.size() == 3){
+            } else if (solts.size() == 3) {
                 String category = solts.get(AiuiConstants.VIDEO_CATEGORY);
                 if ("片".equals(category) || "节目".equals(category) || "影视".equals(category)) {
                     cate = solts.get(AiuiConstants.VIDEO_TAG);
@@ -584,6 +589,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     /**
      * 处理ViewCmd技能
      */
+    int i = 0;
+
     private void intentViewCmd(NlpData nlpData) {
         if (AiuiConstants.VIEWCMD_INTENT.equals(nlpData.semantic.get(0).intent)) {
             switch (nlpData.semantic.get(0).slots.get(0).name) {
