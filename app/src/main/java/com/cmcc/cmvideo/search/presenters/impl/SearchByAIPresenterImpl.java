@@ -68,6 +68,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private String lastResponseVideoTitle = "";
     private String lastVideoData = "";
     private SearchByAIBean lastVideoSearchByAIBean = null;
+    private String lastTextData = "";
 
     public enum CategoryType {
         // 电影，电视剧，记录片，卡通，综艺
@@ -185,7 +186,11 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     }
 
     private void onTppResult(String result) {
+        Log.d("tianrongchaung", result);
         NlpData nlpData = gson.fromJson(result, NlpData.class);
+        if (hasVideoData(nlpData)) {
+            lastTextData = nlpData.text;
+        }
         //判断是否解出了语义，并且当前技能是video
         if (nlpData.rc == 4 || !("video".equals(nlpData.service) || "LINGXI2018.user_video".equals(nlpData.service))) {
             if (nlpData.moreResults == null) {
@@ -378,6 +383,11 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                             String name = subserials.get(index).name;
                             aiuiService.getNavigation().playEpisode(new NavigationBean(subserials.get(index)));
                             aiuiService.tts("正在为你打开" + name);
+                            Logger.debug("大于本来的集数》》》》》》===================");
+
+                        }else {
+                            // TODO: 2018/8/5 超出剧集数据语音播报=====  需后台处理不返回数据了tpp 
+                            Logger.debug("大于本来的集数===================");
                         }
                     }
                 }
@@ -504,7 +514,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             case DOC:
                 return "纪录".equals(cate) || "纪实".equals(cate);
             case MOVIE:
-                return "电影".equals(cate) || "片".equals(cate) || "影视".equals(cate);
+                return "电影".equals(cate) || "片".equals(cate) ;
             case CARTOON:
                 return "卡通".equals(cate) || "动漫".equals(cate);
             case VARIETY:
@@ -606,7 +616,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                             lastVideoSearchByAIBean.getVideoList().remove(0);
                             sendMessage(lastVideoSearchByAIBean);
                         } else {
-                            aiuiService.tts(AiResponse.getInstance().getChangeResponse().response);
+                            //再发送请求  比如用户换一个之前说的是   推荐个电视剧
+                            aiuiService.textUnderstander(lastTextData);
+//                            aiuiService.tts(AiResponse.getInstance().getChangeResponse().response);
                         }
                     }
                     break;

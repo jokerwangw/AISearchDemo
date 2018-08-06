@@ -82,5 +82,5 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation files('libs/AIUI.jar')
     implementation files('libs/Msc.jar')
-    implementation files('libs/IflyUtil.jar')
+//    implementation files('libs/IflyUtil.jar')
 }
