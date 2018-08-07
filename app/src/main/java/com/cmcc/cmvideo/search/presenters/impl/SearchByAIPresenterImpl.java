@@ -71,8 +71,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private String lastTextData = "";
 
     public enum CategoryType {
-        // 电影，电视剧，记录片，卡通，综艺
-        MOVIE, TV, DOC, CARTOON, VARIETY
+        // 电影，电视剧，记录片，卡通，综艺 ,影视
+        MOVIE, TV, DOC, CARTOON, VARIETY, TELEVISION
     }
 
     public SearchByAIPresenterImpl(Executor executor, MainThread mainThread, SearchByAIPresenter.View view, Context context) {
@@ -254,7 +254,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     AiResponse.Response response = AiResponse.getInstance().getGuessWhatYouLike();
                     //hasSubserials(nlpData);
                     boolean hasSubserials = true;
-                    if (checkCategory(map, CategoryType.MOVIE)) {
+                    if (checkCategory(map, CategoryType.MOVIE) || checkCategory(map, CategoryType.TELEVISION)) {
                         messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
                     } else if ((checkCategory(map, CategoryType.TV) || checkCategory(map, CategoryType.DOC) || checkCategory(map, CategoryType.CARTOON)) && hasSubserials) {
                         messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
@@ -268,6 +268,15 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.MOVIE)) {
                         response.response = String.format(response.response, "电影");
                     }
+
+                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.MOVIE)) {
+                        response.response = String.format(response.response, "电影");
+                    }
+
+                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.TELEVISION)) {
+                        response.response = String.format(response.response, "视频");
+                    }
+
                     if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.TV)) {
                         response.response = String.format(response.response, "电视剧");
                     }
@@ -518,6 +527,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 return "卡通".equals(cate) || "动漫".equals(cate);
             case VARIETY:
                 return "综艺".equals(cate);
+            case TELEVISION:
+                return "影视".equals(cate);
             default:
                 return false;
         }
