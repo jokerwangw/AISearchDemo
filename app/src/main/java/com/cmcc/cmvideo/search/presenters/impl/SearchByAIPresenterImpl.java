@@ -385,7 +385,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                             aiuiService.tts("正在为你打开" + name);
                             Logger.debug("大于本来的集数》》》》》》===================");
 
-                        }else {
+                        } else {
                             // TODO: 2018/8/5 超出剧集数据语音播报=====  需后台处理不返回数据了tpp 
                             Logger.debug("大于本来的集数===================");
                         }
@@ -514,7 +514,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             case DOC:
                 return "纪录".equals(cate) || "纪实".equals(cate);
             case MOVIE:
-                return "电影".equals(cate) || "片".equals(cate) ;
+                return "电影".equals(cate) || "片".equals(cate);
             case CARTOON:
                 return "卡通".equals(cate) || "动漫".equals(cate);
             case VARIETY:
