@@ -67,6 +67,9 @@ public class AIUIService extends Service {
     private AIUISemanticProcessor semanticProcessor;
     private boolean uiAttached = false;
 
+    private static final int MIN_CLICK_DELAY_TIME = 5000;
+    private static long lastClickTime = 0;
+
 
     @Override
     public void onCreate() {
@@ -105,19 +108,17 @@ public class AIUIService extends Service {
     //SDK 初始化
     private void init() {
         //初始化用户信息
-
         Logger.debug("上传用户信息===>>>>>>>>>>>>>>>>>>>>>>>>>>");
         //AIUI初始化
         mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
+        mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START, 0, 0, "", null));
         //MSC初始化（登陆）
         SpeechUtility.createUtility(this, "appid=5aceb703");
 
+//        SpeechUtility.createUtility(AIUIService.this, String.format("engine_start=ivw,delay_init=0,appid=%s", "5aceb703"));
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
         registerReceiver(mReceiver, intentFilter);
-
-        // 初始化录音机
-//        IflyRecorder.getInstance().initRecoder(16000, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, MediaRecorder.AudioSource.MIC);
         setUserData();
 
     }
@@ -134,58 +135,6 @@ public class AIUIService extends Service {
 
 
     private void ivwMode() {
-//        try {
-        // 初始化录音机
-//            if (IflyRecorder.getInstance() == null) {
-//                IflyRecorder.getInstance().initRecoder(16000, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, MediaRecorder.AudioSource.MIC);
-//            }
-
-//            IflyRecorder.getInstance().startRecoder(mRecorderListener);
-
-
-//            if (SpeechUtility.getUtility() != null) {
-//                SpeechUtility.getUtility().destroy();
-//            }
-//            SpeechUtility.createUtility(AIUIService.this, String.format("engine_start=ivw,delay_init=0,appid=%s", "5aceb703"));
-//            if (mAIUIAgent == null) {
-//                mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
-//                Logger.debug(">>>>>>>>>>>>>>初始化");
-//            }
-//            JSONObject objectJson = new JSONObject();
-//            JSONObject paramJson = new JSONObject();
-//            paramJson.put("wakeup_mode", "ivw");
-//            paramJson.put("interact_mode", "continuous");
-//            objectJson.put("speech", paramJson);
-//            mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
-//            mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
-//            //延时启动保障完全停止后 能够重新启动
-//            new Handler().postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    //开启录音并通过回调的方式获取音频数据
-//                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START, 0, 0, "", null));
-//
-//                    byte[] fileData = FileUtil.readFileFromAssets(AIUIService.this, "wav/migumigu.wav");
-//                    AIUIMessage writeMsg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, "data_type=audio,sample_rate=16000", fileData);
-//                    Logger.debug("AIUI工作状态=====" + mCurrentState);
-//                    mAIUIAgent.sendMessage(writeMsg);
-////                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
-//                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
-//                    setUserMicData();
-//
-//                    isIvwModel = true;
-//                }
-//            }, 500);
-//
-//
-//
-//
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-
         setParam("5000", "ivw", "continuous", "sdk");
         byte[] fileData = FileUtil.readFileFromAssets(AIUIService.this, "wav/migumigu.wav");
         AIUIMessage writeMsg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, "data_type=audio,sample_rate=16000", fileData);
@@ -194,7 +143,6 @@ public class AIUIService extends Service {
         sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
         setUserMicData();
         isIvwModel = true;
-
 
         Logger.debug("已启动唤醒模式");
     }
@@ -259,43 +207,15 @@ public class AIUIService extends Service {
     }
 
 
+    /**
+     * 标准模式
+     */
     private void standardMode() {
-//        try {
-//            if (mAIUIAgent == null) {
-//                mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
-//                Logger.debug(">>>>>>>>>>>>>>+++++++初始化");
-//            }
-//
-//            JSONObject objectJson = new JSONObject();
-//            JSONObject paramJson = new JSONObject();
-//            paramJson.put("wakeup_mode", "off");
-//            paramJson.put("interact_mode", "oneshot");
-//            objectJson.put("speech", paramJson);
-//            sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
-//            mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
-//            new Handler().postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    //延时启动保障完全停止后 能够重新启动
-//                    mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START, 0, 0, "", null));
-//                    byte[] fileData = FileUtil.readFileFromAssets(AIUIService.this, "wav/migumigu.wav");
-//                    AIUIMessage writeMsg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, "data_type=audio,sample_rate=16000", fileData);
-//                    Logger.debug("AIUI工作状态=====" + mCurrentState);
-//                    mAIUIAgent.sendMessage(writeMsg);
-//                    setUserData();
-//                    isIvwModel = false;
-//                }
-//            }, 500);
-//            SpeechUtility.createUtility(this, "appid=5aceb703");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-
+        aiuiService.cancelTts();
         sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
         setParam("60000", "off", "oneshot", "sdk");
-        isIvwModel = false;
         Logger.debug("已启动标准模式");
+        isIvwModel = false;
 
 
     }
@@ -465,17 +385,13 @@ public class AIUIService extends Service {
     private AIUIListener aiuiListener = new AIUIListener() {
         @Override
         public void onEvent(AIUIEvent event) {
-            Logger.debug(">>>>>>>>>>>>>>+++++++info" + event.info);
             switch (event.eventType) {
                 case AIUIConstant.EVENT_RESULT: {
                     if (hasCancelRecordAudio) {
                         return;
                     }
-
                     try {
                         JSONObject bizParamJson = new JSONObject(event.info);
-                        Logger.debug(">>>>>>>>>>>>>>+++++++info" + event.info);
-
                         JSONObject data = bizParamJson.getJSONArray("data").getJSONObject(0);
                         JSONObject params = data.getJSONObject("params");
                         JSONObject content = data.getJSONArray("content").getJSONObject(0);
@@ -535,10 +451,8 @@ public class AIUIService extends Service {
                 }
                 break;
                 case AIUIConstant.CMD_START_RECORD:
-                    enableRecord = true;
                     break;
                 case AIUIConstant.CMD_STOP_RECORD: {
-                    enableRecord = false;
                 }
                 break;
                 case AIUIConstant.EVENT_ERROR:
@@ -548,7 +462,12 @@ public class AIUIService extends Service {
                 case AIUIConstant.EVENT_WAKEUP:
                     Logger.debug("----------------EVENT_wakeup======");
                     if (isIvwModel) {
-                        tts(AiuiConstants.MICRO_MESSAGE);
+                        long curClickTime = System.currentTimeMillis();
+                        if ((curClickTime - lastClickTime) >= MIN_CLICK_DELAY_TIME) {
+                            // 超过点击间隔后再将lastClickTime重置为当前点击时间
+                            lastClickTime = curClickTime;
+                            tts(AiuiConstants.MICRO_MESSAGE);
+                        }
                     }
                     break;
                 case AIUIConstant.EVENT_SLEEP:
@@ -599,13 +518,11 @@ public class AIUIService extends Service {
                 case AIUIConstant.EVENT_TTS: {
                     switch (event.arg1) {
                         case AIUIConstant.TTS_SPEAK_BEGIN:
-                            inTTs = true;
                             Logger.debug("==========TTS_SPEAK_BEGIN");
                             // 停止后台音频播放
                             FuncAdapter.Lock(AIUIService.this, null);
                             break;
                         case AIUIConstant.TTS_SPEAK_COMPLETED:
-                            inTTs = false;
                             Logger.debug("=============TTS_SPEAK_COMPLETED");
                             // 开启后台音频播放
                             FuncAdapter.UnLock(AIUIService.this, null);
@@ -792,7 +709,6 @@ public class AIUIService extends Service {
         if (mAIUIAgent != null) {
             //确保AIUI处于唤醒状态
             if (mCurrentState != AIUIConstant.STATE_WORKING) {
-//                mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START, 0, 0, "", null));
                 mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
             }
 
@@ -880,7 +796,7 @@ public class AIUIService extends Service {
                         semanticProcessor.setIsMicConnect(false);
                         navigation.isHeadset(false);
                         //切换为外放模式
-                        PlayerManager.getInstance().changeToReceiver();
+//                        PlayerManager.getInstance().changeToReceiver();
                         if (isIvwModel) {
                             standardMode();
                         }
@@ -899,53 +815,26 @@ public class AIUIService extends Service {
         }
     };
 
-    private boolean inTTs = false;
 
-    private boolean enableRecord = true;
+    private static String oldTtsMsg;
+    private static long time;
 
-    private int wakeupMode = 0;
+    private void showTts(String ttsMsg) {
+        if (!ttsMsg.equals(oldTtsMsg)) { // 当显示的内容不一样时，即断定为不是同一个Toast
+            if (isIvwModel) {
+                tts(ttsMsg);
+            }
+        } else {
+            time = System.currentTimeMillis();
+            // 显示内容一样时，只有间隔时间大于2秒时才显示
+            if (System.currentTimeMillis() - time > 5000) {
+                tts(ttsMsg);
+                time = System.currentTimeMillis();
+            }
+        }
+        oldTtsMsg = ttsMsg;
 
-    //实时音频回调listener
-//    private IRecorderListener mRecorderListener = new IRecorderListener() {
-//        // 录音缓存队列，用于录音回放和文件保存
-//        private ConcurrentLinkedQueue<byte[]> mRecordBuffer = new ConcurrentLinkedQueue<>();
-//        private boolean startSave = false;
-//        private String save_path;
-//        private String audio_format;
-//
-//        @Override
-//        public void startSave(String path, String audioFormat) {
-//            save_path = path;
-//            audio_format = audioFormat;
-//            mRecordBuffer.clear();
-//            startSave = true;
-//        }
-//
-//        @Override
-//        public void stopSave(boolean canSave) {
-//            startSave = false;
-//            if (canSave && mRecordBuffer.size() > 0) {
-//                boolean saveResult = FileUtil.saveFile(mRecordBuffer, save_path);
-//                if ("wav".equals(audio_format) && saveResult) {
-//                    FileUtil.formatPcm(audio_format, save_path, 16000);
-//                }
-//            } else {
-//                mRecordBuffer.clear();
-//            }
-//        }
-//
-//        @Override
-//        public void OnReceiveBytes(final byte[] data, final int length) {
-//            if (enableRecord && !inTTs && null != data && data.length != 0) {
-//                byte[] audio = new byte[data.length];
-//                System.arraycopy(data, 0, audio, 0, data.length);
-//                if (null != mAIUIAgent) {
-//                    AIUIMessage writeMsg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, "data_type=audio,sample_rate=16000", audio);
-//                    mAIUIAgent.sendMessage(writeMsg);
-//                }
-//            }
-//        }
-//    };
+    }
 
 
 }

@@ -186,7 +186,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     }
 
     private void onTppResult(String result) {
-        Log.d("tianrongchaung", result);
         NlpData nlpData = gson.fromJson(result, NlpData.class);
         if (hasVideoData(nlpData)) {
             lastTextData = nlpData.text;
@@ -599,8 +598,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     /**
      * 处理ViewCmd技能
      */
-    int i = 0;
-
     private void intentViewCmd(NlpData nlpData) {
         if (AiuiConstants.VIEWCMD_INTENT.equals(nlpData.semantic.get(0).intent)) {
             switch (nlpData.semantic.get(0).slots.get(0).name) {
