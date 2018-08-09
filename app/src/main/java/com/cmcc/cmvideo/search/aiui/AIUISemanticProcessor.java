@@ -254,7 +254,6 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
 
     /**
      * 处理控制指令
-     *
      * @param mData
      */
     private void intentControl(NlpData mData) {
@@ -274,13 +273,12 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
                         }
                     }
                 }
-                aiuiService.tts("正在为您" + mData.text);
+//                aiuiService.tts("正在为您" + mData.text);
                 break;
             case AiuiConstants.SREEN_INTENT:
                 // 投屏跳转
-                isAvailableVideo = true;
                 EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_SCREEN));
-                aiuiService.tts("正在为您" + mData.text);
+//                aiuiService.tts("正在为您" + mData.text);
                 break;
             default:
                 break;

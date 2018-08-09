@@ -134,15 +134,10 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     }
 
     @Override
-    public void analysisDefaultData(final String jsonData) {
+    public void analysisDefaultData(String jsonData) {
         if (!TextUtils.isEmpty(jsonData)) {
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    //暂时用延迟来保证页面显示出来之后再加载数据
-                    onTppResult(jsonData);
-                }
-            }, 500);
+            //暂时用延迟来保证页面显示出来之后再加载数据
+            onTppResult(jsonData);
         }
     }
 

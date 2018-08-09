@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -500,7 +501,12 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
             }};
             aiuiService.setUserParam(map);
 
-            mSearchByAIPresenter.analysisDefaultData(getIntent().getStringExtra("TPP_DATA"));
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mSearchByAIPresenter.analysisDefaultData(getIntent().getStringExtra("TPP_DATA"));
+                }
+            },1000);
         }
 
         @Override

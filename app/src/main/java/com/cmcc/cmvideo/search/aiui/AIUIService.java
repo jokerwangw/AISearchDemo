@@ -6,30 +6,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.AssetManager;
-import android.media.AudioFormat;
-import android.media.AudioRecord;
-import android.media.MediaRecorder;
-import android.net.Uri;
 import android.os.Binder;
-import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.cmcc.cmvideo.base.ApplicationContext;
 import com.cmcc.cmvideo.search.SearchByAIActivity;
 import com.cmcc.cmvideo.search.aiui.bean.IatBean;
 import com.cmcc.cmvideo.search.aiui.impl.NavigationImpl;
 import com.cmcc.cmvideo.util.AiResponse;
 import com.cmcc.cmvideo.util.AiuiConstants;
 import com.cmcc.cmvideo.util.FileUtil;
-import com.cmcc.cmvideo.util.NetworkUtil;
-import com.cmcc.cmvideo.util.PlayerManager;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.iflytek.aiui.AIUIAgent;
 import com.iflytek.aiui.AIUIConstant;
 import com.iflytek.aiui.AIUIEvent;
@@ -47,7 +36,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AIUIService extends Service {
     public static final String AIUI_SERVICE_NAME = "com.cmcc.cmvideo.search.aiui.AIUIService";
@@ -67,8 +55,7 @@ public class AIUIService extends Service {
     private AIUISemanticProcessor semanticProcessor;
     private boolean uiAttached = false;
 
-    private static final int MIN_CLICK_DELAY_TIME = 5000;
-    private static long lastClickTime = 0;
+    private byte[] fileData;
 
 
     @Override
@@ -84,6 +71,7 @@ public class AIUIService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        sendBroadcast();
         return START_STICKY;
     }
 
@@ -92,10 +80,6 @@ public class AIUIService extends Service {
         if (mAIUIAgent != null) {
             mAIUIAgent.destroy();
         }
-//        if (null != IflyRecorder.getInstance()) {
-//            IflyRecorder.getInstance().stopRecorder();
-//        }
-
         SpeechUtility.getUtility().destroy();
         if (null != mReceiver) {
             unregisterReceiver(mReceiver);
@@ -116,12 +100,20 @@ public class AIUIService extends Service {
         SpeechUtility.createUtility(this, "appid=5aceb703");
 
 //        SpeechUtility.createUtility(AIUIService.this, String.format("engine_start=ivw,delay_init=0,appid=%s", "5aceb703"));
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
-        registerReceiver(mReceiver, intentFilter);
+        sendBroadcast();
         setUserData();
 
     }
+
+    /**
+     * 发送检测耳机状态广播
+     */
+    private void sendBroadcast() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
+        registerReceiver(mReceiver, intentFilter);
+    }
+
 
     private void setUserData() {
         Map<String, String> map = new HashMap<String, String>() {{
@@ -136,13 +128,16 @@ public class AIUIService extends Service {
 
     private void ivwMode() {
         setParam("5000", "ivw", "continuous", "sdk");
-        byte[] fileData = FileUtil.readFileFromAssets(AIUIService.this, "wav/migumigu.wav");
+        fileData = FileUtil.readFileFromAssets(AIUIService.this, "wav/migumigu.wav");
         AIUIMessage writeMsg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, "data_type=audio,sample_rate=16000", fileData);
         Logger.debug("AIUI工作状态=====" + mCurrentState);
         sendMessage(writeMsg);
         sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
         setUserMicData();
         isIvwModel = true;
+        AIUIMessage writeStopMsg = new AIUIMessage(AIUIConstant.CMD_STOP_WRITE, 0, 0, "data_type=audio,sample_rate=16000", fileData);
+        Logger.debug("AIUI工作状态=====" + mCurrentState);
+        sendMessage(writeStopMsg);
 
         Logger.debug("已启动唤醒模式");
     }
@@ -462,12 +457,13 @@ public class AIUIService extends Service {
                 case AIUIConstant.EVENT_WAKEUP:
                     Logger.debug("----------------EVENT_wakeup======");
                     if (isIvwModel) {
-                        long curClickTime = System.currentTimeMillis();
-                        if ((curClickTime - lastClickTime) >= MIN_CLICK_DELAY_TIME) {
-                            // 超过点击间隔后再将lastClickTime重置为当前点击时间
-                            lastClickTime = curClickTime;
-                            tts(AiuiConstants.MICRO_MESSAGE);
-                        }
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                tts(AiuiConstants.MICRO_MESSAGE);
+                            }
+                        }, 500);
+
                     }
                     break;
                 case AIUIConstant.EVENT_SLEEP:
