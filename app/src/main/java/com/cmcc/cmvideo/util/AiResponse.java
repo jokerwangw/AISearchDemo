@@ -243,7 +243,14 @@ public class AiResponse {
      * 当satisfy返回false时语音播报
      */
     public Response getSatisfyResponse() {
-        return falseSatisfyList.get(0);
+//        return falseSatisfyList.get(0);
+        Response target = null;
+        try {
+            target = (Response) falseSatisfyList.get(random.nextInt(falseSatisfyList.size())).clone();
+        } catch (CloneNotSupportedException c) {
+            c.printStackTrace();
+        }
+        return target;
     }
 
 
