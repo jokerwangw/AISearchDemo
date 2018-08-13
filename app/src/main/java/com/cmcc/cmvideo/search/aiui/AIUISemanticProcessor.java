@@ -104,7 +104,6 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
     private void onNlpResult(String nlpResult) {
         String service = null;
         NlpData mData = gson.fromJson(nlpResult, NlpData.class);
-        Logger.debug("听写用户输入数据=====" + mData.text);
         if (null != mData.service) {
             service = mData.service;
             if (!AiuiConstants.VIEWCMD_SERVICE.equals(service)) {
@@ -129,13 +128,10 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
         }
 
         if (mData.rc == 4) {
-            Logger.debug("rc===4", ">>>>>>>>>>>4" + mData.rc);
-
             //播报
             if (isAvailableVideo) {
                 AiResponse.Response response = AiResponse.getInstance().getResultResponse();
                 aiuiService.tts(response.response);
-                Logger.debug("rc===4", "==========4" + mData.rc);
                 sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
             } else {
                 if ((System.currentTimeMillis() - startTime) > TIME_OUT) {
@@ -144,7 +140,6 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
                 } else {
                     AiResponse.Response response = AiResponse.getInstance().getResultResponse();
                     aiuiService.tts(response.response);
-                    Logger.debug("rc===4", "==========4" + mData.rc);
                     sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
                 }
             }
@@ -254,6 +249,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
 
     /**
      * 处理控制指令
+     *
      * @param mData
      */
     private void intentControl(NlpData mData) {
@@ -277,6 +273,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
                 break;
             case AiuiConstants.SREEN_INTENT:
                 // 投屏跳转
+                isAvailableVideo = true;
                 EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_SCREEN));
 //                aiuiService.tts("正在为您" + mData.text);
                 break;
@@ -432,14 +429,11 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
         switch (intent) {
             case AiuiConstants.VIDEO_CHANNEL_INTENT:
                 //频道查询 如：我要看CCTV5体育 / 湖南卫视
-                Logger.debug("VIDEO_CHANNEL_INTENT==================" + mData);
                 aiuiService.getNavigation().toLive(mData);
                 break;
             case AiuiConstants.VIDEO_VERITY_INTENT:
                 //多样直播视频查询 如：我要看直播 、体育直播
                 if (!TextUtils.isEmpty(mData.text)) {
-                    Logger.debug("VIDEO_CHANNEL_INTENT=====我要看直播=============" + mData);
-
                     if ("我要看直播".equals(mData.text)) {
                         //直接跳转到直播模块
                         aiuiService.getNavigation().toLive(LiveEnum.UNKNOWN);

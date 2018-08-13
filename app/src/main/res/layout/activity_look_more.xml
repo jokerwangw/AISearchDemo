@@ -39,12 +39,20 @@
         android:layout_below="@+id/rl_header"
         android:background="@color/appointment_movie_time"/>
 
-    <android.support.v7.widget.RecyclerView
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/look_more_recyclerView"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_below="@+id/rl_header"-->
+        <!--android:layout_marginLeft="@dimen/dimen_3dp"-->
+        <!--android:layout_marginTop="@dimen/dimen_3dp"-->
+        <!--/>-->
+
+    <com.jcodecraeer.xrecyclerview.XRecyclerView
         android:id="@+id/look_more_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/rl_header"
         android:layout_marginLeft="@dimen/dimen_3dp"
-        android:layout_marginTop="@dimen/dimen_3dp"
-        />
+        android:layout_marginTop="@dimen/dimen_3dp" />
 </RelativeLayout>

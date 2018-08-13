@@ -16,6 +16,8 @@ import com.cmcc.cmvideo.search.aiui.bean.TppData;
 
 import org.json.JSONObject;
 
+import java.util.List;
+
 import static com.cmcc.cmvideo.util.AiuiConstants.IMG_BASE_URL;
 
 

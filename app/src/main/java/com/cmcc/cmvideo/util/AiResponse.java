@@ -118,6 +118,12 @@ public class AiResponse {
 
     ));
 
+
+    private List<Response> falseSatisfyList = new ArrayList<Response>(Arrays.asList(
+            new Response("你想要的%s不存在，只为你找到了这些", RespType.VIDEO_TYPE)
+    ));
+
+
     /**
      * 换一个 没有数据了 反馈语
      *
@@ -231,6 +237,15 @@ public class AiResponse {
     public Response getSleep() {
         return sleepList.get(0);
     }
+
+
+    /**
+     * 当satisfy返回false时语音播报
+     */
+    public Response getSatisfyResponse() {
+        return falseSatisfyList.get(0);
+    }
+
 
     public class Response implements Cloneable {
         public Response() {

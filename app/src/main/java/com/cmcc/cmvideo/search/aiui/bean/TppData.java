@@ -9,6 +9,7 @@ public class TppData {
     public static class LxResultBean {
         public String code;
         public String codedesc;
+        public boolean satisfy;
         public DataBean data;
     }
 

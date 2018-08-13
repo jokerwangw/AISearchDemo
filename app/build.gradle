@@ -82,4 +82,5 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation files('libs/AIUI.jar')
     implementation files('libs/Msc.jar')
+    compile 'com.jcodecraeer:xrecyclerview:1.5.9'
 }

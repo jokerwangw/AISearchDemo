@@ -5,10 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,12 +23,25 @@ import com.cmcc.cmvideo.search.adapter.LookMoreAdapter;
 import com.cmcc.cmvideo.search.aiui.AIUIService;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.aiui.Logger;
+import com.cmcc.cmvideo.search.aiui.bean.NlpData;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
+import com.cmcc.cmvideo.search.model.LookMoreEventDataBean;
 import com.cmcc.cmvideo.search.presenters.LookMorePresenter;
 import com.cmcc.cmvideo.search.presenters.impl.LookMorePresenterImpl;
+import com.google.gson.Gson;
+import com.iflytek.aiui.AIUIConstant;
+import com.iflytek.aiui.AIUIMessage;
+import com.jcodecraeer.xrecyclerview.ProgressStyle;
+import com.jcodecraeer.xrecyclerview.XRecyclerView;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,15 +55,21 @@ import butterknife.OnClick;
 
 public class LookMoreActivity extends AppCompatActivity implements LookMorePresenter.View, LookMoreAdapter.OnLookMoreItemClick {
     @BindView(R.id.look_more_recyclerView)
-    RecyclerView mLookMoreRecyclerView;
+    XRecyclerView mLookMoreRecyclerView;
     @BindView(R.id.tv_title)
     TextView titleTv;
     public static final String KEY_MORE_DATE = "more_data";
     public static final String KEY_TITLE = "more_data_title";
+    public static final String KEY_LAST_TEXT = "last_text";
     private Context mContext;
     private LookMorePresenterImpl lookMorePresenter;
     private LookMoreAdapter mLookMoreAdapter;
     private List<TppData.DetailsListBean> detailsList;
+    private int pageNum = 1;
+    private int pageSize = 15;
+    private IAIUIService aiuiService;
+    private String lastTextData;
+    private Gson gson;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,24 +83,110 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         initData();
     }
 
+
     private void initData() {
+        gson = new Gson();
+        EventBus.getDefault().register(this);
+        bindService(new Intent(this, AIUIService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
         detailsList = new ArrayList<>();
         lookMorePresenter = new LookMorePresenterImpl(
                 ThreadExecutor.getInstance(),
                 MainThreadImpl.getInstance(),
                 this,
                 this);
-        lookMorePresenter.setDetailsJson(getIntent().getStringExtra(KEY_MORE_DATE));
+//        lookMorePresenter.setDetailsJson(getIntent().getStringExtra(KEY_MORE_DATE));
     }
 
-    private void initCustomView() {
-        mLookMoreAdapter = new LookMoreAdapter(mContext, this);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, 3);
-        mLookMoreRecyclerView.setHasFixedSize(true);
-        mLookMoreRecyclerView.setLayoutManager(gridLayoutManager);
-        mLookMoreRecyclerView.setAdapter(mLookMoreAdapter);
-        titleTv.setText(getIntent().getStringExtra(KEY_TITLE));
+    //创建Handler
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == 1002) {
+                aiuiService.getLookMorePage(lastTextData, pageNum, pageSize);
+                Logger.debug("加载分页页数===" + pageNum);
+
+            }
+        }
+    };
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiveLookMoreData(LookMoreEventDataBean moreData) {
+        Logger.debug("接收到的请求加载更多的数据===" + moreData.getMoreData());
+        lookMorePresenter.setDetailsJson(moreData.getMoreData());
+        mLookMoreAdapter.notifyDataSetChanged();
+        NlpData nlpData = gson.fromJson(moreData.getMoreData(), NlpData.class);
+        if (
+                nlpData.data == null
+                        || nlpData.data.lxresult == null
+                        || nlpData.data.lxresult.data.detailslist.size() == 0) {
+
+
+            mLookMoreRecyclerView.setFootViewText(null, null);
+            mLookMoreRecyclerView.loadMoreComplete();
+
+            return;
+        }
+        mLookMoreRecyclerView.loadMoreComplete();
+
+
     }
+
+
+    private void initCustomView() {
+        lastTextData = getIntent().getStringExtra(KEY_LAST_TEXT);
+        mLookMoreAdapter = new LookMoreAdapter(mContext, this);
+//        GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, 3);
+//        mLookMoreRecyclerView.setHasFixedSize(true);
+//        mLookMoreRecyclerView.setLayoutManager(gridLayoutManager);
+//        mLookMoreRecyclerView.setAdapter(mLookMoreAdapter);
+        titleTv.setText(getIntent().getStringExtra(KEY_TITLE));
+
+
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mLookMoreRecyclerView.setLayoutManager(layoutManager);
+        mLookMoreRecyclerView.setPullRefreshEnabled(false);
+        mLookMoreRecyclerView.setLoadingMoreProgressStyle(ProgressStyle.Pacman);
+        mLookMoreRecyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
+            @Override
+            public void onRefresh() {
+                //refresh data here
+                pageNum = 1;
+            }
+
+            @Override
+            public void onLoadMore() {
+                // load more data here
+                pageNum++;
+                // TODO: 2018/8/9 发送请求
+                Message message = Message.obtain();
+                message.what = 1002;
+                handler.sendMessage(message);
+
+                Logger.debug("上拉加载===>>>>>");
+
+
+            }
+        });
+
+        mLookMoreRecyclerView.setAdapter(mLookMoreAdapter);
+
+    }
+
+
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            aiuiService = (IAIUIService) service;
+            aiuiService.getLookMorePage(lastTextData, pageNum, pageSize);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+        }
+    };
+
 
     /**
      * 显示数据
@@ -117,5 +225,7 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
     protected void onDestroy() {
         super.onDestroy();
         lookMorePresenter.destroy();
+        EventBus.getDefault().unregister(this);
+
     }
 }

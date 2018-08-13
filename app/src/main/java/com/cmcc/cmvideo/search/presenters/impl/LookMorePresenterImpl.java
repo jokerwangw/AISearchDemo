@@ -29,6 +29,7 @@ public class LookMorePresenterImpl extends AbstractPresenter implements LookMore
     private LookMorePresenter.View mView;
     private Context mContext;
     private Gson gson;
+    private List<TppData.DetailsListBean> LookMoreData = new ArrayList();
 
     public LookMorePresenterImpl(Executor executor, MainThread mainThread, LookMorePresenter.View view, Context context) {
         super(executor, mainThread);
@@ -64,7 +65,7 @@ public class LookMorePresenterImpl extends AbstractPresenter implements LookMore
 
 
     public void onTppResult(String result) {
-        if (TextUtils.isEmpty(result)){
+        if (TextUtils.isEmpty(result)) {
             return;
         }
 
@@ -90,22 +91,28 @@ public class LookMorePresenterImpl extends AbstractPresenter implements LookMore
                         || nlpData.data.lxresult.data.detailslist.size() == 0) {
             return;
         }
-        mView.showInitList(blurDetailsList(nlpData.data.lxresult.data.detailslist));
+
+        LookMoreData.addAll(nlpData.data.lxresult.data.detailslist);
+
+//        mView.showInitList(blurDetailsList(nlpData.data.lxresult.data.detailslist));
+//        mView.showInitList(blurDetailsList(LookMoreData));
+        mView.showInitList(LookMoreData);
     }
+
     //前三个 保持不变后面的数据随机排序，产品需求 为了造成每次查看更多好像都换新的数据的假象
-    private List<TppData.DetailsListBean> blurDetailsList(List<TppData.DetailsListBean> detailslist){
-        if(detailslist ==null||detailslist.size()<4){
+    private List<TppData.DetailsListBean> blurDetailsList(List<TppData.DetailsListBean> detailslist) {
+        if (detailslist == null || detailslist.size() < 4) {
             return detailslist;
         }
 
-        List<TppData.DetailsListBean> headList =  detailslist.subList(0,3);
-        List<TppData.DetailsListBean> blurList = detailslist.subList(3,detailslist.size());
+        List<TppData.DetailsListBean> headList = detailslist.subList(0, 3);
+        List<TppData.DetailsListBean> blurList = detailslist.subList(3, detailslist.size());
         List<TppData.DetailsListBean> sourceList = new ArrayList<>();
         int count = blurList.size();
-        Random random  =  new Random();
-        for(int i=0;i<count;i++){
+        Random random = new Random();
+        for (int i = 0; i < count; i++) {
             int index = random.nextInt(count);
-            Collections.swap(blurList,0,index);
+            Collections.swap(blurList, 0, index);
         }
         sourceList.addAll(headList);
         sourceList.addAll(blurList);
