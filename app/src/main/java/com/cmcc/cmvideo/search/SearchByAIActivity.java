@@ -234,7 +234,8 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                 //查看更多
                 Intent intent = new Intent(mContext, LookMoreActivity.class);
                 intent.putExtra(LookMoreActivity.KEY_TITLE, titleText);
-                intent.putExtra(LookMoreActivity.KEY_LAST_TEXT, lastText);
+//                intent.putExtra(LookMoreActivity.KEY_LAST_TEXT, lastText);
+                intent.putExtra(LookMoreActivity.KEY_MORE_DATE, deailsJson);
                 startActivity(intent);
             } else {
                 int i = position + 1;

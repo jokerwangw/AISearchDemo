@@ -217,7 +217,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         AiResponse.Response responseTts = null;
         Map<String, String> map = formatSlotsToMap(nlpData.semantic.get(0).slots);
         lastVideoData = result;
-        Logger.debug("查看更多的数据====" + lastVideoData);
         lastResponseVideoTitle = makeCardTitle(map);
         String msg = nlpData.answer != null ? nlpData.answer.text : "";
         switch (nlpData.semantic.get(0).intent) {
