@@ -29,8 +29,10 @@ import com.cmcc.cmvideo.base.ThreadExecutor;
 import com.cmcc.cmvideo.search.adapter.SearchByAIAdapter;
 import com.cmcc.cmvideo.search.aiui.AIUIService;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
+import com.cmcc.cmvideo.search.aiui.Logger;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.interactors.ItemSearchByAIClickListener;
+import com.cmcc.cmvideo.search.model.LastTextDataBean;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
 import com.cmcc.cmvideo.search.model.SearchByAIRefreshUIEventBean;
@@ -104,6 +106,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private AudioManager audioManager = null;
     private int currVolume = 0;
     private int mViewCacheSize = 100;
+    private String lastText = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -203,6 +206,13 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiveLastText(LastTextDataBean text) {
+        if (null != text) {
+            lastText = text.getLastText();
+        }
+    }
+
     /**
      * 点击不同条目对应的点击事件
      */
@@ -221,9 +231,10 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         @Override
         public void clickItemSearchByAIEveryoneISWatching(boolean isClickMore, int position, String deailsJson, String titleText) {
             if (isClickMore) {
+                //查看更多
                 Intent intent = new Intent(mContext, LookMoreActivity.class);
-                intent.putExtra(LookMoreActivity.KEY_MORE_DATE, deailsJson);
                 intent.putExtra(LookMoreActivity.KEY_TITLE, titleText);
+                intent.putExtra(LookMoreActivity.KEY_LAST_TEXT, lastText);
                 startActivity(intent);
             } else {
                 int i = position + 1;
@@ -493,20 +504,13 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         public void onServiceConnected(ComponentName name, IBinder service) {
             aiuiService = (IAIUIService) service;
             mSearchByAIPresenter.setAIUIService(aiuiService);
-
-            Map<String, String> map = new HashMap<String, String>() {{
-                put("msisdn", "13764279837");
-                put("user_id", "553782460");
-                put("client_id", "897ddadc222ec9c20651da355daee9cc");
-            }};
-            aiuiService.setUserParam(map);
-
+            
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mSearchByAIPresenter.analysisDefaultData(getIntent().getStringExtra("TPP_DATA"));
                 }
-            },1000);
+            }, 1000);
         }
 
         @Override
