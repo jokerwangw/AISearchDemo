@@ -86,14 +86,11 @@ public class AIUIService extends Service {
             unregisterReceiver(mReceiver);
         }
         super.onDestroy();
-        Logger.debug("AIUIService has onDestroy!");
     }
 
 
     //SDK 初始化
     private void init() {
-        //初始化用户信息
-        Logger.debug("上传用户信息===>>>>>>>>>>>>>>>>>>>>>>>>>>");
         //AIUI初始化
         mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
         mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START, 0, 0, "", null));
@@ -131,16 +128,12 @@ public class AIUIService extends Service {
         setParam("5000", "ivw", "continuous", "sdk");
         fileData = FileUtil.readFileFromAssets(AIUIService.this, "wav/migumigu.wav");
         AIUIMessage writeMsg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, "data_type=audio,sample_rate=16000", fileData);
-        Logger.debug("AIUI工作状态=====" + mCurrentState);
         sendMessage(writeMsg);
         sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
         setUserData();
         isIvwModel = true;
         AIUIMessage writeStopMsg = new AIUIMessage(AIUIConstant.CMD_STOP_WRITE, 0, 0, "data_type=audio,sample_rate=16000", fileData);
-        Logger.debug("AIUI工作状态=====" + mCurrentState);
         sendMessage(writeStopMsg);
-
-        Logger.debug("已启动唤醒模式");
     }
 
     /**
@@ -181,7 +174,6 @@ public class AIUIService extends Service {
         aiuiService.cancelTts();
         sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
         setParam("60000", "off", "oneshot", "sdk");
-        Logger.debug("已启动标准模式");
         isIvwModel = false;
 
 
@@ -424,11 +416,8 @@ public class AIUIService extends Service {
                 }
                 break;
                 case AIUIConstant.EVENT_ERROR:
-                    Logger.debug("----------------EVENT_ERROR======" + event.info
-                            + "arg===" + event.arg1 + "argg2===" + event.arg2);
                     break;
                 case AIUIConstant.EVENT_WAKEUP:
-                    Logger.debug("----------------EVENT_wakeup======");
                     if (isIvwModel) {
                         new Handler().postDelayed(new Runnable() {
                             @Override
@@ -440,7 +429,6 @@ public class AIUIService extends Service {
                     }
                     break;
                 case AIUIConstant.EVENT_SLEEP:
-                    Logger.debug("----------------EVENT_SLEEP======");
                     if (isIvwModel) {
                         tts(AiResponse.getInstance().getSleep().response);
                     }
@@ -764,8 +752,6 @@ public class AIUIService extends Service {
                     if (intent.getIntExtra("state", 0) == 0) {
                         semanticProcessor.setIsMicConnect(false);
                         navigation.isHeadset(false);
-                        //切换为外放模式
-//                        PlayerManager.getInstance().changeToReceiver();
                         if (isIvwModel) {
                             standardMode();
                         }
@@ -773,8 +759,6 @@ public class AIUIService extends Service {
                         isAvailableVideo = true;
                         navigation.isHeadset(true);
                         semanticProcessor.setIsMicConnect(true);
-                        //切换为耳机模式
-                        //PlayerManager.getInstance().changeToHeadset();
                         if (!isIvwModel) {
                             ivwMode();
                         }
@@ -783,27 +767,6 @@ public class AIUIService extends Service {
             }
         }
     };
-
-
-    private static String oldTtsMsg;
-    private static long time;
-
-    private void showTts(String ttsMsg) {
-        if (!ttsMsg.equals(oldTtsMsg)) { // 当显示的内容不一样时，即断定为不是同一个Toast
-            if (isIvwModel) {
-                tts(ttsMsg);
-            }
-        } else {
-            time = System.currentTimeMillis();
-            // 显示内容一样时，只有间隔时间大于2秒时才显示
-            if (System.currentTimeMillis() - time > 5000) {
-                tts(ttsMsg);
-                time = System.currentTimeMillis();
-            }
-        }
-        oldTtsMsg = ttsMsg;
-
-    }
 
 
 }
