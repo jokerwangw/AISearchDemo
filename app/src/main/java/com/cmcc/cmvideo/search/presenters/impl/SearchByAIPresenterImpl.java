@@ -210,9 +210,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             }
         }
 
-        //当返回为false时，返回数据为兜底数据，同时播报反馈语“你想要的"xxxx"不存在，只为你找到了这些”
-//        Logger.debug("返回的satisfy字段=====" + nlpData.data.lxresult.satisfy);
-
         //语义后处理没有返回数据则直接退出
         if (!hasVideoData(nlpData) || !"0000000".equals(nlpData.data.lxresult.code)) {
             //没有影片数据且存在answer 则播报  随机播报一条反馈语言
@@ -409,11 +406,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                             String name = subserials.get(index).name;
                             aiuiService.getNavigation().playEpisode(new NavigationBean(subserials.get(index)));
                             aiuiService.tts("正在为你打开" + name);
-                            Logger.debug("大于本来的集数》》》》》》===================");
 
                         } else {
-                            // TODO: 2018/8/5 超出剧集数据语音播报=====  需后台处理不返回数据了tpp 
-                            Logger.debug("大于本来的集数===================");
                         }
                     }
                 }

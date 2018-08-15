@@ -34,6 +34,18 @@ public class AiResponse {
     }
 
     /**
+     * 电视剧集数超过最大集数时的反馈语
+     */
+    private List<Response> beyondEpisodeMsgList = new ArrayList<Response>(Arrays.asList(
+            new Response("抱歉小主，你搜索的集数不存在哦", RespType.NORMAL),
+            new Response("", RespType.NORMAL),
+            new Response("我还在学习中，等我学会再回答你", RespType.NORMAL),
+            new Response("我好像没听明白，再说一次呗", RespType.NORMAL)
+    ));
+
+
+
+    /**
      * rc == 4 反馈语
      */
     private List<Response> errorRcMsgList = new ArrayList<Response>(Arrays.asList(
@@ -47,9 +59,10 @@ public class AiResponse {
      * 网络不好 类似后台查询异常反馈语
      */
     private List<Response> networkResponseList = new ArrayList<Response>(Arrays.asList(
-            new Response("对不起，我开小差了", RespType.NETWORK),
+            new Response("没有您要找的内容呢，换一个试试", RespType.NETWORK),
+            new Response("是不是又在考验小咪了，没有这个哦", RespType.NETWORK),
             new Response("没有找到你想要的，我再努力试试", RespType.NETWORK),
-            new Response("我好像没听明白，再说一次呗", RespType.NETWORK),
+            new Response("抱歉小主，小咪已经尽力了，换个别的搜搜吧", RespType.NETWORK),
             new Response("我已经尽力了，但是没有找到结果", RespType.NETWORK)
     ));
 
@@ -237,6 +250,9 @@ public class AiResponse {
     public Response getSleep() {
         return sleepList.get(0);
     }
+
+
+
 
 
     /**
