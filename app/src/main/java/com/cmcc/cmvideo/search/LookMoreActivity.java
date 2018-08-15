@@ -70,6 +70,7 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
     private IAIUIService aiuiService;
     private String lastTextData;
     private Gson gson;
+    private boolean isBind = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -94,7 +95,6 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
                 MainThreadImpl.getInstance(),
                 this,
                 this);
-//        lookMorePresenter.setDetailsJson(getIntent().getStringExtra(KEY_MORE_DATE));
     }
 
     //创建Handler
@@ -104,7 +104,6 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
             super.handleMessage(msg);
             if (msg.what == 1002) {
                 aiuiService.getLookMorePage(lastTextData, pageNum, pageSize);
-                Logger.debug("加载分页页数===" + pageNum);
 
             }
         }
@@ -112,7 +111,6 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveLookMoreData(LookMoreEventDataBean moreData) {
-        Logger.debug("接收到的请求加载更多的数据===" + moreData.getMoreData());
         lookMorePresenter.setDetailsJson(moreData.getMoreData());
         mLookMoreAdapter.notifyDataSetChanged();
         NlpData nlpData = gson.fromJson(moreData.getMoreData(), NlpData.class);
@@ -124,7 +122,6 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
 
             mLookMoreRecyclerView.setFootViewText(null, null);
             mLookMoreRecyclerView.loadMoreComplete();
-
             return;
         }
         mLookMoreRecyclerView.loadMoreComplete();
@@ -136,12 +133,7 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
     private void initCustomView() {
         lastTextData = getIntent().getStringExtra(KEY_LAST_TEXT);
         mLookMoreAdapter = new LookMoreAdapter(mContext, this);
-//        GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, 3);
-//        mLookMoreRecyclerView.setHasFixedSize(true);
-//        mLookMoreRecyclerView.setLayoutManager(gridLayoutManager);
-//        mLookMoreRecyclerView.setAdapter(mLookMoreAdapter);
         titleTv.setText(getIntent().getStringExtra(KEY_TITLE));
-
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -159,14 +151,9 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
             public void onLoadMore() {
                 // load more data here
                 pageNum++;
-                // TODO: 2018/8/9 发送请求
                 Message message = Message.obtain();
                 message.what = 1002;
                 handler.sendMessage(message);
-
-                Logger.debug("上拉加载===>>>>>");
-
-
             }
         });
 
@@ -179,6 +166,7 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             aiuiService = (IAIUIService) service;
+            isBind = true;
             aiuiService.getLookMorePage(lastTextData, pageNum, pageSize);
         }
 
@@ -225,6 +213,10 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
     protected void onDestroy() {
         super.onDestroy();
         lookMorePresenter.destroy();
+        if (isBind) {
+            unbindService(connection);
+        }
+        isBind = false;
         EventBus.getDefault().unregister(this);
 
     }

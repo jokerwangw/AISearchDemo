@@ -104,11 +104,32 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
     private void onNlpResult(String nlpResult) {
         String service = null;
         NlpData mData = gson.fromJson(nlpResult, NlpData.class);
+
         if (null != mData.service) {
             service = mData.service;
             if (!AiuiConstants.VIEWCMD_SERVICE.equals(service)) {
                 sendMessage(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
             }
+        }
+
+        if (mData.rc == 4) {
+            //播报
+            sendMessage(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
+            if (isAvailableVideo) {
+                AiResponse.Response response = AiResponse.getInstance().getResultResponse();
+                aiuiService.tts(response.response);
+                sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
+            } else {
+                if ((System.currentTimeMillis() - startTime) > TIME_OUT) {
+                    // 超过5秒表示 且rc=4（无法解析出语义） ，可显示推荐说法卡片
+                    sendMessage("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI);
+                } else {
+                    AiResponse.Response response = AiResponse.getInstance().getResultResponse();
+                    aiuiService.tts(response.response);
+                    sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
+                }
+            }
+            return;
         }
 
 
@@ -127,24 +148,6 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
             }
         }
 
-        if (mData.rc == 4) {
-            //播报
-            if (isAvailableVideo) {
-                AiResponse.Response response = AiResponse.getInstance().getResultResponse();
-                aiuiService.tts(response.response);
-                sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
-            } else {
-                if ((System.currentTimeMillis() - startTime) > TIME_OUT) {
-                    // 超过5秒表示 且rc=4（无法解析出语义） ，可显示推荐说法卡片
-                    sendMessage("", MESSAGE_TYPE_CAN_ASK_AI, MESSAGE_FROM_AI);
-                } else {
-                    AiResponse.Response response = AiResponse.getInstance().getResultResponse();
-                    aiuiService.tts(response.response);
-                    sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
-                }
-            }
-            return;
-        }
 
         try {
             //解析出当前语义状态，以便上传同步客户端状态，实现多伦对话

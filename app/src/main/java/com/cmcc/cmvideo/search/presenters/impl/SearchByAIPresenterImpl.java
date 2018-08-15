@@ -48,6 +48,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.cmcc.cmvideo.util.AiuiConstants.MessageFrom.MESSAGE_FROM_AI;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageFrom.MESSAGE_FROM_USER;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_CAN_ASK_AI;
 import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_EVERYONE_IS_WATCHING;
 import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
 import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
@@ -164,11 +166,12 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     private void onNlpResult(String nlpResult) {
         NlpData mData = gson.fromJson(nlpResult, NlpData.class);
+        String service = mData.service;
         if (mData.rc == 4) {
+            Logger.debug(">>>>>>>>>>>>>rc4======");
             return;
         }
 
-        String service = mData.service;
         switch (service) {
             case AiuiConstants.VIEWCMD_SERVICE:
                 intentViewCmd(mData);
@@ -226,6 +229,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         String msg = nlpData.answer != null ? nlpData.answer.text : "";
         switch (nlpData.semantic.get(0).intent) {
             case AiuiConstants.VIDEO_CMD_INTENT:
+                break;
             case AiuiConstants.QUERY_INTENT:
                 int messageType = MESSAGE_TYPE_NORMAL;
                 /*  暂时去除该模块判断 后续会加上
@@ -641,7 +645,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         } else {
                             //再发送请求  比如用户换一个之前说的是   推荐个电视剧
                             aiuiService.textUnderstander(lastTextData);
-//                            aiuiService.tts(AiResponse.getInstance().getChangeResponse().response);
                         }
                     }
                     break;
