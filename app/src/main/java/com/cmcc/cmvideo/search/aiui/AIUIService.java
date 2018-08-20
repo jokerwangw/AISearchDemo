@@ -403,7 +403,11 @@ public class AIUIService extends Service {
                                     Logger.debug("NLP 【" + resultStr + "】");
 
                                     eventListenerManager.onResult(null, resultStr, null);
-                                    textUnderstand = "";
+                                    if(!TextUtils.isEmpty(textUnderstand)){
+                                        if(resultStr.contains(textUnderstand)){
+                                            textUnderstand ="";
+                                        }
+                                    }
                                 } else {
                                     String resultStr = cntJson.optString("intent");
                                     if (resultStr.equals("{}")) {
