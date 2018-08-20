@@ -1,5 +1,6 @@
 package com.cmcc.cmvideo.search;
 
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -53,7 +54,6 @@ import butterknife.OnClick;
  * Describe:
  */
 
-
 public class LookMoreActivity extends AppCompatActivity implements LookMorePresenter.View, LookMoreAdapter.OnLookMoreItemClick {
     @BindView(R.id.look_more_recyclerView)
     XRecyclerView mLookMoreRecyclerView;
@@ -73,6 +73,17 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
     private Gson gson;
     private boolean isBind = false;
     private String spLastData;
+    //创建Handler
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == 1002) {
+                aiuiService.getLookMorePage(lastTextData, pageNum, pageSize);
+            }
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -86,7 +97,6 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         initData();
     }
 
-
     private void initData() {
         gson = new Gson();
         EventBus.getDefault().register(this);
@@ -98,18 +108,6 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
                 this,
                 this);
     }
-
-    //创建Handler
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (msg.what == 1002) {
-                aiuiService.getLookMorePage(lastTextData, pageNum, pageSize);
-
-            }
-        }
-    };
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveLookMoreData(LookMoreEventDataBean moreData) {
@@ -125,11 +123,9 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
 
         lookMorePresenter.setDetailsJson(moreData.getMoreData());
         mLookMoreAdapter.notifyDataSetChanged();
-        if (
-                nlpData.data == null
+        if (nlpData.data == null
                         || nlpData.data.lxresult == null
                         || nlpData.data.lxresult.data.detailslist.size() == 0) {
-
 
             mLookMoreRecyclerView.setFootViewText(null, null);
             mLookMoreRecyclerView.loadMoreComplete();
@@ -137,7 +133,6 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         }
         mLookMoreRecyclerView.loadMoreComplete();
     }
-
 
     private void initCustomView() {
         SharedPreferencesHelper.getInstance(this).setValue(KEY_LAST_TEXT, getIntent().getStringExtra(KEY_LAST_TEXT));
@@ -172,7 +167,6 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
 
     }
 
-
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -180,7 +174,7 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
             isBind = true;
 
             lookMorePresenter.setDetailsJson(getIntent().getStringExtra(KEY_MORE_DATE));
-//            aiuiService.getLookMorePage(lastTextData, pageNum, pageSize);
+            //            aiuiService.getLookMorePage(lastTextData, pageNum, pageSize);
         }
 
         @Override
@@ -222,7 +216,6 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         this.finish();
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -234,6 +227,5 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         lastTextData = "";
         spLastData = "";
         EventBus.getDefault().unregister(this);
-
     }
 }

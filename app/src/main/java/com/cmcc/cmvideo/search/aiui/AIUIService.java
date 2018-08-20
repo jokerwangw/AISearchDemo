@@ -58,10 +58,12 @@ public class AIUIService extends Service {
     private boolean isAvailableVideo = false;
     private AIUISemanticProcessor semanticProcessor;
     private boolean uiAttached = false;
-
     private byte[] fileData;
     //是否正在tts播报中
     private boolean isTtsing = false;
+    private static String oldTtsMsg;
+    private static long time;
+    private static Gson mGson;
 
     private String textUnderstand ="";
 
@@ -93,8 +95,9 @@ public class AIUIService extends Service {
         super.onDestroy();
     }
 
-
-    //SDK 初始化
+    /**
+     * SDK 初始化
+     */
     private void init() {
         //AIUI初始化
         mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
@@ -102,7 +105,6 @@ public class AIUIService extends Service {
         //MSC初始化（登陆）
         SpeechUtility.createUtility(this, "appid=5aceb703");
 
-        //        SpeechUtility.createUtility(AIUIService.this, String.format("engine_start=ivw,delay_init=0,appid=%s", "5aceb703"));
         sendBroadcast();
         setUserData();
         Logger.debug(">>>>>>>>>>>onCreate>>>>>>>");
@@ -117,7 +119,6 @@ public class AIUIService extends Service {
         registerReceiver(mReceiver, intentFilter);
     }
 
-
     private void setUserData() {
         Map<String, String> map = new HashMap<String, String>() {{
             put("msisdn", "13764279837");
@@ -127,7 +128,6 @@ public class AIUIService extends Service {
         userInfoMap = map;
         AIUIService.this.setUserParam();
     }
-
 
     private void ivwMode() {
         Logger.debug(">>>>>>>>>ivwMode=========>>>>>>>>");
@@ -151,7 +151,6 @@ public class AIUIService extends Service {
      * @param dataSource
      */
     private void setParam(String interactTime, String wakeupMode, String interactMode, String dataSource) {
-
         try {
             JSONObject objectJson = new JSONObject();
             JSONObject paramJson = new JSONObject();
@@ -169,9 +168,7 @@ public class AIUIService extends Service {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
-
 
     /**
      * 标准模式
@@ -181,7 +178,6 @@ public class AIUIService extends Service {
         sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
         setParam("60000", "off", "oneshot", "sdk");
         isIvwModel = false;
-
     }
 
     @Nullable
@@ -196,6 +192,10 @@ public class AIUIService extends Service {
     }
 
     private class AIUIServiceImpl extends Binder implements IAIUIService {
+        private String lookMoreText;
+        private int pageIndex;
+        private int pageSize;
+
         @Override
         public void setInteractMode(boolean isOnShot) {
             if (isOnShot) {
@@ -218,7 +218,6 @@ public class AIUIService extends Service {
         public void cancelTts() {
             //取消语音合成
             AIUIService.this.cancelTts();
-
         }
 
         @Override
@@ -269,10 +268,6 @@ public class AIUIService extends Service {
         public void syncSpeakableData(String stateKey, Map<String, String> hotInfo) {
             AIUIService.this.syncSpeakableData(stateKey, hotInfo);
         }
-
-        private String lookMoreText;
-        private int pageIndex;
-        private int pageSize;
 
         @Override
         public void getLookMorePage(final String lookMoreText, final int pageIndex, final int pageSize) {
@@ -384,8 +379,10 @@ public class AIUIService extends Service {
                                 if (!TextUtils.isEmpty(json)) {
                                     cntJson = new JSONObject(json);
                                 }
-                                if (cntJson == null)
+                                if (cntJson == null) {
                                     return;
+                                }
+
                                 if ("iat".equals(sub)) {
                                     String iat = cntJson.optString("text");
                                     if (iat.equals("{}") || iat.isEmpty()) {
@@ -414,7 +411,7 @@ public class AIUIService extends Service {
                                     }
 
                                     String jsonResultStr = cntJson.toString();
-                                    //                                    LogUtil.e("TPP===", resultStr);
+                                    //LogUtil.e("TPP===", resultStr);
                                     Logger.debug("TPP 【" + jsonResultStr + "】");
                                     EventBus.getDefault().post(new LookMoreEventDataBean(jsonResultStr));
                                     eventListenerManager.onResult(null, null, jsonResultStr);
@@ -473,7 +470,8 @@ public class AIUIService extends Service {
                     if (event1.arg1 == AIUIConstant.CMD_SYNC) {
                         int dtype = event.data.getInt("sync_dtype");
                         //arg2表示结果
-                        if (0 == event.arg2) {          // 同步成功
+                        if (0 == event.arg2) {
+                            // 同步成功
                             Logger.debug("sync_dtype is " + dtype);
                             switch (dtype) {
                                 case AIUIConstant.SYNC_DATA_SPEAKABLE:
@@ -529,11 +527,9 @@ public class AIUIService extends Service {
         }
     };
 
-
     private void cancelTts() {
         sendMessage(new AIUIMessage(AIUIConstant.CMD_TTS, AIUIConstant.CANCEL, 0, "", null));
     }
-
 
     private void tts(String ttsText) {
         if (TextUtils.isEmpty(ttsText)) {
@@ -547,18 +543,29 @@ public class AIUIService extends Service {
             e.printStackTrace();
         }
 
-        StringBuffer params = new StringBuffer();  //构建合成参数
-        params.append("vcn=jiajia");  //合成发音人
-        params.append(",speed=85");  //合成速度
-        params.append(",pitch=30");  //合成音调
-        params.append(",volume=100");  //合成音量
-        params.append(",ent=xtts");//引擎，默认aisound，如果需要较好的效果，可设置成xtts
+        //构建合成参数
+        StringBuffer params = new StringBuffer();
+        //合成发音人
+        params.append("vcn=jiajia");
+        //合成速度
+        params.append(",speed=85");
+        //合成音调
+        params.append(",pitch=30");
+        //合成音量
+        params.append(",volume=100");
+        //引擎，默认aisound，如果需要较好的效果，可设置成xtts
+        params.append(",ent=xtts");
         //开始合成
         Logger.debug("合成参数【" + params.toString() + "】");
         sendMessage(new AIUIMessage(AIUIConstant.CMD_TTS, AIUIConstant.START, 0, params.toString(), ttsData));
     }
 
-    //设置页码
+    /**
+     * 设置页码
+     *
+     * @param pageIndex
+     * @param pageSize
+     */
     private void setPageInfo(String pageIndex, String pageSize) {
         if (userInfoMap != null) {
             userInfoMap.put("pageindex", pageIndex);
@@ -567,7 +574,9 @@ public class AIUIService extends Service {
         }
     }
 
-    //生效动态实体
+    /**
+     * 生效动态实体
+     */
     public void effectDynamicEntity() {
         try {
             JSONObject params = new JSONObject();
@@ -577,10 +586,13 @@ public class AIUIService extends Service {
             AIUIMessage setMsg = new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, params.toString(), null);
             mAIUIAgent.sendMessage(setMsg);
         } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
-    //清除所见即可说
+    /**
+     * 清除所见即可说
+     */
     public void clearSpeakableData() {
         try {
             JSONObject data = new JSONObject();
@@ -607,7 +619,12 @@ public class AIUIService extends Service {
         }
     }
 
-    //同步所见即可说
+    /**
+     * 同步所见即可说
+     *
+     * @param stateKey
+     * @param hotInfo
+     */
     public void syncSpeakableData(String stateKey, String hotInfo) {
         try {
             if (TextUtils.isEmpty(stateKey) && TextUtils.isEmpty(hotInfo)) {
@@ -644,7 +661,12 @@ public class AIUIService extends Service {
         }
     }
 
-    //同步所见即可说
+    /**
+     * 同步所见即可说
+     *
+     * @param stateKey
+     * @param hotInfo
+     */
     public void syncSpeakableData(String stateKey, Map<String, String> hotInfo) {
         try {
             if (TextUtils.isEmpty(stateKey) && (hotInfo == null || hotInfo.size() == 0)) {
@@ -685,20 +707,24 @@ public class AIUIService extends Service {
         }
     }
 
-    //发送AIUI消息
+    /**
+     * 发送AIUI消息
+     *
+     * @param message
+     */
     private void sendMessage(final AIUIMessage message) {
         if (mAIUIAgent != null) {
             //确保AIUI处于唤醒状态
             if (mCurrentState != AIUIConstant.STATE_WORKING) {
                 mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
             }
-
             mAIUIAgent.sendMessage(message);
-
         }
     }
 
-    //同步用户数据
+    /**
+     * 同步用户数据
+     */
     private void setUserParam() {
         if (userInfoMap != null && userInfoMap.size() > 0) {
             try {
@@ -718,7 +744,11 @@ public class AIUIService extends Service {
         }
     }
 
-    //获取AIUI参数
+    /**
+     * 获取AIUI参数
+     *
+     * @return
+     */
     private String getAIUIParams() {
         String params = "";
         AssetManager assetManager = getResources().getAssets();
@@ -743,8 +773,6 @@ public class AIUIService extends Service {
 
         void onEvent(AIUIEvent event);
     }
-
-    private static Gson mGson;
 
     private String getIatTxt(String iat) {
         if (mGson == null) {
@@ -796,12 +824,9 @@ public class AIUIService extends Service {
         }
     };
 
-
-    private static String oldTtsMsg;
-    private static long time;
-
     private void showTts(String ttsMsg) {
-        if (!ttsMsg.equals(oldTtsMsg)) { // 当显示的内容不一样时，即断定为不是同一个Toast
+        // 当显示的内容不一样时，即断定为不是同一个Toast
+        if (!ttsMsg.equals(oldTtsMsg)) {
             if (isIvwModel) {
                 tts(ttsMsg);
             }
@@ -814,8 +839,5 @@ public class AIUIService extends Service {
             }
         }
         oldTtsMsg = ttsMsg;
-
     }
-
-
 }
