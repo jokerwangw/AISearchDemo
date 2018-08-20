@@ -63,6 +63,7 @@ public class AIUIService extends Service {
     //是否正在tts播报中
     private boolean isTtsing = false;
 
+    private String textUnderstand ="";
 
     @Override
     public void onCreate() {
@@ -292,10 +293,16 @@ public class AIUIService extends Service {
 
         @Override
         public void textUnderstander(String text) {
+            textUnderstand  =text;
             String params = "data_type=text";
             byte[] textData = text.getBytes();
             AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, params, textData);
             sendMessage(msg);
+        }
+
+        @Override
+        public boolean nlpIsTextUnderstander() {
+            return !TextUtils.isEmpty(textUnderstand);
         }
 
         @Override
@@ -399,6 +406,7 @@ public class AIUIService extends Service {
                                     Logger.debug("NLP 【" + resultStr + "】");
 
                                     eventListenerManager.onResult(null, resultStr, null);
+                                    textUnderstand = "";
                                 } else {
                                     String resultStr = cntJson.optString("intent");
                                     if (resultStr.equals("{}")) {

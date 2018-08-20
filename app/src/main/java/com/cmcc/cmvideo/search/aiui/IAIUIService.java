@@ -125,4 +125,6 @@ public interface IAIUIService {
      * @param flag
      */
     void onResume(boolean flag);
+
+    boolean nlpIsTextUnderstander();
 }
