@@ -50,30 +50,6 @@ public class TppData {
         public ActionBean action;
     }
 
-
-    public static class ActionBean {
-        public ParamsBean params;
-        public int timeStamp;
-        public String type;
-
-        public static class ParamsBean {
-            public String contentID;
-            public ExtraBean extra;
-            public String frameID;
-            public String groupId;
-            public String imgUrl;
-            public String index;
-            public String location;
-            public String pageID;
-            public String path;
-            public String url;
-
-            public static class ExtraBean {
-
-            }
-        }
-    }
-
     public static class SubserialsBean implements Serializable {
         //第一集名称
         public String name;

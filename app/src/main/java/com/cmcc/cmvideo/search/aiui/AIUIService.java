@@ -100,7 +100,7 @@ public class AIUIService extends Service {
         //MSC初始化（登陆）
         SpeechUtility.createUtility(this, "appid=5aceb703");
 
-//        SpeechUtility.createUtility(AIUIService.this, String.format("engine_start=ivw,delay_init=0,appid=%s", "5aceb703"));
+        //        SpeechUtility.createUtility(AIUIService.this, String.format("engine_start=ivw,delay_init=0,appid=%s", "5aceb703"));
         sendBroadcast();
         setUserData();
 
@@ -412,7 +412,7 @@ public class AIUIService extends Service {
                             }
                         }
                     } catch (Throwable e) {
-
+                        e.printStackTrace();
                     }
                 }
                 break;
@@ -757,7 +757,7 @@ public class AIUIService extends Service {
                         semanticProcessor.setIsMicConnect(false);
                         navigation.isHeadset(false);
                         //切换为外放模式
-//                        PlayerManager.getInstance().changeToReceiver();
+                        //                        PlayerManager.getInstance().changeToReceiver();
                         if (isIvwModel) {
                             standardMode();
                         }

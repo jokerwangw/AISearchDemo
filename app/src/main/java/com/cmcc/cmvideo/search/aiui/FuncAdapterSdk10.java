@@ -14,14 +14,14 @@ public class FuncAdapterSdk10 {
         avoidValue = value;
     }
 
-    public static boolean Lock(Context context, AudioManager.OnAudioFocusChangeListener listener)
-    {
-        try{
-            AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+    public static boolean Lock(Context context, AudioManager.OnAudioFocusChangeListener listener) {
+        try {
+            AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
             audioManager.requestAudioFocus(listener, AudioManager.STREAM_MUSIC,
                     AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return false;
     }
@@ -29,24 +29,22 @@ public class FuncAdapterSdk10 {
     /**
      * 释放Audio Focus，恢复后台音乐播放
      */
-    public static boolean UnLock(Context context, AudioManager.OnAudioFocusChangeListener listener)
-    {
-        try{
-            AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+    public static boolean UnLock(Context context, AudioManager.OnAudioFocusChangeListener listener) {
+        try {
+            AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
             audioManager.abandonAudioFocus(listener);
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return false;
     }
-
 
     /**
      * 关闭硬件加速器
      * 4.0以上android默认开启硬件加速器，导致clipPath等方法不可用
      */
-    public static void CloseHardWareAccelerate(View view)
-    {
+    public static void CloseHardWareAccelerate(View view) {
         //设置硬件软加速.
         view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
