@@ -119,4 +119,10 @@ public interface IAIUIService {
      * @return 导航对象
      */
     INavigation getNavigation();
+
+    /**
+     * activity onResume
+     * @param flag
+     */
+    void onResume(boolean flag);
 }

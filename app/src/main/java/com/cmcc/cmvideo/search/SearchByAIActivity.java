@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -235,6 +236,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                 Intent intent = new Intent(mContext, LookMoreActivity.class);
                 intent.putExtra(LookMoreActivity.KEY_TITLE, titleText);
                 intent.putExtra(LookMoreActivity.KEY_LAST_TEXT, lastText);
+                intent.putExtra(LookMoreActivity.KEY_MORE_DATE, deailsJson);
                 startActivity(intent);
             } else {
                 int i = position + 1;
@@ -504,7 +506,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         public void onServiceConnected(ComponentName name, IBinder service) {
             aiuiService = (IAIUIService) service;
             mSearchByAIPresenter.setAIUIService(aiuiService);
-            
+
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -531,6 +533,9 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         super.onResume();
         if (null != mSearchByAIPresenter) {
             mSearchByAIPresenter.resume();
+        }
+        if (aiuiService!=null) {
+            aiuiService.onResume(false);
         }
     }
 

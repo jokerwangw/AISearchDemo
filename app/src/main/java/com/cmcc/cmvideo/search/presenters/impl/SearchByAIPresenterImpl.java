@@ -168,7 +168,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         NlpData mData = gson.fromJson(nlpResult, NlpData.class);
         String service = mData.service;
         if (mData.rc == 4) {
-            Logger.debug(">>>>>>>>>>>>>rc4======");
             return;
         }
 
@@ -406,7 +405,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                             String name = subserials.get(index).name;
                             aiuiService.getNavigation().playEpisode(new NavigationBean(subserials.get(index)));
                             aiuiService.tts("正在为你打开" + name);
-
+                            Logger.debug("集数====》》》》" + name);
                         } else {
                         }
                     }
@@ -628,6 +627,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     Intent intent = new Intent(mContext, LookMoreActivity.class);
                     intent.putExtra(LookMoreActivity.KEY_TITLE, lastResponseVideoTitle);
                     intent.putExtra(LookMoreActivity.KEY_LAST_TEXT, lastTextData);
+                    intent.putExtra(LookMoreActivity.KEY_MORE_DATE, lastVideoData);
                     Logger.debug("上次会话请求文本" + lastTextData);
                     mContext.startActivity(intent);
                     break;

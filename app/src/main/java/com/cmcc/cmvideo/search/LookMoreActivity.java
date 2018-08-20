@@ -28,6 +28,7 @@ import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.model.LookMoreEventDataBean;
 import com.cmcc.cmvideo.search.presenters.LookMorePresenter;
 import com.cmcc.cmvideo.search.presenters.impl.LookMorePresenterImpl;
+import com.cmcc.cmvideo.util.SharedPreferencesHelper;
 import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIConstant;
 import com.iflytek.aiui.AIUIMessage;
@@ -71,6 +72,7 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
     private String lastTextData;
     private Gson gson;
     private boolean isBind = false;
+    private String spLastData;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -111,9 +113,18 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveLookMoreData(LookMoreEventDataBean moreData) {
+        NlpData nlpData = gson.fromJson(moreData.getMoreData(), NlpData.class);
+        String lastText = nlpData.text;
+        if (!spLastData.equals(lastText)) {
+            if (null != aiuiService) {
+                aiuiService.onResume(false);
+                this.finish();
+            }
+            return;
+        }
+
         lookMorePresenter.setDetailsJson(moreData.getMoreData());
         mLookMoreAdapter.notifyDataSetChanged();
-        NlpData nlpData = gson.fromJson(moreData.getMoreData(), NlpData.class);
         if (
                 nlpData.data == null
                         || nlpData.data.lxresult == null
@@ -125,12 +136,12 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
             return;
         }
         mLookMoreRecyclerView.loadMoreComplete();
-
-
     }
 
 
     private void initCustomView() {
+        SharedPreferencesHelper.getInstance(this).setValue(KEY_LAST_TEXT, getIntent().getStringExtra(KEY_LAST_TEXT));
+        spLastData = SharedPreferencesHelper.getInstance(this).getValue(KEY_LAST_TEXT);
         lastTextData = getIntent().getStringExtra(KEY_LAST_TEXT);
         mLookMoreAdapter = new LookMoreAdapter(mContext, this);
         titleTv.setText(getIntent().getStringExtra(KEY_TITLE));
@@ -167,7 +178,9 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         public void onServiceConnected(ComponentName name, IBinder service) {
             aiuiService = (IAIUIService) service;
             isBind = true;
-            aiuiService.getLookMorePage(lastTextData, pageNum, pageSize);
+
+            lookMorePresenter.setDetailsJson(getIntent().getStringExtra(KEY_MORE_DATE));
+//            aiuiService.getLookMorePage(lastTextData, pageNum, pageSize);
         }
 
         @Override
@@ -206,8 +219,9 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
 
     @OnClick(R.id.bt_back)
     public void clickBackClose() {
-        finish();
+        this.finish();
     }
+
 
     @Override
     protected void onDestroy() {
@@ -217,6 +231,8 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
             unbindService(connection);
         }
         isBind = false;
+        lastTextData = "";
+        spLastData = "";
         EventBus.getDefault().unregister(this);
 
     }

@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.cmcc.cmvideo.search.SearchByAIActivity;
 import com.cmcc.cmvideo.search.aiui.bean.IatBean;
@@ -58,6 +59,8 @@ public class AIUIService extends Service {
     private boolean uiAttached = false;
 
     private byte[] fileData;
+    //是否正在tts播报中
+    private boolean isTtsing = false;
 
 
     @Override
@@ -171,11 +174,10 @@ public class AIUIService extends Service {
      * 标准模式
      */
     private void standardMode() {
-        aiuiService.cancelTts();
+        AIUIService.this.cancelTts();
         sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
         setParam("60000", "off", "oneshot", "sdk");
         isIvwModel = false;
-
 
     }
 
@@ -325,6 +327,11 @@ public class AIUIService extends Service {
         }
 
         @Override
+        public void onResume(boolean flag) {
+            hasSetLookMorePageSize = flag;
+        }
+
+        @Override
         public void cancelRecordAudio() {
             hasCancelRecordAudio = true;
             semanticProcessor.cancelRecordAudio();
@@ -418,13 +425,9 @@ public class AIUIService extends Service {
                     break;
                 case AIUIConstant.EVENT_WAKEUP:
                     if (isIvwModel) {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                tts(AiuiConstants.MICRO_MESSAGE);
-                            }
-                        }, 500);
-
+                        if (!isTtsing) {
+                            tts(AiuiConstants.MICRO_MESSAGE);
+                        }
                     }
                     break;
                 case AIUIConstant.EVENT_SLEEP:
@@ -474,11 +477,13 @@ public class AIUIService extends Service {
                 case AIUIConstant.EVENT_TTS: {
                     switch (event.arg1) {
                         case AIUIConstant.TTS_SPEAK_BEGIN:
+                            isTtsing = true;
                             Logger.debug("==========TTS_SPEAK_BEGIN");
                             // 停止后台音频播放
                             FuncAdapter.Lock(AIUIService.this, null);
                             break;
                         case AIUIConstant.TTS_SPEAK_COMPLETED:
+                            isTtsing = false;
                             Logger.debug("=============TTS_SPEAK_COMPLETED");
                             // 开启后台音频播放
                             FuncAdapter.UnLock(AIUIService.this, null);
