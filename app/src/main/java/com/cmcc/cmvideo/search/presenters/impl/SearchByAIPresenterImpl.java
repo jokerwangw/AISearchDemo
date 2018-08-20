@@ -221,7 +221,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         AiResponse.Response responseTts = null;
         Map<String, String> map = formatSlotsToMap(nlpData.semantic.get(0).slots);
         lastVideoData = result;
-        lastResponseVideoTitle = makeCardTitle(map);
+//        lastResponseVideoTitle = makeCardTitle(map);
         String msg = nlpData.answer != null ? nlpData.answer.text : "";
         switch (nlpData.semantic.get(0).intent) {
             case AiuiConstants.VIDEO_CMD_INTENT:
@@ -252,6 +252,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     AiResponse.Response response = null;
                     //当返回字段satisfy字段为true时正常展示数据播报，为false时展示兜底数据结构不变且播报
                     if (nlpData.data.lxresult.satisfy) {
+                        lastResponseVideoTitle = makeCardTitle(map);
                         response = AiResponse.getInstance().getGuessWhatYouLike();
                     } else {
                         response = AiResponse.getInstance().getSatisfyResponse();
@@ -297,7 +298,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         response.response = String.format(response.response, "综艺");
                     }
 
-
                     //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
 //                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && !checkCategory(map, CategoryType.MOVIE)) {
 //                        response.response = String.format(response.response, "视频");
@@ -310,6 +310,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 } else {
                     AiResponse.Response response = null;
                     if (nlpData.data.lxresult.satisfy) {
+                        lastResponseVideoTitle = makeCardTitle(map);
                         response = AiResponse.getInstance().getEveryoneSee();
                     } else {
                         response = AiResponse.getInstance().getSatisfyResponse();
@@ -346,11 +347,17 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 if (hasVideoData(nlpData)) {
                     msg = lastResponseVideoTitle;
                 }
-                sendMessage(msg, messageType, MESSAGE_FROM_AI, nlpData.data.lxresult.data.detailslist);
+
+                if (nlpData.data.lxresult.satisfy) {
+                    sendMessage(msg, messageType, MESSAGE_FROM_AI, nlpData.data.lxresult.data.detailslist);
+                } else {
+                    sendMessage("为您推荐", messageType, MESSAGE_FROM_AI, nlpData.data.lxresult.data.detailslist);
+                }
                 break;
             case AiuiConstants.HOTVIDEO_INTENT:
                 AiResponse.Response response = null;
                 if (nlpData.data.lxresult.satisfy) {
+                    lastResponseVideoTitle = makeCardTitle(map);
                     response = AiResponse.getInstance().getEveryoneSee();
                 } else {
                     response = AiResponse.getInstance().getSatisfyResponse();
@@ -381,7 +388,13 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 if (hasVideoData(nlpData)) {
                     msg = lastResponseVideoTitle;
                 }
-                sendMessage(msg, MESSAGE_TYPE_EVERYONE_IS_WATCHING, MESSAGE_FROM_AI, nlpData.data.lxresult.data.detailslist);
+
+                //当返回字段satisfy字段为true时正常展示卡片标题，为false时展示为您推荐   大家都在看改为为您推荐   猜你喜欢的卡片标题不变
+                if (nlpData.data.lxresult.satisfy) {
+                    sendMessage(msg, MESSAGE_TYPE_EVERYONE_IS_WATCHING, MESSAGE_FROM_AI, nlpData.data.lxresult.data.detailslist);
+                } else {
+                    sendMessage("为您推荐", MESSAGE_TYPE_EVERYONE_IS_WATCHING, MESSAGE_FROM_AI, nlpData.data.lxresult.data.detailslist);
+                }
                 break;
             default:
                 break;

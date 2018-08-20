@@ -40,6 +40,7 @@ import com.cmcc.cmvideo.search.model.SearchByAIRefreshUIEventBean;
 import com.cmcc.cmvideo.search.presenters.SearchByAIPresenter;
 import com.cmcc.cmvideo.search.presenters.impl.SearchByAIPresenterImpl;
 import com.cmcc.cmvideo.util.AIUIUtils;
+import com.cmcc.cmvideo.util.ServiceUtils;
 import com.cmcc.cmvideo.widget.VoiceLineView;
 import com.cmcc.cmvideo.widget.WrapContentLinearLayoutManager;
 import com.iflytek.aiui.AIUIConstant;
@@ -108,6 +109,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private int currVolume = 0;
     private int mViewCacheSize = 100;
     private String lastText = "";
+    private boolean isBindService = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -136,6 +138,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                 this,
                 this);
 
+        Logger.debug("》》》》》》》》服务是否正在运行》》》" + ServiceUtils.isServiceRunning(this, "com.cmcc.cmvideo.search.aiui.AIUIService"));
         bindService(new Intent(this, AIUIService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
         mSearchByAIPresenter.initListSearchItem();
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -504,6 +507,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+            isBindService = true;
             aiuiService = (IAIUIService) service;
             mSearchByAIPresenter.setAIUIService(aiuiService);
 
@@ -534,7 +538,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         if (null != mSearchByAIPresenter) {
             mSearchByAIPresenter.resume();
         }
-        if (aiuiService!=null) {
+        if (aiuiService != null) {
             aiuiService.onResume(false);
         }
     }
@@ -558,9 +562,10 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (null != connection) {
+        if (isBindService && null != connection) {
             unbindService(connection);
         }
+        isBindService = false;
         if (null != mSearchByAIPresenter) {
             mSearchByAIPresenter.destroy();
         }

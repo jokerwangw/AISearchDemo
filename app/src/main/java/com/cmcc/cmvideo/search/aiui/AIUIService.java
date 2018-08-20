@@ -20,6 +20,7 @@ import com.cmcc.cmvideo.search.model.LookMoreEventDataBean;
 import com.cmcc.cmvideo.util.AiResponse;
 import com.cmcc.cmvideo.util.AiuiConstants;
 import com.cmcc.cmvideo.util.FileUtil;
+import com.cmcc.cmvideo.util.ServiceUtils;
 import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIAgent;
 import com.iflytek.aiui.AIUIConstant;
@@ -103,7 +104,7 @@ public class AIUIService extends Service {
         //        SpeechUtility.createUtility(AIUIService.this, String.format("engine_start=ivw,delay_init=0,appid=%s", "5aceb703"));
         sendBroadcast();
         setUserData();
-
+        Logger.debug(">>>>>>>>>>>onCreate>>>>>>>");
     }
 
     /**
@@ -128,6 +129,7 @@ public class AIUIService extends Service {
 
 
     private void ivwMode() {
+        Logger.debug(">>>>>>>>>ivwMode=========>>>>>>>>");
         setParam("5000", "ivw", "continuous", "sdk");
         fileData = FileUtil.readFileFromAssets(AIUIService.this, "wav/migumigu.wav");
         AIUIMessage writeMsg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, "data_type=audio,sample_rate=16000", fileData);
@@ -430,9 +432,19 @@ public class AIUIService extends Service {
                         }
                     }
                     break;
+                case AIUIConstant.EVENT_PRE_SLEEP:
+                    Logger.debug(">>>>>>>>>>>>EVENT_PRE_SLEEP>>>>>>>>>>>>");
+                    //如果正在合成
+                    if (isTtsing) {
+                        mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
+                    }
+                    break;
                 case AIUIConstant.EVENT_SLEEP:
+                    Logger.debug(">>>>>>>>>>>>EVENT_SLEEP>>>>>>>>>>>>");
                     if (isIvwModel) {
-                        tts(AiResponse.getInstance().getSleep().response);
+                        if (!isTtsing) {
+                            tts(AiResponse.getInstance().getSleep().response);
+                        }
                     }
                     break;
                 case AIUIConstant.EVENT_VAD:
@@ -580,7 +592,7 @@ public class AIUIService extends Service {
             String params = data.toString();
             byte[] syncData = params.getBytes("utf-8");
             AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC, AIUIConstant.SYNC_DATA_STATUS, 0, params, syncData);
-            sendMessage(syncAthenaMessage);
+            mAIUIAgent.sendMessage(syncAthenaMessage);
             Logger.debug("删除状态数据【" + data.toString() + "】");
         } catch (Exception e) {
             e.printStackTrace();

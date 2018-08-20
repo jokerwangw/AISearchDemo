@@ -44,7 +44,6 @@ public class AiResponse {
     ));
 
 
-
     /**
      * rc == 4 反馈语
      */
@@ -250,9 +249,6 @@ public class AiResponse {
     public Response getSleep() {
         return sleepList.get(0);
     }
-
-
-
 
 
     /**
