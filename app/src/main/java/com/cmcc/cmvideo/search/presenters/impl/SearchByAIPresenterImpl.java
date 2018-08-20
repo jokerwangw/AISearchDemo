@@ -221,7 +221,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         AiResponse.Response responseTts = null;
         Map<String, String> map = formatSlotsToMap(nlpData.semantic.get(0).slots);
         lastVideoData = result;
-//        lastResponseVideoTitle = makeCardTitle(map);
+        //        lastResponseVideoTitle = makeCardTitle(map);
         String msg = nlpData.answer != null ? nlpData.answer.text : "";
         switch (nlpData.semantic.get(0).intent) {
             case AiuiConstants.VIDEO_CMD_INTENT:
@@ -299,9 +299,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     }
 
                     //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
-//                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && !checkCategory(map, CategoryType.MOVIE)) {
-//                        response.response = String.format(response.response, "视频");
-//                    }
+                    //                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && !checkCategory(map, CategoryType.MOVIE)) {
+                    //                        response.response = String.format(response.response, "视频");
+                    //                    }
                     //播报电影名称的反馈语
                     if (response.respType == AiResponse.RespType.VIDEO_NAME) {
                         response.response = String.format(response.response, nlpData.data.lxresult.data.detailslist.get(0).name);
