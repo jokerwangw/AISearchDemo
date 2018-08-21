@@ -138,7 +138,6 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                 this,
                 this);
 
-        Logger.debug("》》》》》》》》服务是否正在运行》》》" + ServiceUtils.isServiceRunning(this, "com.cmcc.cmvideo.search.aiui.AIUIService"));
         bindService(new Intent(this, AIUIService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
         mSearchByAIPresenter.initListSearchItem();
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -240,6 +239,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                 intent.putExtra(LookMoreActivity.KEY_TITLE, titleText);
                 intent.putExtra(LookMoreActivity.KEY_LAST_TEXT, lastText);
                 intent.putExtra(LookMoreActivity.KEY_MORE_DATE, deailsJson);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             } else {
                 int i = position + 1;

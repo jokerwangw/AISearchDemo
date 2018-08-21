@@ -65,7 +65,7 @@ public class AIUIService extends Service {
     private static long time;
     private static Gson mGson;
 
-    private String textUnderstand ="";
+    private String textUnderstand = "";
 
     @Override
     public void onCreate() {
@@ -271,6 +271,9 @@ public class AIUIService extends Service {
 
         @Override
         public void getLookMorePage(final String lookMoreText, final int pageIndex, final int pageSize) {
+            Log.d("AIUISemanticProcessor===", "getLookMorePage true");
+
+            textUnderstand = lookMoreText;
             this.lookMoreText = lookMoreText;
             this.pageIndex = pageIndex;
             this.pageSize = pageSize;
@@ -288,7 +291,7 @@ public class AIUIService extends Service {
 
         @Override
         public void textUnderstander(String text) {
-            textUnderstand  =text;
+            textUnderstand = text;
             String params = "data_type=text";
             byte[] textData = text.getBytes();
             AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, params, textData);
@@ -332,6 +335,8 @@ public class AIUIService extends Service {
 
         @Override
         public void onResume(boolean flag) {
+            Log.d("AIUISemanticProcessor==", "onResume fasle");
+
             hasSetLookMorePageSize = flag;
         }
 
@@ -347,7 +352,7 @@ public class AIUIService extends Service {
             String params = "data_type=text";
             byte[] textData = lookMoreText.getBytes();
             AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, params, textData);
-            sendMessage(msg);
+            mAIUIAgent.sendMessage(msg);
         }
     }
 
@@ -403,11 +408,12 @@ public class AIUIService extends Service {
                                     Logger.debug("NLP 【" + resultStr + "】");
 
                                     eventListenerManager.onResult(null, resultStr, null);
-                                    if(!TextUtils.isEmpty(textUnderstand)){
-                                        if(resultStr.contains(textUnderstand)){
-                                            textUnderstand ="";
+                                    if (!TextUtils.isEmpty(textUnderstand)) {
+                                        if (!resultStr.contains("\"service\":\"viewCmd\"")) {
+                                            textUnderstand = "";
                                         }
                                     }
+
                                 } else {
                                     String resultStr = cntJson.optString("intent");
                                     if (resultStr.equals("{}")) {
@@ -435,17 +441,11 @@ public class AIUIService extends Service {
                 case AIUIConstant.EVENT_ERROR:
                     break;
                 case AIUIConstant.EVENT_WAKEUP:
+                    Logger.debug(">>>>>>>>>>>>EVENT_WAKEUP>>>>>>>>>>>>");
                     if (isIvwModel) {
                         if (!isTtsing) {
                             tts(AiuiConstants.MICRO_MESSAGE);
                         }
-                    }
-                    break;
-                case AIUIConstant.EVENT_PRE_SLEEP:
-                    Logger.debug(">>>>>>>>>>>>EVENT_PRE_SLEEP>>>>>>>>>>>>");
-                    //如果正在合成
-                    if (isTtsing) {
-                        mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
                     }
                     break;
                 case AIUIConstant.EVENT_SLEEP:
@@ -453,6 +453,8 @@ public class AIUIService extends Service {
                     if (isIvwModel) {
                         if (!isTtsing) {
                             tts(AiResponse.getInstance().getSleep().response);
+                        } else {
+                            mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
                         }
                     }
                     break;
@@ -511,11 +513,11 @@ public class AIUIService extends Service {
                             FuncAdapter.UnLock(AIUIService.this, null);
                             break;
                         case AIUIConstant.TTS_SPEAK_PAUSED:
-                            Logger.debug("暂停播放");
+                            Logger.debug("===========暂停播放=========");
                             break;
 
                         case AIUIConstant.TTS_SPEAK_RESUMED:
-                            Logger.debug("恢复播放");
+                            Logger.debug("===========恢复播放========");
                             break;
 
                         default:
@@ -560,8 +562,7 @@ public class AIUIService extends Service {
         //引擎，默认aisound，如果需要较好的效果，可设置成xtts
         params.append(",ent=xtts");
         //开始合成
-        Logger.debug("合成参数【" + params.toString() + "】");
-        sendMessage(new AIUIMessage(AIUIConstant.CMD_TTS, AIUIConstant.START, 0, params.toString(), ttsData));
+        mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_TTS, AIUIConstant.START, 0, params.toString(), ttsData));
     }
 
     /**

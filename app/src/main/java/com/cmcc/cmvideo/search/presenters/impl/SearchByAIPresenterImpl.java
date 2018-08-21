@@ -10,7 +10,9 @@ import android.widget.Toast;
 
 import com.cmcc.cmvideo.BuildConfig;
 import com.cmcc.cmvideo.MainActivity;
+import com.cmcc.cmvideo.MyApplication;
 import com.cmcc.cmvideo.base.AbstractPresenter;
+import com.cmcc.cmvideo.base.ApplicationContext;
 import com.cmcc.cmvideo.base.Executor;
 import com.cmcc.cmvideo.base.MainThread;
 import com.cmcc.cmvideo.search.LookMoreActivity;
@@ -642,6 +644,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     intent.putExtra(LookMoreActivity.KEY_LAST_TEXT, lastTextData);
                     intent.putExtra(LookMoreActivity.KEY_MORE_DATE, lastVideoData);
                     Logger.debug("上次会话请求文本" + lastTextData);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(intent);
                     break;
                 case "CHANGE":

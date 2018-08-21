@@ -4,6 +4,7 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.cmcc.cmvideo.BuildConfig;
 import com.cmcc.cmvideo.search.aiui.bean.ControlEventBean;
 import com.cmcc.cmvideo.search.aiui.bean.NlpData;
 import com.cmcc.cmvideo.search.aiui.impl.LiveEnum;
@@ -107,7 +108,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
 
         if (null != mData.service) {
             service = mData.service;
-            if (!AiuiConstants.VIEWCMD_SERVICE.equals(service)&&!aiuiService.nlpIsTextUnderstander()) {
+            if (!AiuiConstants.VIEWCMD_SERVICE.equals(service) && !aiuiService.nlpIsTextUnderstander()) {
                 sendMessage(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
             }
         }

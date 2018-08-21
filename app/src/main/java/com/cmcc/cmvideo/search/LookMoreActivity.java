@@ -113,7 +113,8 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
     public void receiveLookMoreData(LookMoreEventDataBean moreData) {
         NlpData nlpData = gson.fromJson(moreData.getMoreData(), NlpData.class);
         String lastText = nlpData.text;
-        if (!spLastData.equals(lastText)) {
+        Logger.debug("文本数据===++++++" + lastText);
+        if (!spLastData.equals(lastText) && !lastText.equals("查看更多")) {
             if (null != aiuiService) {
                 aiuiService.onResume(false);
                 this.finish();
@@ -124,8 +125,8 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         lookMorePresenter.setDetailsJson(moreData.getMoreData());
         mLookMoreAdapter.notifyDataSetChanged();
         if (nlpData.data == null
-                        || nlpData.data.lxresult == null
-                        || nlpData.data.lxresult.data.detailslist.size() == 0) {
+                || nlpData.data.lxresult == null
+                || nlpData.data.lxresult.data.detailslist.size() == 0) {
 
             mLookMoreRecyclerView.setFootViewText(null, null);
             mLookMoreRecyclerView.loadMoreComplete();
@@ -138,6 +139,7 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         SharedPreferencesHelper.getInstance(this).setValue(KEY_LAST_TEXT, getIntent().getStringExtra(KEY_LAST_TEXT));
         spLastData = SharedPreferencesHelper.getInstance(this).getValue(KEY_LAST_TEXT);
         lastTextData = getIntent().getStringExtra(KEY_LAST_TEXT);
+        Logger.debug("上次请求文本====>>>>>>>>>>>" + lastTextData);
         mLookMoreAdapter = new LookMoreAdapter(mContext, this);
         titleTv.setText(getIntent().getStringExtra(KEY_TITLE));
 
@@ -174,7 +176,8 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
             isBind = true;
 
             lookMorePresenter.setDetailsJson(getIntent().getStringExtra(KEY_MORE_DATE));
-            //            aiuiService.getLookMorePage(lastTextData, pageNum, pageSize);
+            //aiuiService.getLookMorePage(lastTextData, pageNum, pageSize);
+
         }
 
         @Override
@@ -218,6 +221,7 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
 
     @Override
     protected void onDestroy() {
+        EventBus.getDefault().unregister(this);
         super.onDestroy();
         lookMorePresenter.destroy();
         if (isBind) {
@@ -226,6 +230,5 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         isBind = false;
         lastTextData = "";
         spLastData = "";
-        EventBus.getDefault().unregister(this);
     }
 }
