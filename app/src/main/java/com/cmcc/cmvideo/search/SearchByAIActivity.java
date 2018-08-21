@@ -552,6 +552,8 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         }
         if (aiuiService != null) {
             aiuiService.onResume(false);
+            //重置用户参数
+            aiuiService.setUserParams("", "", "", "1");
         }
     }
 

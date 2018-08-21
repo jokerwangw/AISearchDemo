@@ -80,7 +80,7 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if (msg.what == 1002) {
-                aiuiService.getLookMorePage(lastTextData, pageNum, pageSize);
+                aiuiService.getLookMorePage(lastTextData, pageNum, pageSize, false);
             }
         }
     };
@@ -143,6 +143,7 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
                 MainThreadImpl.getInstance(),
                 this,
                 this);
+        Logger.debug(">>>>>>>>>>>.initData>>>>>>>>>>>>>>>>>>>");
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -192,10 +193,9 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         public void onServiceConnected(ComponentName name, IBinder service) {
             aiuiService = (IAIUIService) service;
             isBind = true;
-
-            lookMorePresenter.setDetailsJson(getIntent().getStringExtra(KEY_MORE_DATE));
-            //aiuiService.getLookMorePage(lastTextData, pageNum, pageSize);
-
+//            lookMorePresenter.setDetailsJson(getIntent().getStringExtra(KEY_MORE_DATE));
+            aiuiService.setUserParams(pageSize + "", pageNum + "", "", "2");
+            aiuiService.getLookMorePage(lastTextData, pageNum, pageSize, true);
         }
 
         @Override

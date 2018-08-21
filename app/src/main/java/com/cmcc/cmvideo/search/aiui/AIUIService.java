@@ -64,8 +64,9 @@ public class AIUIService extends Service {
     private static String oldTtsMsg;
     private static long time;
     private static Gson mGson;
-
-    private String textUnderstand = "";
+    //文本请求tag标记
+    private boolean isTextRequest = false;
+    private boolean isLookMoreDatas = false;
 
     @Override
     public void onCreate() {
@@ -106,7 +107,7 @@ public class AIUIService extends Service {
         SpeechUtility.createUtility(this, "appid=5aceb703");
 
         sendBroadcast();
-        setUserData();
+        setUserDataParam("", "", "", "1");
         Logger.debug(">>>>>>>>>>>onCreate>>>>>>>");
     }
 
@@ -136,7 +137,7 @@ public class AIUIService extends Service {
         AIUIMessage writeMsg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, "data_type=audio,sample_rate=16000", fileData);
         sendMessage(writeMsg);
         sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
-        setUserData();
+        setUserDataParam("", "", "", "1");
         isIvwModel = true;
         AIUIMessage writeStopMsg = new AIUIMessage(AIUIConstant.CMD_STOP_WRITE, 0, 0, "data_type=audio,sample_rate=16000", fileData);
         sendMessage(writeStopMsg);
@@ -270,13 +271,11 @@ public class AIUIService extends Service {
         }
 
         @Override
-        public void getLookMorePage(final String lookMoreText, final int pageIndex, final int pageSize) {
-            Log.d("AIUISemanticProcessor===", "getLookMorePage true");
-
-            textUnderstand = lookMoreText;
+        public void getLookMorePage(final String lookMoreText, final int pageIndex, final int pageSize, boolean isLookMoreData) {
             this.lookMoreText = lookMoreText;
             this.pageIndex = pageIndex;
             this.pageSize = pageSize;
+            isLookMoreDatas = isLookMoreData;
             hasSetLookMorePageSize = true;
             if (hasSyncData) {
                 //如果有同步所见即可说数据先要清除数据，避免lookMoreText中带了上一次查找的内容而干扰结果返回
@@ -285,13 +284,13 @@ public class AIUIService extends Service {
                 hasSyncData = false;
                 hasClearData = true;
             } else {
-                getPage();
+                getLookMorePage();
+
             }
         }
 
         @Override
         public void textUnderstander(String text) {
-            textUnderstand = text;
             String params = "data_type=text";
             byte[] textData = text.getBytes();
             AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, params, textData);
@@ -299,8 +298,20 @@ public class AIUIService extends Service {
         }
 
         @Override
-        public boolean nlpIsTextUnderstander() {
-            return !TextUtils.isEmpty(textUnderstand);
+        public boolean isTextUnderRequest() {
+            return isTextRequest;
+        }
+
+        @Override
+        public void textUnderRequest(String text) {
+            byte[] textData = text.getBytes();
+            AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, "data_type=text,tag=write_data_text", textData);
+            sendMessage(msg);
+        }
+
+        @Override
+        public void setUserParams(String pagesize, String pageindex, String screen_type, String req_more_num) {
+            setUserDataParam(pagesize, pageindex, screen_type, req_more_num);
         }
 
         @Override
@@ -336,7 +347,6 @@ public class AIUIService extends Service {
         @Override
         public void onResume(boolean flag) {
             Log.d("AIUISemanticProcessor==", "onResume fasle");
-
             hasSetLookMorePageSize = flag;
         }
 
@@ -347,8 +357,12 @@ public class AIUIService extends Service {
             stopRecordAudio();
         }
 
-        public void getPage() {
-            setPageInfo(pageIndex + "", pageSize + "");
+        public void getLookMorePage() {
+            if (isLookMoreDatas) {
+                setMorePageInfo(pageIndex + "", pageSize + "", "2");
+            } else {
+                setPageInfo(pageIndex + "", pageSize + "", "3");
+            }
             String params = "data_type=text";
             byte[] textData = lookMoreText.getBytes();
             AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, params, textData);
@@ -361,6 +375,7 @@ public class AIUIService extends Service {
         public void onEvent(AIUIEvent event) {
             switch (event.eventType) {
                 case AIUIConstant.EVENT_RESULT: {
+                    isTextRequest = false;
                     if (hasCancelRecordAudio) {
                         return;
                     }
@@ -388,6 +403,16 @@ public class AIUIService extends Service {
                                     return;
                                 }
 
+                                if (!TextUtils.isEmpty(event.data.getString("tag"))) {
+                                    String tag = event.data.getString("tag");
+                                    Logger.debug("文本请求的标签===" + tag);
+                                    if (tag.equals("write_data_text")) {
+                                        isTextRequest = true;
+                                    } else {
+                                        isTextRequest = false;
+                                    }
+                                }
+
                                 if ("iat".equals(sub)) {
                                     String iat = cntJson.optString("text");
                                     if (iat.equals("{}") || iat.isEmpty()) {
@@ -406,20 +431,13 @@ public class AIUIService extends Service {
                                         return;
                                     }
                                     Logger.debug("NLP 【" + resultStr + "】");
-
                                     eventListenerManager.onResult(null, resultStr, null);
-                                    if (!TextUtils.isEmpty(textUnderstand)) {
-                                        if (!resultStr.contains("\"service\":\"viewCmd\"")) {
-                                            textUnderstand = "";
-                                        }
-                                    }
 
                                 } else {
                                     String resultStr = cntJson.optString("intent");
                                     if (resultStr.equals("{}")) {
                                         return;
                                     }
-
                                     String jsonResultStr = cntJson.toString();
                                     //LogUtil.e("TPP===", resultStr);
                                     Logger.debug("TPP 【" + jsonResultStr + "】");
@@ -487,7 +505,7 @@ public class AIUIService extends Service {
                                 case AIUIConstant.SYNC_DATA_STATUS:
                                     Logger.debug("同步所见即可说数据成功");
                                     if (hasClearData) {
-                                        aiuiService.getPage();
+                                        aiuiService.getLookMorePage();
                                         hasClearData = false;
                                     }
                                     break;
@@ -571,12 +589,27 @@ public class AIUIService extends Service {
      * @param pageIndex
      * @param pageSize
      */
-    private void setPageInfo(String pageIndex, String pageSize) {
-        if (userInfoMap != null) {
-            userInfoMap.put("pageindex", pageIndex);
-            userInfoMap.put("pagesize", pageSize);
-            setUserParam();
-        }
+    private void setPageInfo(String pageIndex, String pageSize, String reqNum) {
+//        if (userInfoMap != null) {
+//            userInfoMap.put("pageindex", pageIndex);
+//            userInfoMap.put("pagesize", pageSize);
+//            setUserParam();
+//        }
+
+        setUserDataParam(pageSize, pageIndex, "", reqNum);
+
+
+    }
+
+
+    /**
+     * 设置页码
+     *
+     * @param pageIndex
+     * @param pageSize
+     */
+    private void setMorePageInfo(String pageIndex, String pageSize, String reqNum) {
+        setUserDataParam(pageSize, pageIndex, "", reqNum);
     }
 
     /**
@@ -829,20 +862,32 @@ public class AIUIService extends Service {
         }
     };
 
-    private void showTts(String ttsMsg) {
-        // 当显示的内容不一样时，即断定为不是同一个Toast
-        if (!ttsMsg.equals(oldTtsMsg)) {
-            if (isIvwModel) {
-                tts(ttsMsg);
+
+    private void setUserDataParam(final String pagesize, final String pageindex, final String screen_type, final String req_more_num) {
+        try {
+
+            Map<String, String> map = new HashMap<String, String>() {{
+                put("client_id", "897ddadc222ec9c20651da355daee9cc");
+                put("user_id", "553782460");
+                put("msisdn", "13764279837");
+                put("pagesize", pagesize);
+                put("pageindex", pageindex);
+                put("screen_type", screen_type);
+                put("req_more_num", req_more_num);
+            }};
+
+            JSONObject objectJson = new JSONObject();
+            JSONObject paramJson = new JSONObject();
+            //用户数据添加的初始化参数中
+            Iterator<Map.Entry<String, String>> iterator = map.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, String> item = iterator.next();
+                paramJson.put(item.getKey(), item.getValue());
             }
-        } else {
-            time = System.currentTimeMillis();
-            // 显示内容一样时，只有间隔时间大于2秒时才显示
-            if (System.currentTimeMillis() - time > 5000) {
-                tts(ttsMsg);
-                time = System.currentTimeMillis();
-            }
+            objectJson.put("userparams", paramJson);
+            sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        oldTtsMsg = ttsMsg;
     }
 }

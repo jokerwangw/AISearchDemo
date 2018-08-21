@@ -108,7 +108,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
 
         if (null != mData.service) {
             service = mData.service;
-            if (!AiuiConstants.VIEWCMD_SERVICE.equals(service) && !aiuiService.nlpIsTextUnderstander()) {
+            if (!AiuiConstants.VIEWCMD_SERVICE.equals(service) && !aiuiService.isTextUnderRequest()) {
                 sendMessage(mData.text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_USER);
             }
         }

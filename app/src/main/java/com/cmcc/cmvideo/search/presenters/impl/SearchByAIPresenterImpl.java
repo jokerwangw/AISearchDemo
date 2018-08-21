@@ -69,7 +69,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private final String TAG = "SearchByAIPresenterImpl";
     private final int TIME_OUT = 5000;
     private Context mContext;
-    private SearchByAIPresenter.View mView;
+    private View mView;
     private IAIUIService aiuiService;
     private Gson gson;
     private String lastResponseVideoTitle = "";
@@ -82,7 +82,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         MOVIE, TV, DOC, CARTOON, VARIETY, TELEVISION
     }
 
-    public SearchByAIPresenterImpl(Executor executor, MainThread mainThread, SearchByAIPresenter.View view, Context context) {
+    public SearchByAIPresenterImpl(Executor executor, MainThread mainThread, View view, Context context) {
         super(executor, mainThread);
         mView = view;
         mContext = context;
@@ -189,8 +189,15 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     private void onTppResult(String result) {
         NlpData nlpData = gson.fromJson(result, NlpData.class);
+        if (nlpData.moreResults != null) {
+            if ("QUERY".equals(nlpData.moreResults.get(0).semantic.get(0).intent)) {
+                nlpData = nlpData.moreResults.get(0);
+            }
+        }
+
         if (hasVideoData(nlpData)) {
             lastTextData = nlpData.text;
+            Logger.debug("上次请求文本====》》》" + lastTextData);
             EventBus.getDefault().post(new LastTextDataBean(lastTextData));
         }
         //判断是否解出了语义，并且当前技能是video
@@ -207,11 +214,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             }
         }
 
-        if (nlpData.moreResults != null) {
-            if ("QUERY".equals(nlpData.moreResults.get(0).semantic.get(0).intent)) {
-                nlpData = nlpData.moreResults.get(0);
-            }
-        }
 
         //语义后处理没有返回数据则直接退出
         if (!hasVideoData(nlpData) || !"0000000".equals(nlpData.data.lxresult.code)) {
@@ -405,7 +407,10 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         }
         if (responseTts != null) {
             Logger.debug("反馈语=====" + responseTts.response);
-            aiuiService.tts(responseTts.response);
+            //当多次换一个重新请求时候不播报 也不显示用户信息
+            if (!aiuiService.isTextUnderRequest()) {
+                aiuiService.tts(responseTts.response);
+            }
         }
     }
 
@@ -656,7 +661,10 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                             sendMessage(lastVideoSearchByAIBean);
                         } else {
                             //再发送请求  比如用户换一个之前说的是   推荐个电视剧
-                            aiuiService.textUnderstander(lastTextData);
+//                            aiuiService.textUnderstander(lastTextData);
+                            Logger.debug("上次请求文本=====" + lastTextData);
+                            aiuiService.textUnderRequest(lastTextData);
+                            Logger.debug("上次请求文本=====>>>>" + lastTextData);
                         }
                     }
                     break;
