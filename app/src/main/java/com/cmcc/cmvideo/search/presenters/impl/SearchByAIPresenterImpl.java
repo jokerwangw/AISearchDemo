@@ -19,6 +19,7 @@ import com.cmcc.cmvideo.search.LookMoreActivity;
 import com.cmcc.cmvideo.search.aiui.AIUIService;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.aiui.Logger;
+import com.cmcc.cmvideo.search.aiui.bean.ActionBean;
 import com.cmcc.cmvideo.search.aiui.bean.MicBean;
 import com.cmcc.cmvideo.search.aiui.bean.NavigationBean;
 import com.cmcc.cmvideo.search.aiui.bean.NlpData;
@@ -49,6 +50,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static com.cmcc.cmvideo.util.AiuiConstants.IMG_BASE_URL;
 import static com.cmcc.cmvideo.util.AiuiConstants.MessageFrom.MESSAGE_FROM_AI;
 import static com.cmcc.cmvideo.util.AiuiConstants.MessageFrom.MESSAGE_FROM_USER;
 import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_CAN_ASK_AI;
@@ -866,26 +868,26 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     return;
                 }
 
-                playVideo(nlpData.data.lxresult.data.detailslist.get(position).id);
+                playVideo(nlpData.data.lxresult.data.detailslist.get(position).action, false, "");
                 break;
             case MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE:
                 if (null != detailsListBean) {
-                    playVideo(detailsListBean.id);
+                    playVideo(detailsListBean.action, false, "");
                 }
                 break;
             case MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL:
                 if (isClickLookMore) {
-                    Toast.makeText(mContext, "查看更多", Toast.LENGTH_SHORT).show();
+                    turnToLookMore(0, detailsListBean);
                 } else {
-                    playVideo(getContentID(detailsListBean, position));
+                    playVideo(detailsListBean.action, true, getContentID(detailsListBean, position));
                 }
                 break;
             case MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL:
                 if (isClickLookMore) {
-                    Toast.makeText(mContext, "查看更多", Toast.LENGTH_SHORT).show();
+                    turnToLookMore(1, detailsListBean);
                 } else {
                     if (null != detailsListBean.subserials && detailsListBean.subserials.size() > position) {
-                        playVideo(detailsListBean.subserials.get(position).id);
+                        playVideo(detailsListBean.action, true, getContentID(detailsListBean, position));
                     }
                 }
                 break;
@@ -897,11 +899,11 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     /**
      * 播放视频
      *
+     * @param mActionBean
+     * @param isSubserials
      * @param contentID
      */
-    private void playVideo(String contentID) {
-        if (!TextUtils.isEmpty(contentID)) {
-        }
+    private void playVideo(ActionBean mActionBean, boolean isSubserials, String contentID) {
     }
 
     /**
@@ -917,13 +919,44 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             List<TppData.SubserialsBean> subserials = detailsListBean.subserials;
             if (null != subserials && subserials.size() > pos) {
                 contentID = subserials.get(pos).id;
-                //int position = subserials.size() - pos - 1;
-                //if (position > -1 && position < subserials.size()) {
-                //contentID = subserials.get(position).id;
-                //}
             }
         }
         return contentID;
+    }
+
+    /**
+     * 跳转到查看更多
+     *
+     * @param type
+     * @param detailsListBean
+     */
+    private void turnToLookMore(int type, TppData.DetailsListBean detailsListBean) {
+        Toast.makeText(mContext, "查看更多", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * 根据类型得到对应的图片url
+     *
+     * @param image
+     * @param imageType
+     */
+    private String getImgUrl(String image, String imageType) {
+        String imgUrl = "";
+        try {
+            JSONObject jsonObject = new JSONObject(image);
+            imgUrl = jsonObject.optString(imageType);
+            if (!TextUtils.isEmpty(imgUrl)) {
+                if (!imgUrl.startsWith("http")) {
+                    imgUrl = IMG_BASE_URL + imgUrl;
+                }
+            } else {
+                imgUrl = "";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            imgUrl = "";
+        }
+        return imgUrl;
     }
 
     /**

@@ -97,6 +97,42 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         initData();
     }
 
+    private void initCustomView() {
+        SharedPreferencesHelper.getInstance(this).setValue(KEY_LAST_TEXT, getIntent().getStringExtra(KEY_LAST_TEXT));
+        spLastData = SharedPreferencesHelper.getInstance(this).getValue(KEY_LAST_TEXT);
+
+        lastTextData = getIntent().getStringExtra(KEY_LAST_TEXT);
+        Logger.debug("上次请求文本====>>>>>>>>>>>" + lastTextData);
+        titleTv.setText(getIntent().getStringExtra(KEY_TITLE));
+
+        mLookMoreAdapter = new LookMoreAdapter(mContext, this);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mLookMoreRecyclerView.setLayoutManager(layoutManager);
+        mLookMoreRecyclerView.setHasFixedSize(true);
+        mLookMoreRecyclerView.setPullRefreshEnabled(false);
+        mLookMoreRecyclerView.setLoadingMoreProgressStyle(ProgressStyle.Pacman);
+        mLookMoreRecyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
+            @Override
+            public void onRefresh() {
+                //refresh data here
+                pageNum = 1;
+            }
+
+            @Override
+            public void onLoadMore() {
+                // load more data here
+                pageNum++;
+                Message message = Message.obtain();
+                message.what = 1002;
+                handler.sendMessage(message);
+            }
+        });
+
+        mLookMoreRecyclerView.setAdapter(mLookMoreAdapter);
+
+    }
+
     private void initData() {
         gson = new Gson();
         EventBus.getDefault().register(this);
@@ -135,38 +171,20 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         mLookMoreRecyclerView.loadMoreComplete();
     }
 
-    private void initCustomView() {
-        SharedPreferencesHelper.getInstance(this).setValue(KEY_LAST_TEXT, getIntent().getStringExtra(KEY_LAST_TEXT));
-        spLastData = SharedPreferencesHelper.getInstance(this).getValue(KEY_LAST_TEXT);
-        lastTextData = getIntent().getStringExtra(KEY_LAST_TEXT);
-        Logger.debug("上次请求文本====>>>>>>>>>>>" + lastTextData);
-        mLookMoreAdapter = new LookMoreAdapter(mContext, this);
-        titleTv.setText(getIntent().getStringExtra(KEY_TITLE));
+    /**
+     * 显示数据
+     */
+    @Override
+    public void showInitList(List<TppData.DetailsListBean> detailsListBeanArrayList) {
+        if (null != detailsListBeanArrayList && null != mLookMoreAdapter) {
+            detailsList = detailsListBeanArrayList;
+            mLookMoreAdapter.bindData(detailsListBeanArrayList, true);
+        }
+    }
 
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        mLookMoreRecyclerView.setLayoutManager(layoutManager);
-        mLookMoreRecyclerView.setPullRefreshEnabled(false);
-        mLookMoreRecyclerView.setLoadingMoreProgressStyle(ProgressStyle.Pacman);
-        mLookMoreRecyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
-            @Override
-            public void onRefresh() {
-                //refresh data here
-                pageNum = 1;
-            }
-
-            @Override
-            public void onLoadMore() {
-                // load more data here
-                pageNum++;
-                Message message = Message.obtain();
-                message.what = 1002;
-                handler.sendMessage(message);
-            }
-        });
-
-        mLookMoreRecyclerView.setAdapter(mLookMoreAdapter);
-
+    @Override
+    public void onClickItemVideo(int position) {
+        Toast.makeText(mContext, "查看更多==" + position + "===" + detailsList.get(position).name, Toast.LENGTH_SHORT).show();
     }
 
     private ServiceConnection connection = new ServiceConnection() {
@@ -184,23 +202,6 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         public void onServiceDisconnected(ComponentName name) {
         }
     };
-
-
-    /**
-     * 显示数据
-     */
-    @Override
-    public void showInitList(List<TppData.DetailsListBean> detailsListBeanArrayList) {
-        if (null != detailsListBeanArrayList && null != mLookMoreAdapter) {
-            detailsList = detailsListBeanArrayList;
-            mLookMoreAdapter.bindData(detailsListBeanArrayList, true);
-        }
-    }
-
-    @Override
-    public void onClickItemVideo(int position) {
-        Toast.makeText(mContext, "查看更多==" + position + "===" + detailsList.get(position).name, Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     public void showProgress() {

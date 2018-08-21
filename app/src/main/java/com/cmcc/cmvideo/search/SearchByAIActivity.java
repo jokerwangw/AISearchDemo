@@ -169,6 +169,13 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiveLastText(LastTextDataBean text) {
+        if (null != text) {
+            lastText = text.getLastText();
+        }
+    }
+
     /**
      * 根据相关事件更新UI
      *
@@ -209,12 +216,6 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void receiveLastText(LastTextDataBean text) {
-        if (null != text) {
-            lastText = text.getLastText();
-        }
-    }
 
     /**
      * 点击不同条目对应的点击事件
@@ -504,6 +505,9 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         mVoiceLineView.setVolume(arg2 + 120);
     }
 
+    /**
+     * 初始化conn
+     */
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
