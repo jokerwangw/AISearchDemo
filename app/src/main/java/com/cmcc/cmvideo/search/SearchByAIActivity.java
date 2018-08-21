@@ -142,8 +142,16 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         mSearchByAIPresenter.initListSearchItem();
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         if (null != audioManager) {
+
+            try {
+                //打开扬声器
+                AIUIUtils.setAudioMode(SearchByAIActivity.this, AudioManager.MODE_NORMAL);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             isOpenSpeaker = audioManager.isSpeakerphoneOn();
-            vSpekaker.setVisibility(isOpenSpeaker ? View.VISIBLE : View.GONE);
+            vSpekaker.setVisibility(isOpenSpeaker ? View.GONE : View.VISIBLE);
         }
     }
 
@@ -353,7 +361,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                 }
             }
             isOpenSpeaker = audioManager.isSpeakerphoneOn();
-            vSpekaker.setVisibility(isOpenSpeaker ? View.VISIBLE : View.GONE);
+            vSpekaker.setVisibility(isOpenSpeaker ? View.GONE : View.VISIBLE);
         } catch (Exception e) {
             e.printStackTrace();
         }
