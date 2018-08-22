@@ -1012,8 +1012,16 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         SearchByAIBean searchByAIBean = new SearchByAIBean(msg, messageType, msgFrom, videoList);
         if (videoList != null && videoList.size() > 0) {
             lastVideoSearchByAIBean = searchByAIBean;
-            List<TppData.SubserialsBean> subserials = lastVideoSearchByAIBean.getVideoList().get(0).subserials;
-            Collections.reverse(subserials);
+            if (lastVideoSearchByAIBean != null && lastVideoSearchByAIBean.getVideoList() != null && lastVideoSearchByAIBean.getVideoList().size() > 0) {
+                List<TppData.SubserialsBean> subserials = lastVideoSearchByAIBean.getVideoList().get(0).subserials;
+                try {
+                    if (subserials.size() > 0) {
+                        Collections.reverse(subserials);
+                    }
+                } catch (Exception e) {
+
+                }
+            }
             //服务端返回数据就去同步所见即可说
             syncSpeakableData(searchByAIBean.getMessageType(), videoList);
         }
