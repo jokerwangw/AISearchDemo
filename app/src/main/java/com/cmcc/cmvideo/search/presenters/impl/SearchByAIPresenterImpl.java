@@ -1014,12 +1014,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             lastVideoSearchByAIBean = searchByAIBean;
             if (lastVideoSearchByAIBean != null && lastVideoSearchByAIBean.getVideoList() != null && lastVideoSearchByAIBean.getVideoList().size() > 0) {
                 List<TppData.SubserialsBean> subserials = lastVideoSearchByAIBean.getVideoList().get(0).subserials;
-                try {
-                    if (subserials.size() > 0) {
-                        Collections.reverse(subserials);
-                    }
-                } catch (Exception e) {
-
+                if (subserials!=null&&subserials.size() > 0) {
+                    Collections.reverse(subserials);
                 }
             }
             //服务端返回数据就去同步所见即可说
