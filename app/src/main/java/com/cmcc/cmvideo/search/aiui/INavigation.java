@@ -10,14 +10,18 @@ import com.cmcc.cmvideo.search.aiui.impl.LiveEnum;
 public interface INavigation {
     /**
      * 播放视频
+     *
      * @param navBean
      */
     void playVideo(NavigationBean<TppData.DetailsListBean> navBean);
+
     /**
      * 播放剧集
+     *
      * @param navBean
+     * @param episodeIndex
      */
-    void playEpisode(NavigationBean<TppData.SubserialsBean> navBean);
+    void playEpisode(NavigationBean<TppData.DetailsListBean> navBean, int episodeIndex);
 
     /**
      * 会员业务
@@ -33,6 +37,7 @@ public interface INavigation {
      * 活动打折业务业务
      */
     void toActivity();
+
     /**
      * 购票业务
      */
@@ -45,6 +50,7 @@ public interface INavigation {
 
     /**
      * Live模块分类跳转
+     *
      * @param liveType 直播台类型
      */
     void toLive(LiveEnum liveType);

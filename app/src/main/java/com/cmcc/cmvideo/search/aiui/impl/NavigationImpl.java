@@ -30,10 +30,11 @@ public class NavigationImpl implements INavigation {
     /**
      * 播放剧集
      *
-     * @param epiSodeBean 剧集数据
+     * @param videoBean    剧集数据
+     * @param episodeIndex 剧集集数
      */
     @Override
-    public void playEpisode(NavigationBean<TppData.SubserialsBean> epiSodeBean) {
+    public void playEpisode(NavigationBean<TppData.DetailsListBean> videoBean, int episodeIndex) {
 
     }
 
@@ -79,7 +80,6 @@ public class NavigationImpl implements INavigation {
 
     /**
      * 频道查询 如：我要看CCTV5体育 / 湖南卫视
-     *
      */
     @Override
     public void toLive(NlpData mData) {
@@ -88,6 +88,7 @@ public class NavigationImpl implements INavigation {
 
     /**
      * 是否插入耳机 true表示接入耳机  false表示没有接入耳机
+     *
      * @param isConnectEarphone
      */
     @Override

@@ -31,6 +31,7 @@ import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
 import com.cmcc.cmvideo.search.model.SearchByAIRefreshUIEventBean;
 import com.cmcc.cmvideo.search.presenters.SearchByAIPresenter;
+import com.cmcc.cmvideo.util.AIUIUtils;
 import com.cmcc.cmvideo.util.AiResponse;
 import com.cmcc.cmvideo.util.AiuiConstants;
 import com.cmcc.cmvideo.util.NumberToWord;
@@ -80,7 +81,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private String lastVideoData = "";
     private SearchByAIBean lastVideoSearchByAIBean = null;
     private String lastTextData = "";
-    private String tag = "";
 
     public enum CategoryType {
         // 电影，电视剧，记录片，卡通，综艺 ,影视
@@ -355,7 +355,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     responseTts = response;
                 }
                 if (messageType == MESSAGE_TYPE_NORMAL && nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text)) {
-                    String txt = transition(nlpData.answer.text);
+                    String txt = AIUIUtils.transition(nlpData.answer.text);
                     aiuiService.tts(txt);
                 }
                 if (hasVideoData(nlpData)) {
@@ -433,8 +433,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         Collections.reverse(subserials);
                         if (index >= 0 && index < subserials.size()) {
                             String name = subserials.get(index).name;
-                            aiuiService.getNavigation().playEpisode(new NavigationBean(subserials.get(index)));
-                            String transName = transition(name);
+                            aiuiService.getNavigation().playEpisode(new NavigationBean(lastVideoSearchByAIBean.getVideoList().get(0)), index);
+                            String transName = AIUIUtils.transition(name);
                             aiuiService.tts("正在为你打开" + transName);
                         } else {
                         }
@@ -699,14 +699,28 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         aiuiService.clearSpeakableData();
                         return;
                     }
+                    int episodeIndex = 0;
                     List<TppData.SubserialsBean> selectedSubserialsList = new ArrayList<>();
                     for (String subName : subNames) {
-                        for (TppData.SubserialsBean sub : detail.subserials) {
+                        //                        for (TppData.SubserialsBean sub : detail.subserials) {
+                        //                            Logger.debug("name【" + subName + "】beanName【" + sub.name + "】");
+                        //                            if (sub.name.contains(subName)) {
+                        //                                // 找到多个匹配结果
+                        //                                // 找到多个匹配结果
+                        //                                selectedSubserialsList.add(sub);
+                        //                                break;
+                        //                            }
+                        //                        }
+
+                        for (int i = 0; i < detail.subserials.size(); i++) {
+                            TppData.SubserialsBean sub = detail.subserials.get(i);
+
                             Logger.debug("name【" + subName + "】beanName【" + sub.name + "】");
                             if (sub.name.contains(subName)) {
                                 // 找到多个匹配结果
                                 // 找到多个匹配结果
                                 selectedSubserialsList.add(sub);
+                                episodeIndex = i;
                                 break;
                             }
                         }
@@ -714,8 +728,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     if (selectedSubserialsList.size() == 0) {
                         return;
                     }
-                    aiuiService.getNavigation().playEpisode(new NavigationBean(selectedSubserialsList.get(0)));
-                    String traName = transition(selectedSubserialsList.get(0).name);
+                    aiuiService.getNavigation().playEpisode(new NavigationBean(detail), episodeIndex);
+                    String traName = AIUIUtils.transition(selectedSubserialsList.get(0).name);
                     aiuiService.tts("正在为你打开," + traName);
                     break;
                 case "VIDEO_NAME":
@@ -742,8 +756,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         return;
                     }
                     if (selectedVideoList.size() == 1) {
-                        aiuiService.getNavigation().playEpisode(new NavigationBean(selectedVideoList.get(0)));
-                        String traOneName = transition(selectedVideoList.get(0).name);
+                        aiuiService.getNavigation().playVideo(new NavigationBean(selectedVideoList.get(0)));
+                        String traOneName = AIUIUtils.transition(selectedVideoList.get(0).name);
                         aiuiService.tts("正在为你打开," + traOneName);
                     } else {
                         lastVideoSearchByAIBean.setVideoList(selectedVideoList);
@@ -755,12 +769,12 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 case "FIRST":
                     TppData.DetailsListBean detail1 = lastVideoSearchByAIBean.getVideoList().get(0);
                     if (lastSearchIsGuessWhatYouLike() && hasSubserials(detail1)) {
-                        aiuiService.getNavigation().playEpisode(new NavigationBean(detail1.subserials.get(0)));
-                        String firName = transition(detail1.subserials.get(0).name);
+                        aiuiService.getNavigation().playEpisode(new NavigationBean(detail1), 0);
+                        String firName = AIUIUtils.transition(detail1.subserials.get(0).name);
                         aiuiService.tts("正在为你打开," + firName);
                     } else {
                         aiuiService.getNavigation().playVideo(new NavigationBean(lastVideoSearchByAIBean.getVideoList().get(0)));
-                        String naviName = transition(lastVideoSearchByAIBean.getVideoList().get(0).name);
+                        String naviName = AIUIUtils.transition(lastVideoSearchByAIBean.getVideoList().get(0).name);
                         aiuiService.tts("正在为你打开," + naviName);
                     }
 
@@ -768,24 +782,24 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 case "SECOND":
                     TppData.DetailsListBean detail2 = lastVideoSearchByAIBean.getVideoList().get(0);
                     if (lastSearchIsGuessWhatYouLike() && hasSubserials(detail2) && detail2.subserials.size() >= 2) {
-                        aiuiService.getNavigation().playEpisode(new NavigationBean(detail2.subserials.get(1)));
-                        String secName = transition(detail2.subserials.get(1).name);
+                        aiuiService.getNavigation().playEpisode(new NavigationBean(detail2), 1);
+                        String secName = AIUIUtils.transition(detail2.subserials.get(1).name);
                         aiuiService.tts("正在为你打开," + secName);
                     } else {
                         aiuiService.getNavigation().playVideo(new NavigationBean(lastVideoSearchByAIBean.getVideoList().get(1)));
-                        String secNaviName = transition(lastVideoSearchByAIBean.getVideoList().get(1).name);
+                        String secNaviName = AIUIUtils.transition(lastVideoSearchByAIBean.getVideoList().get(1).name);
                         aiuiService.tts("正在为你打开," + secNaviName);
                     }
                     break;
                 case "THIRD":
                     TppData.DetailsListBean detail3 = lastVideoSearchByAIBean.getVideoList().get(0);
                     if (lastSearchIsGuessWhatYouLike() && hasSubserials(detail3) && detail3.subserials.size() >= 3) {
-                        aiuiService.getNavigation().playEpisode(new NavigationBean(detail3.subserials.get(2)));
-                        String thiName = transition(detail3.subserials.get(2).name);
+                        aiuiService.getNavigation().playEpisode(new NavigationBean(detail3), 2);
+                        String thiName = AIUIUtils.transition(detail3.subserials.get(2).name);
                         aiuiService.tts("正在为你打开," + thiName);
                     } else {
                         aiuiService.getNavigation().playVideo(new NavigationBean(lastVideoSearchByAIBean.getVideoList().get(2)));
-                        String thiNaviName = transition(lastVideoSearchByAIBean.getVideoList().get(2).name);
+                        String thiNaviName = AIUIUtils.transition(lastVideoSearchByAIBean.getVideoList().get(2).name);
                         aiuiService.tts("正在为你打开," + thiNaviName);
                     }
                     break;
@@ -1028,39 +1042,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         EventBus.getDefault().post(new SearchByAIEventBean(messageList));
     }
 
-    /**
-     * 阿拉伯数字转大写
-     *
-     * @param s
-     * @return
-     */
-    public String transition(String s) {
-        tag = s;
-        if (!HasDigit(tag)) {
-            return tag;
-        }
 
-        String num = getNumbers(tag);
-        String zh = NumberToWord.toChinese(num);
-        tag = tag.replaceFirst(num, zh);
-        if (HasDigit(tag)) {
-            return transition(tag);
-        } else {
-            return tag;
-        }
-    }
-
-
-    // 判断一个字符串是否含有数字
-    public boolean HasDigit(String content) {
-        boolean flag = false;
-        Pattern p = Pattern.compile(".*\\d+.*");
-        Matcher m = p.matcher(content);
-        if (m.matches()) {
-            flag = true;
-        }
-        return flag;
-    }
 
 
 }

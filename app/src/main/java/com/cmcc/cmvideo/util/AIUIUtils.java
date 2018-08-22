@@ -6,6 +6,10 @@ import android.media.AudioManager;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.cmcc.cmvideo.util.DigitUtil.getNumbers;
 
 /**
  * Created by Yyw on 2018/6/25.
@@ -51,5 +55,44 @@ public class AIUIUtils {
             audioManager.setSpeakerphoneOn(false);
         }
         audioManager.setMode(mode);
+    }
+
+    /**
+     * 阿拉伯数字转大写
+     *
+     * @param s
+     * @return
+     */
+    public static String transition(String s) {
+        String tag = "";
+        tag = s;
+        if (!HasDigit(tag)) {
+            return tag;
+        }
+
+        String num = getNumbers(tag);
+        String zh = NumberToWord.toChinese(num);
+        tag = tag.replaceFirst(num, zh);
+        if (HasDigit(tag)) {
+            return transition(tag);
+        } else {
+            return tag;
+        }
+    }
+
+    /**
+     * 判断一个字符串是否含有数字
+     *
+     * @param content
+     * @return
+     */
+    public static boolean HasDigit(String content) {
+        boolean flag = false;
+        Pattern p = Pattern.compile(".*\\d+.*");
+        Matcher m = p.matcher(content);
+        if (m.matches()) {
+            flag = true;
+        }
+        return flag;
     }
 }
