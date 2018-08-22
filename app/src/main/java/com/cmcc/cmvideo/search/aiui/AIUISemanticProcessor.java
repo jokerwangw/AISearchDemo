@@ -133,7 +133,6 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
             return;
         }
 
-
         //如 我想看电影 是开放问答的技能，此时会返回moreResults字段，但是这个是要走后处理，所以moreResults里面如果是video就直接返回
         //如果包含moreResults且service是video则直接返回，如果是viewCmd则要发送消息
         if (null != mData && null != mData.moreResults) {
@@ -148,7 +147,6 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
                 mData = mData.moreResults.get(0);
             }
         }
-
 
         try {
             //解析出当前语义状态，以便上传同步客户端状态，实现多伦对话
@@ -187,10 +185,10 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
                 //视频播放、暂停、下一集、上一集
                 controlCmdIntent(mData);
                 break;
-//            case AiuiConstants.VIDEO_ON_SERVICE:
-//                //直播模块
-//                intentOnLive(mData);
-//                break;
+            //            case AiuiConstants.VIDEO_ON_SERVICE:
+            //                //直播模块
+            //                intentOnLive(mData);
+            //                break;
             case AiuiConstants.WORLD_CUP_SERVICE:
                 //伪球迷必备
                 intentWorldCup(mData);
@@ -223,7 +221,6 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
         }
 
     }
-    //============================================================================================================================================
 
     /**
      * 控制指令 播放、暂停、下一集、上一集
@@ -250,7 +247,6 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
         }
     }
 
-
     /**
      * 处理控制指令
      *
@@ -273,18 +269,17 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
                         }
                     }
                 }
-//                aiuiService.tts("正在为您" + mData.text);
+                //                aiuiService.tts("正在为您" + mData.text);
                 break;
             case AiuiConstants.SREEN_INTENT:
                 // 投屏跳转
                 isAvailableVideo = true;
                 EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_SCREEN));
-//                aiuiService.tts("正在为您" + mData.text);
+                //                aiuiService.tts("正在为您" + mData.text);
                 break;
             default:
                 break;
         }
-
     }
 
     /**
@@ -336,14 +331,11 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
                         swControl(mData);
                         Logger.debug("快进到XXXXX===" + intent);
                         break;
-
                     default:
                         break;
-
                 }
             }
         }
-
     }
 
     /**
@@ -380,29 +372,22 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
     private void formatControlTime(Map<String, String> solts) {
         String controlVdoTimeHour = null, controlVdoTimeMinu = null, controlVdoTimeSecon = null;
 
-        if (null != solts.get(AiuiConstants.HOURS)
-                && solts.containsKey(AiuiConstants.HOURS)) {
+        if (null != solts.get(AiuiConstants.HOURS)&& solts.containsKey(AiuiConstants.HOURS)) {
             //小时
             controlVdoTimeHour = solts.get(AiuiConstants.HOURS);
-
         }
 
-        if (null != solts.get(AiuiConstants.MINUTE)
-                && solts.containsKey(AiuiConstants.MINUTE)) {
+        if (null != solts.get(AiuiConstants.MINUTE)&& solts.containsKey(AiuiConstants.MINUTE)) {
             //分钟
             controlVdoTimeMinu = solts.get(AiuiConstants.MINUTE);
         }
 
-
-        if (null != solts.get(AiuiConstants.SECOND)
-                && solts.containsKey(AiuiConstants.SECOND)) {
+        if (null != solts.get(AiuiConstants.SECOND)&& solts.containsKey(AiuiConstants.SECOND)) {
             //秒
             controlVdoTimeSecon = solts.get(AiuiConstants.SECOND);
-
         }
 
-        if (AiuiConstants.VIDEO_FASTWORD.equals(solts.get(AiuiConstants.VIDEO_INSTYPE))
-                || AiuiConstants.VIDEO_BACKWORD.equals(solts.get(AiuiConstants.VIDEO_INSTYPE))) {
+        if (AiuiConstants.VIDEO_FASTWORD.equals(solts.get(AiuiConstants.VIDEO_INSTYPE))|| AiuiConstants.VIDEO_BACKWORD.equals(solts.get(AiuiConstants.VIDEO_INSTYPE))) {
             EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_BACKWORD, controlVdoTimeHour, controlVdoTimeMinu, controlVdoTimeSecon));
 
         } else if (AiuiConstants.VIDEO_FASTWORD_TO.equals(solts.get(AiuiConstants.VIDEO_INSTYPE))) {

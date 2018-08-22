@@ -120,16 +120,6 @@ public class AIUIService extends Service {
         registerReceiver(mReceiver, intentFilter);
     }
 
-    private void setUserData() {
-        Map<String, String> map = new HashMap<String, String>() {{
-            put("msisdn", "13764279837");
-            put("user_id", "553782460");
-            put("client_id", "897ddadc222ec9c20651da355daee9cc");
-        }};
-        userInfoMap = map;
-        AIUIService.this.setUserParam();
-    }
-
     private void ivwMode() {
         Logger.debug(">>>>>>>>>ivwMode=========>>>>>>>>");
         setParam("5000", "ivw", "continuous", "sdk");

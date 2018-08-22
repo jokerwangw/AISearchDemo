@@ -19,6 +19,7 @@ import static com.cmcc.cmvideo.util.DigitUtil.getNumbers;
 public class AIUIUtils {
     /**
      * 判断服务是否开启
+     *
      * @return
      */
     public static boolean isServiceRunning(Context context, String serviceName) {
@@ -37,6 +38,7 @@ public class AIUIUtils {
 
     /**
      * 设置语音播放的模式
+     *
      * @param ctx
      * @param mode
      */
@@ -57,6 +59,7 @@ public class AIUIUtils {
 
     /**
      * 阿拉伯数字转大写
+     *
      * @param s
      * @return
      */
@@ -79,6 +82,7 @@ public class AIUIUtils {
 
     /**
      * 判断一个字符串是否含有数字
+     *
      * @param content
      * @return
      */
