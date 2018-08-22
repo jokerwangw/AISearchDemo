@@ -331,6 +331,10 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
                         swControl(mData);
                         Logger.debug("快进到XXXXX===" + intent);
                         break;
+                    case AiuiConstants.VIDEO_INDEX:
+                        //第几集
+                        EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_WHICH_EPISODE));
+                        break;
                     default:
                         break;
                 }
@@ -372,22 +376,22 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
     private void formatControlTime(Map<String, String> solts) {
         String controlVdoTimeHour = null, controlVdoTimeMinu = null, controlVdoTimeSecon = null;
 
-        if (null != solts.get(AiuiConstants.HOURS)&& solts.containsKey(AiuiConstants.HOURS)) {
+        if (null != solts.get(AiuiConstants.HOURS) && solts.containsKey(AiuiConstants.HOURS)) {
             //小时
             controlVdoTimeHour = solts.get(AiuiConstants.HOURS);
         }
 
-        if (null != solts.get(AiuiConstants.MINUTE)&& solts.containsKey(AiuiConstants.MINUTE)) {
+        if (null != solts.get(AiuiConstants.MINUTE) && solts.containsKey(AiuiConstants.MINUTE)) {
             //分钟
             controlVdoTimeMinu = solts.get(AiuiConstants.MINUTE);
         }
 
-        if (null != solts.get(AiuiConstants.SECOND)&& solts.containsKey(AiuiConstants.SECOND)) {
+        if (null != solts.get(AiuiConstants.SECOND) && solts.containsKey(AiuiConstants.SECOND)) {
             //秒
             controlVdoTimeSecon = solts.get(AiuiConstants.SECOND);
         }
 
-        if (AiuiConstants.VIDEO_FASTWORD.equals(solts.get(AiuiConstants.VIDEO_INSTYPE))|| AiuiConstants.VIDEO_BACKWORD.equals(solts.get(AiuiConstants.VIDEO_INSTYPE))) {
+        if (AiuiConstants.VIDEO_FASTWORD.equals(solts.get(AiuiConstants.VIDEO_INSTYPE)) || AiuiConstants.VIDEO_BACKWORD.equals(solts.get(AiuiConstants.VIDEO_INSTYPE))) {
             EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_BACKWORD, controlVdoTimeHour, controlVdoTimeMinu, controlVdoTimeSecon));
 
         } else if (AiuiConstants.VIDEO_FASTWORD_TO.equals(solts.get(AiuiConstants.VIDEO_INSTYPE))) {

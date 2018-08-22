@@ -29,6 +29,7 @@ import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.model.LookMoreEventDataBean;
 import com.cmcc.cmvideo.search.presenters.LookMorePresenter;
 import com.cmcc.cmvideo.search.presenters.impl.LookMorePresenterImpl;
+import com.cmcc.cmvideo.util.AiuiConstants;
 import com.cmcc.cmvideo.util.SharedPreferencesHelper;
 import com.cmcc.cmvideo.util.T;
 import com.google.gson.Gson;
@@ -151,16 +152,21 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         NlpData nlpData = gson.fromJson(moreData.getMoreData(), NlpData.class);
         String lastText = nlpData.text;
         if (!spLastData.equals(lastText) && !lastText.equals("查看更多")) {
-            if (null != aiuiService) {
-                aiuiService.onResume(false);
-                this.finish();
-            }
-            return;
-        }
+            //只有是视频搜索的技能才跳转
+            if (AiuiConstants.VIDEO_SERVICE.equals(nlpData.service)
+                    || (nlpData.moreResults != null && nlpData.moreResults.size() > 0 &&
+                    AiuiConstants.VIDEO_SERVICE.equals(nlpData.moreResults.get(0).service))
+                    || AiuiConstants.USER_VIDEO_SERVICE.equals(nlpData.service)) {
 
-        Logger.debug(">>>>>>>>>>>>" + "text====" + nlpData.text);
+                if (null != aiuiService) {
+                    aiuiService.onResume(false);
+                    this.finish();
+                }
+                return;
+
+            }
+        }
         if (null != nlpData.data && null != nlpData.data.lxresult) {
-            Logger.debug(">>>>>>>>>>>>" + nlpData.data.lxresult + "text====" + nlpData.text);
             if (nlpData.data.lxresult.satisfy) {
                 lookMorePresenter.setDetailsJson(moreData.getMoreData());
             } else {

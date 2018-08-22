@@ -131,11 +131,13 @@ public class AiuiConstants {
     public final static int VDO_OPEN = 5;
     public final static int VDO_CLOSE = 6;
     public final static int VDO_SCREEN = 7;
-    //快进 快退 快进（快退） 换一集
+    //快进 快退 快进（快退） 换一集  第几集
     public final static int VDO_FASTWORD = 8;
     public final static int VDO_BACKWORD = 9;
     public final static int VDO_FASTWORD_TO = 10;
     public final static int VDO_CHANGE = 11;
+    public final static int VDO_WHICH_EPISODE = 12;
+
 
 
     //自定义直播技能
