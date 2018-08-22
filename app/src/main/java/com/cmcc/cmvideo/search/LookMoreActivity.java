@@ -30,6 +30,7 @@ import com.cmcc.cmvideo.search.model.LookMoreEventDataBean;
 import com.cmcc.cmvideo.search.presenters.LookMorePresenter;
 import com.cmcc.cmvideo.search.presenters.impl.LookMorePresenterImpl;
 import com.cmcc.cmvideo.util.SharedPreferencesHelper;
+import com.cmcc.cmvideo.util.T;
 import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIConstant;
 import com.iflytek.aiui.AIUIMessage;
@@ -143,14 +144,12 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
                 MainThreadImpl.getInstance(),
                 this,
                 this);
-        Logger.debug(">>>>>>>>>>>.initData>>>>>>>>>>>>>>>>>>>");
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveLookMoreData(LookMoreEventDataBean moreData) {
         NlpData nlpData = gson.fromJson(moreData.getMoreData(), NlpData.class);
         String lastText = nlpData.text;
-        Logger.debug("文本数据===++++++" + lastText);
         if (!spLastData.equals(lastText) && !lastText.equals("查看更多")) {
             if (null != aiuiService) {
                 aiuiService.onResume(false);
@@ -159,7 +158,19 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
             return;
         }
 
-        lookMorePresenter.setDetailsJson(moreData.getMoreData());
+        Logger.debug(">>>>>>>>>>>>" + "text====" + nlpData.text);
+        if (null != nlpData.data && null != nlpData.data.lxresult) {
+            Logger.debug(">>>>>>>>>>>>" + nlpData.data.lxresult + "text====" + nlpData.text);
+            if (nlpData.data.lxresult.satisfy) {
+                lookMorePresenter.setDetailsJson(moreData.getMoreData());
+            } else {
+                mLookMoreRecyclerView.setFootViewText(null, null);
+                mLookMoreRecyclerView.loadMoreComplete();
+                T.show(this, "没有更多数据了哦", 300);
+                return;
+            }
+        }
+
         mLookMoreAdapter.notifyDataSetChanged();
         if (nlpData.data == null
                 || nlpData.data.lxresult == null
