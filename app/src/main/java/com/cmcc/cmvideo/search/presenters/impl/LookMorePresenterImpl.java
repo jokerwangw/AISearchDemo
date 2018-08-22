@@ -57,6 +57,7 @@ public class LookMorePresenterImpl extends AbstractPresenter implements LookMore
 
     @Override
     public void destroy() {
+        aiuiService.resetLastNlp();
         aiuiService.removeAIUIEventListener(this);
     }
 
@@ -73,7 +74,7 @@ public class LookMorePresenterImpl extends AbstractPresenter implements LookMore
     @Override
     public void loadMore() {
         pageNum++;
-        aiuiService.getLookMorePage("查看更多", pageNum, pageSize, false);
+        aiuiService.getLookMorePage("查看更多", pageNum, pageSize, false,"");
     }
 
     @Override

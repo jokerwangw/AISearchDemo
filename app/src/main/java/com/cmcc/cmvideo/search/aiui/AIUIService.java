@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
 import com.cmcc.cmvideo.search.SearchByAIActivity;
 import com.cmcc.cmvideo.search.aiui.bean.IatBean;
 import com.cmcc.cmvideo.search.aiui.impl.NavigationImpl;
@@ -64,6 +65,7 @@ public class AIUIService extends Service {
     private boolean isTextRequest = false;
     private boolean isLookMoreDatas = false;
     private String lastNlp;
+    private String lastLoadMoreNlp;
 
     @Override
     public void onCreate() {
@@ -255,12 +257,27 @@ public class AIUIService extends Service {
         }
 
         @Override
-        public void getLookMorePage(final String lookMoreText, final int pageIndex, final int pageSize, boolean isLookMoreData) {
+        public void getLookMorePage(final String lookMoreText, final int pageIndex, final int pageSize, boolean isLookMoreData,String lastNlp) {
             this.lookMoreText = lookMoreText;
             this.pageIndex = pageIndex;
             this.pageSize = pageSize;
-            isLookMoreDatas = isLookMoreData;
-            getLookMorePage();
+            if(!TextUtils.isEmpty(lastNlp)){
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(lastNlp);
+                    if(jsonObject.has("data")) {
+                        jsonObject.remove("data");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                lastLoadMoreNlp= jsonObject==null?"":jsonObject.toString();
+            }
+            setUserDataParam("", "", "", isLookMoreDatas?"2":"3",lastLoadMoreNlp);
+            String params = "data_type=text";
+            byte[] textData = lookMoreText.getBytes();
+            AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, params, textData);
+            mAIUIAgent.sendMessage(msg);
         }
 
         @Override
@@ -295,6 +312,12 @@ public class AIUIService extends Service {
         }
 
         @Override
+        public void resetLastNlp() {
+            lastLoadMoreNlp = "";
+            setUserParams("","","","1");
+        }
+
+        @Override
         public void setAttached(boolean isAttached) {
             uiAttached = isAttached;
         }
@@ -324,18 +347,6 @@ public class AIUIService extends Service {
             hasCancelRecordAudio = true;
             semanticProcessor.cancelRecordAudio();
             stopRecordAudio();
-        }
-
-        public void getLookMorePage() {
-            if (isLookMoreDatas) {
-                setMorePageInfo(pageIndex + "", pageSize + "", "2");
-            } else {
-                setPageInfo(pageIndex + "", pageSize + "", "3");
-            }
-            String params = "data_type=text";
-            byte[] textData = lookMoreText.getBytes();
-            AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, params, textData);
-            mAIUIAgent.sendMessage(msg);
         }
     }
 
@@ -813,6 +824,9 @@ public class AIUIService extends Service {
     };
 
     private void setUserDataParam(final String pagesize, final String pageindex, final String screen_type, final String req_more_num) {
+        setUserDataParam(pagesize, pageindex,screen_type,req_more_num,"");
+    }
+    private void setUserDataParam(final String pagesize, final String pageindex, final String screen_type, final String req_more_num,String lastVideoNlp) {
         try {
 
             Map<String, String> map = new HashMap<String, String>() {{
@@ -828,9 +842,14 @@ public class AIUIService extends Service {
             JSONObject objectJson = new JSONObject();
             JSONObject paramJson = new JSONObject();
             JSONObject lastNlpIntent = new JSONObject();
-            if(!TextUtils.isEmpty(lastNlp)){
-                lastNlpIntent.put("intent",new JSONObject(lastNlp));
-                Logger.debug("lastNlp is 【"+lastNlp+"】");
+            if(TextUtils.isEmpty(lastVideoNlp)) {
+                if (!TextUtils.isEmpty(lastNlp)) {
+                    lastNlpIntent.put("intent", new JSONObject(lastNlp));
+                    Logger.debug("lastNlp is 【" + lastNlp + "】");
+                }
+            }else {
+                lastNlpIntent.put("intent", new JSONObject(lastVideoNlp));
+                Logger.debug("lastNlp is 【" + lastVideoNlp + "】");
             }
 
             //用户数据添加的初始化参数中

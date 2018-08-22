@@ -58,4 +58,9 @@ public interface SearchByAIPresenter extends BasePresenter {
      * @param position
      */
     void turnToPlayVideo(int type, boolean isClickLookMore, TppData.DetailsListBean detailsListBean, String deailsJson, int position);
+
+    /**
+     * 查看更多
+     */
+    void lookMore(String title,String itemNlp);
 }

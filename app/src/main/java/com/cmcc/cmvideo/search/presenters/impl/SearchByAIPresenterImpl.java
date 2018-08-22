@@ -78,6 +78,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private IAIUIService aiuiService;
     private Gson gson;
     private String lastResponseVideoTitle = "";
+    private String realVideoTitle ="";
     private String lastVideoData = "";
     private SearchByAIBean lastVideoSearchByAIBean = null;
     private String lastTextData = "";
@@ -174,6 +175,12 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         }
     }
 
+    @Override
+    public void lookMore(String title ,String itemNlp) {
+        realVideoTitle  = title;
+        aiuiService.getLookMorePage("查看更多", 1, 15, true,itemNlp);
+    }
+
     private void onNlpResult(String nlpResult) {
         NlpData mData = gson.fromJson(nlpResult, NlpData.class);
         String service = mData.service;
@@ -202,10 +209,11 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             switch (nlpData.semantic.get(0).slots.get(0).name) {
                 case "LOOK_MORE":
                     Intent intent = new Intent(mContext, LookMoreActivity.class);
-                    intent.putExtra(LookMoreActivity.KEY_TITLE, lastResponseVideoTitle);
+                    intent.putExtra(LookMoreActivity.KEY_TITLE,TextUtils.isEmpty(realVideoTitle)?lastResponseVideoTitle:realVideoTitle);
                     intent.putExtra(LookMoreActivity.KEY_MORE_DATE,result);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(intent);
+                    realVideoTitle = "";
                     break;
                 default:
                     break;
@@ -1006,7 +1014,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private void sendMessage(String msg, int messageType, String msgFrom) {
         sendMessage(msg, messageType, msgFrom, null);
     }
-
     /**
      * 发送消息更新UI
      *
