@@ -63,13 +63,11 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
 
     @Override
     public void onResult(String iatResult, String nlpReslult, String tppResult) {
-        if (!aiuiService.isLookMorePageData()) {
-            if (!TextUtils.isEmpty(nlpReslult)) {
-                onNlpResult(nlpReslult);
-            }
-            if (!TextUtils.isEmpty(tppResult)) {
-                onTppResult(tppResult);
-            }
+        if (!TextUtils.isEmpty(nlpReslult)) {
+            onNlpResult(nlpReslult);
+        }
+        if (!TextUtils.isEmpty(tppResult)) {
+            onTppResult(tppResult);
         }
     }
 

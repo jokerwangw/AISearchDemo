@@ -51,11 +51,7 @@ public class AIUIService extends Service {
     private AIUIEventListenerManager eventListenerManager;
     private Map<String, String> userInfoMap;
     private boolean isIvwModel = false;
-    private boolean hasSetLookMorePageSize = false;
-    private boolean hasSyncData = false;
-    private boolean hasClearData = false;
     private boolean hasCancelRecordAudio = false;
-    private boolean isAvailableVideo = false;
     private AIUISemanticProcessor semanticProcessor;
     private boolean uiAttached = false;
     private byte[] fileData;
@@ -67,6 +63,7 @@ public class AIUIService extends Service {
     //文本请求tag标记
     private boolean isTextRequest = false;
     private boolean isLookMoreDatas = false;
+    private String lastNlp;
 
     @Override
     public void onCreate() {
@@ -215,9 +212,6 @@ public class AIUIService extends Service {
         public void startRecordAudio() {
             if (!isIvwModel) {
                 hasCancelRecordAudio = false;
-                if (hasSetLookMorePageSize) {
-                    hasSetLookMorePageSize = false;
-                }
                 sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
             }
         }
@@ -266,17 +260,7 @@ public class AIUIService extends Service {
             this.pageIndex = pageIndex;
             this.pageSize = pageSize;
             isLookMoreDatas = isLookMoreData;
-            hasSetLookMorePageSize = true;
-            if (hasSyncData) {
-                //如果有同步所见即可说数据先要清除数据，避免lookMoreText中带了上一次查找的内容而干扰结果返回
-                //同时由于clearSpeakableData 是异步的，所以在清楚数据后的getPage在EVENT_CMD_RETURN事件（即清除成功返回）中执行
-                AIUIService.this.clearSpeakableData();
-                hasSyncData = false;
-                hasClearData = true;
-            } else {
-                getLookMorePage();
-
-            }
+            getLookMorePage();
         }
 
         @Override
@@ -305,8 +289,9 @@ public class AIUIService extends Service {
         }
 
         @Override
-        public boolean isLookMorePageData() {
-            return hasSetLookMorePageSize;
+        public void setLastNlp(String lastNlp) {
+            AIUIService.this.lastNlp = lastNlp;
+            setUserParams("","","","1");
         }
 
         @Override
@@ -332,12 +317,6 @@ public class AIUIService extends Service {
         @Override
         public INavigation getNavigation() {
             return navigation;
-        }
-
-        @Override
-        public void onResume(boolean flag) {
-            Log.d("AIUISemanticProcessor==", "onResume fasle");
-            hasSetLookMorePageSize = flag;
         }
 
         @Override
@@ -431,7 +410,6 @@ public class AIUIService extends Service {
                                     String jsonResultStr = cntJson.toString();
                                     //LogUtil.e("TPP===", resultStr);
                                     Logger.debug("TPP 【" + jsonResultStr + "】");
-                                    EventBus.getDefault().post(new LookMoreEventDataBean(jsonResultStr));
                                     eventListenerManager.onResult(null, null, jsonResultStr);
                                 }
                             }
@@ -491,13 +469,6 @@ public class AIUIService extends Service {
                                 case AIUIConstant.SYNC_DATA_SPEAKABLE:
                                     Logger.debug("SYNC_DATA_SPEAKABLE 生效");
                                     effectDynamicEntity();
-                                    break;
-                                case AIUIConstant.SYNC_DATA_STATUS:
-                                    Logger.debug("同步所见即可说数据成功");
-                                    if (hasClearData) {
-                                        aiuiService.getLookMorePage();
-                                        hasClearData = false;
-                                    }
                                     break;
                                 default:
                                     break;
@@ -580,15 +551,7 @@ public class AIUIService extends Service {
      * @param pageSize
      */
     private void setPageInfo(String pageIndex, String pageSize, String reqNum) {
-//        if (userInfoMap != null) {
-//            userInfoMap.put("pageindex", pageIndex);
-//            userInfoMap.put("pagesize", pageSize);
-//            setUserParam();
-//        }
-
         setUserDataParam(pageSize, pageIndex, "", reqNum);
-
-
     }
 
 
@@ -682,7 +645,6 @@ public class AIUIService extends Service {
             byte[] syncData = params.getBytes("utf-8");
             AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC, AIUIConstant.SYNC_DATA_STATUS, 0, params, syncData);
             mAIUIAgent.sendMessage(syncAthenaMessage);
-            hasSyncData = true;
             Logger.debug("同步状态数据【" + data.toString() + "】");
         } catch (Exception e) {
             e.printStackTrace();
@@ -728,7 +690,6 @@ public class AIUIService extends Service {
             byte[] syncData = params.getBytes("utf-8");
             AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC, AIUIConstant.SYNC_DATA_STATUS, 0, params, syncData);
             mAIUIAgent.sendMessage(syncAthenaMessage);
-            hasSyncData = true;
             Logger.debug("同步状态数据【" + data.toString() + "】");
         } catch (Exception e) {
             e.printStackTrace();
@@ -838,7 +799,6 @@ public class AIUIService extends Service {
                             standardMode();
                         }
                     } else if (intent.getIntExtra("state", 0) == 1) {
-                        isAvailableVideo = true;
                         navigation.isHeadset(true);
                         semanticProcessor.setIsMicConnect(true);
                         //切换为耳机模式
@@ -851,7 +811,6 @@ public class AIUIService extends Service {
             }
         }
     };
-
 
     private void setUserDataParam(final String pagesize, final String pageindex, final String screen_type, final String req_more_num) {
         try {
@@ -868,12 +827,19 @@ public class AIUIService extends Service {
 
             JSONObject objectJson = new JSONObject();
             JSONObject paramJson = new JSONObject();
+            JSONObject lastNlpIntent = new JSONObject();
+            if(!TextUtils.isEmpty(lastNlp)){
+                lastNlpIntent.put("intent",new JSONObject(lastNlp));
+                Logger.debug("lastNlp is 【"+lastNlp+"】");
+            }
+
             //用户数据添加的初始化参数中
             Iterator<Map.Entry<String, String>> iterator = map.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<String, String> item = iterator.next();
                 paramJson.put(item.getKey(), item.getValue());
             }
+            paramJson.put("content",lastNlpIntent);
             objectJson.put("userparams", paramJson);
             sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
         } catch (JSONException e) {

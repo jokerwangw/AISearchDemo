@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.cmcc.cmvideo.base.BasePresenter;
 import com.cmcc.cmvideo.base.BaseView;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
+import com.cmcc.cmvideo.search.aiui.bean.NlpData;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 
@@ -23,12 +24,18 @@ public interface LookMorePresenter extends BasePresenter {
          * @param detailsListBeanArrayList
          */
         void showInitList(List<TppData.DetailsListBean> detailsListBeanArrayList);
+        void loadComplate();
+        void noMoreData();
+        void noMoreDataWithTip();
+        void exit();
     }
-
     /**
-     * setSpeechText
+     * 传参
      *
-     * @param text
+     * @param service
      */
-    void setDetailsJson(String text);
+    void setAIUIService(IAIUIService service);
+    void loadMore();
+    void refresh();
+    void loadData(String pageData);
 }

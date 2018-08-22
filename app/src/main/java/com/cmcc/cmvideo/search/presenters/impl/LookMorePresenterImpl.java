@@ -12,6 +12,8 @@ import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.aiui.bean.NlpData;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.presenters.LookMorePresenter;
+import com.cmcc.cmvideo.util.AiuiConstants;
+import com.cmcc.cmvideo.util.T;
 import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIEvent;
 
@@ -25,11 +27,14 @@ import java.util.Random;
  * Describe:
  */
 
-public class LookMorePresenterImpl extends AbstractPresenter implements LookMorePresenter {
+public class LookMorePresenterImpl extends AbstractPresenter implements LookMorePresenter ,AIUIService.AIUIEventListener {
     private LookMorePresenter.View mView;
     private Context mContext;
     private Gson gson;
     private List<TppData.DetailsListBean> LookMoreData = new ArrayList();
+    private IAIUIService aiuiService;
+    private int pageNum = 1;
+    private int pageSize = 15;
 
     public LookMorePresenterImpl(Executor executor, MainThread mainThread, LookMorePresenter.View view, Context context) {
         super(executor, mainThread);
@@ -52,6 +57,7 @@ public class LookMorePresenterImpl extends AbstractPresenter implements LookMore
 
     @Override
     public void destroy() {
+        aiuiService.removeAIUIEventListener(this);
     }
 
     @Override
@@ -59,63 +65,71 @@ public class LookMorePresenterImpl extends AbstractPresenter implements LookMore
     }
 
     @Override
-    public void setDetailsJson(String text) {
-        onTppResult(text);
+    public void setAIUIService(IAIUIService service) {
+        this.aiuiService = service;
+        aiuiService.addAIUIEventListener(this);
+    }
+
+    @Override
+    public void loadMore() {
+        pageNum++;
+        aiuiService.getLookMorePage("查看更多", pageNum, pageSize, false);
+    }
+
+    @Override
+    public void refresh() {
+        pageNum = 1;
+    }
+
+    @Override
+    public void loadData(String pageData) {
+        receiveLookMoreData(pageData);
+    }
+
+    @Override
+    public void onResult(String iatResult, String nlpReslult, String tppResult) {
+        if (!TextUtils.isEmpty(tppResult)) {
+            onTppResult(tppResult);
+        }
+    }
+
+    private void onTppResult(String tppResult){
+        receiveLookMoreData(tppResult);
     }
 
 
-    public void onTppResult(String result) {
-        if (TextUtils.isEmpty(result)) {
-            return;
-        }
 
-        NlpData nlpData = gson.fromJson(result, NlpData.class);
-        //判断是否解出了语义，并且当前技能是video
-        if (nlpData.rc == 4
-                || !("video".equals(nlpData.service)
-                || "LINGXI2018.user_video".equals(nlpData.service))) {
-            if (nlpData.moreResults == null) {
-                return;
-            }
-            nlpData = nlpData.moreResults.get(0);
-            if (nlpData.rc == 4
-                    || !("video".equals(nlpData.service)
-                    || "LINGXI2018.user_video".equals(nlpData.service))) {
-                return;
-            }
-        }
-        //语义后处理没有返回数据则直接退出
-        if (
-                nlpData.data == null
-                        || nlpData.data.lxresult == null
-                        || nlpData.data.lxresult.data.detailslist.size() == 0) {
-            return;
-        }
+    @Override
+    public void onEvent(AIUIEvent event) {
 
-        LookMoreData.addAll(nlpData.data.lxresult.data.detailslist);
-
-//        mView.showInitList(blurDetailsList(nlpData.data.lxresult.data.detailslist));
-//        mView.showInitList(blurDetailsList(LookMoreData));
-        mView.showInitList(LookMoreData);
     }
 
-    //前三个 保持不变后面的数据随机排序，产品需求 为了造成每次查看更多好像都换新的数据的假象
-    private List<TppData.DetailsListBean> blurDetailsList(List<TppData.DetailsListBean> detailslist) {
-        if (detailslist == null || detailslist.size() < 4) {
-            return detailslist;
+    public void receiveLookMoreData(String  moreData) {
+        NlpData nlpData = gson.fromJson(moreData, NlpData.class);
+        //只有是视频搜索的技能才跳转
+        if (AiuiConstants.VIDEO_SERVICE.equals(nlpData.service)
+                || (nlpData.moreResults != null && nlpData.moreResults.size() > 0 &&
+                AiuiConstants.VIDEO_SERVICE.equals(nlpData.moreResults.get(0).service))
+                || AiuiConstants.USER_VIDEO_SERVICE.equals(nlpData.service)) {
+            mView.exit();
+            return;
         }
+        if (null != nlpData.data && null != nlpData.data.lxresult) {
+            if (nlpData.data.lxresult.satisfy) {
+                LookMoreData.addAll(nlpData.data.lxresult.data.detailslist);
+                mView.showInitList(LookMoreData);
+            } else {
+                mView.noMoreDataWithTip();
+                return;
+            }
+        }
+        if (nlpData.data == null
+                || nlpData.data.lxresult == null
+                || nlpData.data.lxresult.data.detailslist.size() == 0) {
 
-        List<TppData.DetailsListBean> headList = detailslist.subList(0, 3);
-        List<TppData.DetailsListBean> blurList = detailslist.subList(3, detailslist.size());
-        List<TppData.DetailsListBean> sourceList = new ArrayList<>();
-        int count = blurList.size();
-        Random random = new Random();
-        for (int i = 0; i < count; i++) {
-            int index = random.nextInt(count);
-            Collections.swap(blurList, 0, index);
+            mView.noMoreData();
+            return;
         }
-        sourceList.addAll(headList);
-        sourceList.addAll(blurList);
-        return sourceList;
+        mView.loadComplate();
     }
 }

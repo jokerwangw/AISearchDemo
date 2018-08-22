@@ -81,6 +81,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private String lastVideoData = "";
     private SearchByAIBean lastVideoSearchByAIBean = null;
     private String lastTextData = "";
+    private boolean isPauseing =false;
 
 
     public enum CategoryType {
@@ -97,10 +98,12 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     @Override
     public void resume() {
+        isPauseing= false;
     }
 
     @Override
     public void pause() {
+        isPauseing= true;
     }
 
     @Override
@@ -163,14 +166,11 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     @Override
     public void onResult(String iatResult, String nlpReslult, String tppResult) {
-        //onIatResult(iatResult);
-        if (!aiuiService.isLookMorePageData()) {
-            if (!TextUtils.isEmpty(nlpReslult)) {
-                onNlpResult(nlpReslult);
-            }
-            if (!TextUtils.isEmpty(tppResult)) {
-                onTppResult(tppResult);
-            }
+        if (!TextUtils.isEmpty(nlpReslult)) {
+            onNlpResult(nlpReslult);
+        }
+        if (!TextUtils.isEmpty(tppResult)) {
+            onTppResult(tppResult);
         }
     }
 
@@ -188,6 +188,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             case AiuiConstants.VIDEO_CMD:
                 intentCmd(mData);
                 break;
+            case AiuiConstants.VIDEO_SERVICE:
+                aiuiService.setLastNlp(nlpResult);
             default:
                 break;
         }
@@ -195,6 +197,20 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     private void onTppResult(String result) {
         NlpData nlpData = gson.fromJson(result, NlpData.class);
+
+        if (!isPauseing&&AiuiConstants.VIEWCMD_INTENT.equals(nlpData.semantic.get(0).intent)) {
+            switch (nlpData.semantic.get(0).slots.get(0).name) {
+                case "LOOK_MORE":
+                    Intent intent = new Intent(mContext, LookMoreActivity.class);
+                    intent.putExtra(LookMoreActivity.KEY_TITLE, lastResponseVideoTitle);
+                    intent.putExtra(LookMoreActivity.KEY_MORE_DATE,result);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(intent);
+                    break;
+                default:
+                    break;
+            }
+        }
 
         //判断是否解出了语义，并且当前技能是video
         if (nlpData.rc == 4 || !("video".equals(nlpData.service) || "LINGXI2018.user_video".equals(nlpData.service))) {
@@ -216,12 +232,12 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 nlpData = nlpData.moreResults.get(0);
             }
         }
+
         if (hasVideoData(nlpData)) {
             lastTextData = nlpData.text;
             Logger.debug("上次请求文本====》》》" + lastTextData);
             EventBus.getDefault().post(new LastTextDataBean(lastTextData));
         }
-
 
         //语义后处理没有返回数据则直接退出
         if (!hasVideoData(nlpData) || !"0000000".equals(nlpData.data.lxresult.code)) {
@@ -652,15 +668,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private void intentViewCmd(NlpData nlpData) {
         if (AiuiConstants.VIEWCMD_INTENT.equals(nlpData.semantic.get(0).intent)) {
             switch (nlpData.semantic.get(0).slots.get(0).name) {
-                case "LOOK_MORE":
-                    Intent intent = new Intent(mContext, LookMoreActivity.class);
-                    intent.putExtra(LookMoreActivity.KEY_TITLE, lastResponseVideoTitle);
-                    intent.putExtra(LookMoreActivity.KEY_LAST_TEXT, lastTextData);
-                    intent.putExtra(LookMoreActivity.KEY_MORE_DATE, lastVideoData);
-                    Logger.debug("上次会话请求文本" + lastTextData);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startActivity(intent);
-                    break;
                 case "CHANGE":
                     if (lastVideoSearchByAIBean != null) {
                         if (lastVideoSearchByAIBean.getVideoList().size() > 1) {

@@ -244,12 +244,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         public void clickItemSearchByAIEveryoneISWatching(boolean isClickMore, int position, String deailsJson, String titleText) {
             if (isClickMore) {
                 //查看更多
-                Intent intent = new Intent(mContext, LookMoreActivity.class);
-                intent.putExtra(LookMoreActivity.KEY_TITLE, titleText);
-                intent.putExtra(LookMoreActivity.KEY_LAST_TEXT, lastText);
-                intent.putExtra(LookMoreActivity.KEY_MORE_DATE, deailsJson);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                aiuiService.getLookMorePage("查看更多", 1, 15, true);
             } else {
                 int i = position + 1;
                 Toast.makeText(mContext, "查看==" + i, Toast.LENGTH_SHORT).show();
@@ -549,11 +544,6 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         super.onResume();
         if (null != mSearchByAIPresenter) {
             mSearchByAIPresenter.resume();
-        }
-        if (aiuiService != null) {
-            aiuiService.onResume(false);
-            //重置用户参数
-            aiuiService.setUserParams("", "", "", "1");
         }
     }
 

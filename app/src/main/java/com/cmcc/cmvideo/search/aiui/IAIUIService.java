@@ -100,13 +100,6 @@ public interface IAIUIService {
     void textUnderstander(String text);
 
     /**
-     * 判断当前获得的数据是否是查看更多的数据（如果是查看更多数据，聊天UI中不显示对话UI）
-     *
-     * @return true-false
-     */
-    boolean isLookMorePageData();
-
-    /**
      * 设置语音助手是否在自己的UI页面
      *
      * @param isAttached
@@ -135,13 +128,6 @@ public interface IAIUIService {
     INavigation getNavigation();
 
     /**
-     * activity onResume
-     *
-     * @param flag
-     */
-    void onResume(boolean flag);
-
-    /**
      * 多次换一个后重新请求数据
      *
      * @return
@@ -165,4 +151,10 @@ public interface IAIUIService {
      * @param req_more_num   1表示 正常视频搜索页面请求  2表示查看更多的请求   3表示查看更多页面上拉加载请求
      */
     void setUserParams(String pagesize, String pageindex, String screen_type, String req_more_num);
+
+    /**
+     * 设置上一次的语义结果
+     * @param lastNlp
+     */
+    void setLastNlp(String lastNlp);
 }

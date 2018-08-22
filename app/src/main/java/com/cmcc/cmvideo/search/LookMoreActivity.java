@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +35,7 @@ import com.cmcc.cmvideo.util.SharedPreferencesHelper;
 import com.cmcc.cmvideo.util.T;
 import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIConstant;
+import com.iflytek.aiui.AIUIEvent;
 import com.iflytek.aiui.AIUIMessage;
 import com.jcodecraeer.xrecyclerview.ProgressStyle;
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
@@ -56,36 +58,20 @@ import butterknife.OnClick;
  * Describe:
  */
 
-public class LookMoreActivity extends AppCompatActivity implements LookMorePresenter.View, LookMoreAdapter.OnLookMoreItemClick {
+public class LookMoreActivity extends AppCompatActivity implements LookMorePresenter.View, LookMoreAdapter.OnLookMoreItemClick{
     @BindView(R.id.look_more_recyclerView)
     XRecyclerView mLookMoreRecyclerView;
     @BindView(R.id.tv_title)
     TextView titleTv;
     public static final String KEY_MORE_DATE = "more_data";
     public static final String KEY_TITLE = "more_data_title";
-    public static final String KEY_LAST_TEXT = "last_text";
     private Context mContext;
     private LookMorePresenterImpl lookMorePresenter;
     private LookMoreAdapter mLookMoreAdapter;
     private List<TppData.DetailsListBean> detailsList;
-    private int pageNum = 1;
-    private int pageSize = 15;
     private IAIUIService aiuiService;
-    private String lastTextData;
     private Gson gson;
     private boolean isBind = false;
-    private String spLastData;
-    //创建Handler
-    @SuppressLint("HandlerLeak")
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (msg.what == 1002) {
-                aiuiService.getLookMorePage(lastTextData, pageNum, pageSize, false);
-            }
-        }
-    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,11 +86,6 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
     }
 
     private void initCustomView() {
-        SharedPreferencesHelper.getInstance(this).setValue(KEY_LAST_TEXT, getIntent().getStringExtra(KEY_LAST_TEXT));
-        spLastData = SharedPreferencesHelper.getInstance(this).getValue(KEY_LAST_TEXT);
-
-        lastTextData = getIntent().getStringExtra(KEY_LAST_TEXT);
-        Logger.debug("上次请求文本====>>>>>>>>>>>" + lastTextData);
         titleTv.setText(getIntent().getStringExtra(KEY_TITLE));
 
         mLookMoreAdapter = new LookMoreAdapter(mContext, this);
@@ -118,26 +99,21 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
             @Override
             public void onRefresh() {
                 //refresh data here
-                pageNum = 1;
+                lookMorePresenter.refresh();
             }
 
             @Override
             public void onLoadMore() {
                 // load more data here
-                pageNum++;
-                Message message = Message.obtain();
-                message.what = 1002;
-                handler.sendMessage(message);
+                lookMorePresenter.loadMore();
             }
         });
 
         mLookMoreRecyclerView.setAdapter(mLookMoreAdapter);
-
     }
 
     private void initData() {
         gson = new Gson();
-        EventBus.getDefault().register(this);
         bindService(new Intent(this, AIUIService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
         detailsList = new ArrayList<>();
         lookMorePresenter = new LookMorePresenterImpl(
@@ -147,46 +123,21 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
                 this);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void receiveLookMoreData(LookMoreEventDataBean moreData) {
-        NlpData nlpData = gson.fromJson(moreData.getMoreData(), NlpData.class);
-        String lastText = nlpData.text;
-        if (!spLastData.equals(lastText) && !lastText.equals("查看更多")) {
-            //只有是视频搜索的技能才跳转
-            if (AiuiConstants.VIDEO_SERVICE.equals(nlpData.service)
-                    || (nlpData.moreResults != null && nlpData.moreResults.size() > 0 &&
-                    AiuiConstants.VIDEO_SERVICE.equals(nlpData.moreResults.get(0).service))
-                    || AiuiConstants.USER_VIDEO_SERVICE.equals(nlpData.service)) {
-
-                if (null != aiuiService) {
-                    aiuiService.onResume(false);
-                    this.finish();
-                }
-                return;
-
-            }
-        }
-        if (null != nlpData.data && null != nlpData.data.lxresult) {
-            if (nlpData.data.lxresult.satisfy) {
-                lookMorePresenter.setDetailsJson(moreData.getMoreData());
-            } else {
-                mLookMoreRecyclerView.setFootViewText(null, null);
-                mLookMoreRecyclerView.loadMoreComplete();
-                T.show(this, "没有更多数据了哦", 300);
-                return;
-            }
-        }
-
-        mLookMoreAdapter.notifyDataSetChanged();
-        if (nlpData.data == null
-                || nlpData.data.lxresult == null
-                || nlpData.data.lxresult.data.detailslist.size() == 0) {
-
-            mLookMoreRecyclerView.setFootViewText(null, null);
-            mLookMoreRecyclerView.loadMoreComplete();
-            return;
-        }
+    @Override
+    public void loadComplate() {
         mLookMoreRecyclerView.loadMoreComplete();
+    }
+
+    @Override
+    public void noMoreData() {
+        mLookMoreRecyclerView.loadMoreComplete();
+        mLookMoreRecyclerView.setFootViewText(null, null);
+    }
+
+    @Override
+    public void noMoreDataWithTip() {
+        noMoreData();
+        T.show(this, "没有更多数据了哦", 300);
     }
 
     /**
@@ -197,6 +148,7 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         if (null != detailsListBeanArrayList && null != mLookMoreAdapter) {
             detailsList = detailsListBeanArrayList;
             mLookMoreAdapter.bindData(detailsListBeanArrayList, true);
+            mLookMoreAdapter.notifyDataSetChanged();
         }
     }
 
@@ -209,10 +161,10 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             aiuiService = (IAIUIService) service;
+            String lockMoreData = getIntent().getStringExtra(KEY_MORE_DATE);
+            lookMorePresenter.setAIUIService(aiuiService);
+            lookMorePresenter.loadData(lockMoreData);
             isBind = true;
-//            lookMorePresenter.setDetailsJson(getIntent().getStringExtra(KEY_MORE_DATE));
-            aiuiService.setUserParams(pageSize + "", pageNum + "", "", "2");
-            aiuiService.getLookMorePage(lastTextData, pageNum, pageSize, true);
         }
 
         @Override
@@ -239,14 +191,16 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
 
     @Override
     protected void onDestroy() {
-        EventBus.getDefault().unregister(this);
         super.onDestroy();
         lookMorePresenter.destroy();
         if (isBind) {
             unbindService(connection);
         }
         isBind = false;
-        lastTextData = "";
-        spLastData = "";
+    }
+
+    @Override
+    public void exit() {
+        finish();
     }
 }
