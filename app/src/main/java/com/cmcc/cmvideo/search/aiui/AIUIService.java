@@ -181,9 +181,6 @@ public class AIUIService extends Service {
     }
 
     private class AIUIServiceImpl extends Binder implements IAIUIService {
-        private String lookMoreText;
-        private int pageIndex;
-        private int pageSize;
 
         @Override
         public void setInteractMode(boolean isOnShot) {
@@ -257,9 +254,6 @@ public class AIUIService extends Service {
 
         @Override
         public void getLookMorePage(final String lookMoreText, final int pageIndex, final int pageSize, boolean isLookMoreData,String lastNlp) {
-            this.lookMoreText = lookMoreText;
-            this.pageIndex = pageIndex;
-            this.pageSize = pageSize;
             if(!TextUtils.isEmpty(lastNlp)){
                 JSONObject jsonObject = null;
                 try {
@@ -272,7 +266,7 @@ public class AIUIService extends Service {
                 }
                 lastLoadMoreNlp= jsonObject==null?"":jsonObject.toString();
             }
-            setUserDataParam("", "", "", isLookMoreData?"":"3",lastLoadMoreNlp);
+            setUserDataParam(pageSize+"", pageIndex+"", "", isLookMoreData?"":"3",lastLoadMoreNlp);
             String params = "data_type=text";
             byte[] textData = lookMoreText.getBytes();
             AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, params, textData);
