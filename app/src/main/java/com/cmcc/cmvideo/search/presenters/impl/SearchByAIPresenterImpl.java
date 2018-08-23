@@ -208,7 +208,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private void onTppResult(String result) {
         NlpData nlpData = gson.fromJson(result, NlpData.class);
 
-        if (!isPauseing&&AiuiConstants.VIEWCMD_INTENT.equals(nlpData.semantic.get(0).intent)) {
+        if (nlpData.semantic!=null&&
+                !isPauseing&&
+                AiuiConstants.VIEWCMD_INTENT.equals(nlpData.semantic.get(0).intent)) {
             switch (nlpData.semantic.get(0).slots.get(0).name) {
                 case "LOOK_MORE":
                     Intent intent = new Intent(mContext, LookMoreActivity.class);

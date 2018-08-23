@@ -414,7 +414,7 @@ public class AIUIService extends Service {
                             }
                         }
                     } catch (Throwable e) {
-                        e.printStackTrace();
+                        Logger.error(e);
                     }
                 }
                 break;
