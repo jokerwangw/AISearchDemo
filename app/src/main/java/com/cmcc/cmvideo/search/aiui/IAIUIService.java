@@ -141,17 +141,6 @@ public interface IAIUIService {
      */
     void textUnderRequest(String text);
 
-
-    /**
-     * 设置用户参数
-     *
-     * @param pagesize
-     * @param pageindex
-     * @param screen_type
-     * @param req_more_num   1表示 正常视频搜索页面请求  2表示查看更多的请求   3表示查看更多页面上拉加载请求
-     */
-    void setUserParams(String pagesize, String pageindex, String screen_type, String req_more_num);
-
     /**
      * 设置上一次的语义结果
      * @param lastNlp

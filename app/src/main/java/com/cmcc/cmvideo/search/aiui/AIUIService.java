@@ -63,7 +63,6 @@ public class AIUIService extends Service {
     private static Gson mGson;
     //文本请求tag标记
     private boolean isTextRequest = false;
-    private boolean isLookMoreDatas = false;
     private String lastNlp;
     private String lastLoadMoreNlp;
 
@@ -273,7 +272,7 @@ public class AIUIService extends Service {
                 }
                 lastLoadMoreNlp= jsonObject==null?"":jsonObject.toString();
             }
-            setUserDataParam("", "", "", isLookMoreDatas?"2":"3",lastLoadMoreNlp);
+            setUserDataParam("", "", "", isLookMoreData?"":"3",lastLoadMoreNlp);
             String params = "data_type=text";
             byte[] textData = lookMoreText.getBytes();
             AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, params, textData);
@@ -301,20 +300,15 @@ public class AIUIService extends Service {
         }
 
         @Override
-        public void setUserParams(String pagesize, String pageindex, String screen_type, String req_more_num) {
-            setUserDataParam(pagesize, pageindex, screen_type, req_more_num);
-        }
-
-        @Override
         public void setLastNlp(String lastNlp) {
             AIUIService.this.lastNlp = lastNlp;
-            setUserParams("","","","1");
+            setUserDataParam("","","","1");
         }
 
         @Override
         public void resetLastNlp() {
             lastLoadMoreNlp = "";
-            setUserParams("","","","1");
+            setUserDataParam("","","","1");
         }
 
         @Override
@@ -553,27 +547,6 @@ public class AIUIService extends Service {
         params.append(",ent=xtts");
         //开始合成
         mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_TTS, AIUIConstant.START, 0, params.toString(), ttsData));
-    }
-
-    /**
-     * 设置页码
-     *
-     * @param pageIndex
-     * @param pageSize
-     */
-    private void setPageInfo(String pageIndex, String pageSize, String reqNum) {
-        setUserDataParam(pageSize, pageIndex, "", reqNum);
-    }
-
-
-    /**
-     * 设置页码
-     *
-     * @param pageIndex
-     * @param pageSize
-     */
-    private void setMorePageInfo(String pageIndex, String pageSize, String reqNum) {
-        setUserDataParam(pageSize, pageIndex, "", reqNum);
     }
 
     /**
@@ -823,6 +796,14 @@ public class AIUIService extends Service {
         }
     };
 
+    /**
+     * 设置用户参数
+     *
+     * @param pagesize
+     * @param pageindex
+     * @param screen_type
+     * @param req_more_num   1表示 正常视频搜索页面请求  2表示查看更多的请求   3表示查看更多页面上拉加载请求
+     */
     private void setUserDataParam(final String pagesize, final String pageindex, final String screen_type, final String req_more_num) {
         setUserDataParam(pagesize, pageindex,screen_type,req_more_num,"");
     }
@@ -845,11 +826,9 @@ public class AIUIService extends Service {
             if(TextUtils.isEmpty(lastVideoNlp)) {
                 if (!TextUtils.isEmpty(lastNlp)) {
                     lastNlpIntent.put("intent", new JSONObject(lastNlp));
-                    Logger.debug("lastNlp is 【" + lastNlp + "】");
                 }
             }else {
                 lastNlpIntent.put("intent", new JSONObject(lastVideoNlp));
-                Logger.debug("lastNlp is 【" + lastVideoNlp + "】");
             }
 
             //用户数据添加的初始化参数中
@@ -860,7 +839,9 @@ public class AIUIService extends Service {
             }
             paramJson.put("content",lastNlpIntent);
             objectJson.put("userparams", paramJson);
-            sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, objectJson.toString(), null));
+            String userParams = objectJson.toString();
+            Logger.debug("lastUserParams is 【" + userParams + "】");
+            sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, userParams, null));
         } catch (JSONException e) {
             e.printStackTrace();
         }

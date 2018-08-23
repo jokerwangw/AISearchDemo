@@ -57,7 +57,6 @@ public class LookMorePresenterImpl extends AbstractPresenter implements LookMore
 
     @Override
     public void destroy() {
-        aiuiService.resetLastNlp();
         aiuiService.removeAIUIEventListener(this);
     }
 

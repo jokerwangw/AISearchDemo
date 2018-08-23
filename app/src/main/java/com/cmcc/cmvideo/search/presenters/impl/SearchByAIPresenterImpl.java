@@ -100,6 +100,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     @Override
     public void resume() {
         isPauseing= false;
+        if(aiuiService!=null) {
+            aiuiService.resetLastNlp();
+        }
     }
 
     @Override
