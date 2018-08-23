@@ -78,11 +78,11 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private IAIUIService aiuiService;
     private Gson gson;
     private String lastResponseVideoTitle = "";
-    private String realVideoTitle ="";
+    private String realVideoTitle = "";
     private String lastVideoData = "";
     private SearchByAIBean lastVideoSearchByAIBean = null;
     private String lastTextData = "";
-    private boolean isPauseing =false;
+    private boolean isPauseing = false;
 
 
     public enum CategoryType {
@@ -99,15 +99,15 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     @Override
     public void resume() {
-        isPauseing= false;
-        if(aiuiService!=null) {
+        isPauseing = false;
+        if (aiuiService != null) {
             aiuiService.resetLastNlp();
         }
     }
 
     @Override
     public void pause() {
-        isPauseing= true;
+        isPauseing = true;
     }
 
     @Override
@@ -179,9 +179,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     }
 
     @Override
-    public void lookMore(String title ,String itemNlp) {
-        realVideoTitle  = title;
-        aiuiService.getLookMorePage("查看更多", 1, 15, true,itemNlp);
+    public void lookMore(String title, String itemNlp) {
+        realVideoTitle = title;
+        aiuiService.getLookMorePage("查看更多", 1, 15, true, itemNlp);
     }
 
     private void onNlpResult(String nlpResult) {
@@ -208,14 +208,15 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private void onTppResult(String result) {
         NlpData nlpData = gson.fromJson(result, NlpData.class);
 
-        if (nlpData.semantic!=null&&
-                !isPauseing&&
+        if (nlpData.semantic != null &&
+                !isPauseing &&
                 AiuiConstants.VIEWCMD_INTENT.equals(nlpData.semantic.get(0).intent)) {
+
             switch (nlpData.semantic.get(0).slots.get(0).name) {
                 case "LOOK_MORE":
                     Intent intent = new Intent(mContext, LookMoreActivity.class);
-                    intent.putExtra(LookMoreActivity.KEY_TITLE,TextUtils.isEmpty(realVideoTitle)?lastResponseVideoTitle:realVideoTitle);
-                    intent.putExtra(LookMoreActivity.KEY_MORE_DATE,result);
+                    intent.putExtra(LookMoreActivity.KEY_TITLE, TextUtils.isEmpty(realVideoTitle) ? lastResponseVideoTitle : realVideoTitle);
+                    intent.putExtra(LookMoreActivity.KEY_MORE_DATE, result);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(intent);
                     realVideoTitle = "";
@@ -1019,6 +1020,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private void sendMessage(String msg, int messageType, String msgFrom) {
         sendMessage(msg, messageType, msgFrom, null);
     }
+
     /**
      * 发送消息更新UI
      *
@@ -1033,7 +1035,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             lastVideoSearchByAIBean = searchByAIBean;
             if (lastVideoSearchByAIBean != null && lastVideoSearchByAIBean.getVideoList() != null && lastVideoSearchByAIBean.getVideoList().size() > 0) {
                 List<TppData.SubserialsBean> subserials = lastVideoSearchByAIBean.getVideoList().get(0).subserials;
-                if (subserials!=null&&subserials.size() > 0) {
+                if (subserials != null && subserials.size() > 0) {
                     Collections.reverse(subserials);
                 }
             }

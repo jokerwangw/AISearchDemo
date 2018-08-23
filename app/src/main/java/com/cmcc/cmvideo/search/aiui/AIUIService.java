@@ -253,20 +253,20 @@ public class AIUIService extends Service {
         }
 
         @Override
-        public void getLookMorePage(final String lookMoreText, final int pageIndex, final int pageSize, boolean isLookMoreData,String lastNlp) {
-            if(!TextUtils.isEmpty(lastNlp)){
+        public void getLookMorePage(final String lookMoreText, final int pageIndex, final int pageSize, boolean isLookMoreData, String lastNlp) {
+            if (!TextUtils.isEmpty(lastNlp)) {
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(lastNlp);
-                    if(jsonObject.has("data")) {
+                    if (jsonObject.has("data")) {
                         jsonObject.remove("data");
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                lastLoadMoreNlp= jsonObject==null?"":jsonObject.toString();
+                lastLoadMoreNlp = jsonObject == null ? "" : jsonObject.toString();
             }
-            setUserDataParam(pageSize+"", pageIndex+"", "", isLookMoreData?"":"3",lastLoadMoreNlp);
+            setUserDataParam(pageSize + "", pageIndex + "", "", isLookMoreData ? "" : "3", lastLoadMoreNlp);
             String params = "data_type=text";
             byte[] textData = lookMoreText.getBytes();
             AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, params, textData);
@@ -296,13 +296,13 @@ public class AIUIService extends Service {
         @Override
         public void setLastNlp(String lastNlp) {
             AIUIService.this.lastNlp = lastNlp;
-            setUserDataParam("","","","1");
+            setUserDataParam("", "", "", "1");
         }
 
         @Override
         public void resetLastNlp() {
             lastLoadMoreNlp = "";
-            setUserDataParam("","","","1");
+            setUserDataParam("", "", "", "1");
         }
 
         @Override
@@ -450,6 +450,7 @@ public class AIUIService extends Service {
                     if (event.arg1 == 0) {
                         //检测到前端点表示正在录音
                         AIUIService.this.cancelTts();
+                        isTtsing = false;
                     }
                     break;
                 case AIUIConstant.EVENT_STATE:
@@ -491,6 +492,7 @@ public class AIUIService extends Service {
                             FuncAdapter.UnLock(AIUIService.this, null);
                             break;
                         case AIUIConstant.TTS_SPEAK_PAUSED:
+                            isTtsing = false;
                             Logger.debug("===========暂停播放=========");
                             break;
 
@@ -796,12 +798,13 @@ public class AIUIService extends Service {
      * @param pagesize
      * @param pageindex
      * @param screen_type
-     * @param req_more_num   1表示 正常视频搜索页面请求  2表示查看更多的请求   3表示查看更多页面上拉加载请求
+     * @param req_more_num 1表示 正常视频搜索页面请求  2表示查看更多的请求   3表示查看更多页面上拉加载请求
      */
     private void setUserDataParam(final String pagesize, final String pageindex, final String screen_type, final String req_more_num) {
-        setUserDataParam(pagesize, pageindex,screen_type,req_more_num,"");
+        setUserDataParam(pagesize, pageindex, screen_type, req_more_num, "");
     }
-    private void setUserDataParam(final String pagesize, final String pageindex, final String screen_type, final String req_more_num,String lastVideoNlp) {
+
+    private void setUserDataParam(final String pagesize, final String pageindex, final String screen_type, final String req_more_num, String lastVideoNlp) {
         try {
 
             Map<String, String> map = new HashMap<String, String>() {{
@@ -817,11 +820,11 @@ public class AIUIService extends Service {
             JSONObject objectJson = new JSONObject();
             JSONObject paramJson = new JSONObject();
             JSONObject lastNlpIntent = new JSONObject();
-            if(TextUtils.isEmpty(lastVideoNlp)) {
+            if (TextUtils.isEmpty(lastVideoNlp)) {
                 if (!TextUtils.isEmpty(lastNlp)) {
                     lastNlpIntent.put("intent", new JSONObject(lastNlp));
                 }
-            }else {
+            } else {
                 lastNlpIntent.put("intent", new JSONObject(lastVideoNlp));
             }
 
@@ -831,7 +834,7 @@ public class AIUIService extends Service {
                 Map.Entry<String, String> item = iterator.next();
                 paramJson.put(item.getKey(), item.getValue());
             }
-            paramJson.put("content",lastNlpIntent);
+            paramJson.put("content", lastNlpIntent);
             objectJson.put("userparams", paramJson);
             String userParams = objectJson.toString();
             Logger.debug("lastUserParams is 【" + userParams + "】");
