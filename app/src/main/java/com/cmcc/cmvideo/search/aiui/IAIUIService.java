@@ -90,7 +90,7 @@ public interface IAIUIService {
      * @param pageIndex    分页index
      * @param pageSize     分页大小
      */
-    void getLookMorePage(String lookMoreText, int pageIndex, int pageSize,boolean isLookMoreData,String lastNlp);
+    void getLookMorePage(String lookMoreText, int pageIndex, int pageSize, boolean isLookMoreData, String lastNlp);
 
     /**
      * 文本语义理解
@@ -143,6 +143,7 @@ public interface IAIUIService {
 
     /**
      * 设置上一次的语义结果
+     *
      * @param lastNlp
      */
     void setLastNlp(String lastNlp);
@@ -151,4 +152,5 @@ public interface IAIUIService {
      * 重置上一次的语义结果
      */
     void resetLastNlp();
+
 }

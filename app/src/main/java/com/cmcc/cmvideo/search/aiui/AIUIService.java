@@ -55,7 +55,6 @@ public class AIUIService extends Service {
     private boolean hasCancelRecordAudio = false;
     private AIUISemanticProcessor semanticProcessor;
     private boolean uiAttached = false;
-    private byte[] fileData;
     //是否正在tts播报中
     private boolean isTtsing = false;
     private static String oldTtsMsg;
@@ -121,10 +120,10 @@ public class AIUIService extends Service {
     private void ivwMode() {
         Logger.debug(">>>>>>>>>ivwMode=========>>>>>>>>");
         setParam("5000", "ivw", "continuous", "sdk");
-        fileData = FileUtil.readFileFromAssets(AIUIService.this, "wav/migumigu.wav");
+        byte[] fileData = FileUtil.readFileFromAssets(AIUIService.this, "wav/migumigu.wav");
         AIUIMessage writeMsg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, "data_type=audio,sample_rate=16000", fileData);
         sendMessage(writeMsg);
-        sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
+        mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
         setUserDataParam("", "", "", "1");
         isIvwModel = true;
         AIUIMessage writeStopMsg = new AIUIMessage(AIUIConstant.CMD_STOP_WRITE, 0, 0, "data_type=audio,sample_rate=16000", fileData);
@@ -583,7 +582,7 @@ public class AIUIService extends Service {
             String params = data.toString();
             byte[] syncData = params.getBytes("utf-8");
             AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC, AIUIConstant.SYNC_DATA_STATUS, 0, params, syncData);
-            mAIUIAgent.sendMessage(syncAthenaMessage);
+            sendMessage(syncAthenaMessage);
             Logger.debug("删除状态数据【" + data.toString() + "】");
         } catch (Exception e) {
             e.printStackTrace();

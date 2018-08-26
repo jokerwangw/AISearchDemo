@@ -244,7 +244,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         public void clickItemSearchByAIEveryoneISWatching(boolean isClickMore, int position, String deailsJson, String titleText) {
             if (isClickMore) {
                 //查看更多
-                mSearchByAIPresenter.lookMore(titleText,deailsJson);
+                mSearchByAIPresenter.lookMore(titleText, deailsJson);
             } else {
                 int i = position + 1;
                 Toast.makeText(mContext, "查看==" + i, Toast.LENGTH_SHORT).show();
@@ -589,5 +589,6 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     @Override
     public void showError(String message) {
     }
+
 
 }

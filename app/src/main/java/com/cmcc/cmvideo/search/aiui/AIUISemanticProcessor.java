@@ -191,8 +191,38 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
                 //伪球迷必备
                 intentWorldCup(mData);
                 break;
+            case AiuiConstants.QUERY_ENCYCLO_SERVICE:
+                //百科词条查询
+                intentBaiKeQuery(mData);
+                break;
+            case AiuiConstants.QUERY_WEATHER_SERVICE:
+                intentWeatherQuery(mData);
+                break;
             default:
                 break;
+        }
+    }
+
+
+    /**
+     * 天气查询技能
+     * @param nlpData
+     */
+    private void intentWeatherQuery(NlpData nlpData) {
+        if ((nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text))) {
+            aiuiService.tts(nlpData.getAnswer().text);
+            sendMessage(nlpData.getAnswer().text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
+        }
+    }
+
+    /**
+     * 百科词条技能
+     * @param nlpData
+     */
+    private void intentBaiKeQuery(NlpData nlpData) {
+        if ((nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text))) {
+            aiuiService.tts(nlpData.getAnswer().text);
+            sendMessage(nlpData.getAnswer().text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
         }
     }
 

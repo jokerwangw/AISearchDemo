@@ -32,7 +32,7 @@ import com.cmcc.cmvideo.search.presenters.LookMorePresenter;
 import com.cmcc.cmvideo.search.presenters.impl.LookMorePresenterImpl;
 import com.cmcc.cmvideo.util.AiuiConstants;
 import com.cmcc.cmvideo.util.SharedPreferencesHelper;
-import com.cmcc.cmvideo.util.T;
+import com.cmcc.cmvideo.util.ToastUtil;
 import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIConstant;
 import com.iflytek.aiui.AIUIEvent;
@@ -58,7 +58,7 @@ import butterknife.OnClick;
  * Describe:
  */
 
-public class LookMoreActivity extends AppCompatActivity implements LookMorePresenter.View, LookMoreAdapter.OnLookMoreItemClick{
+public class LookMoreActivity extends AppCompatActivity implements LookMorePresenter.View, LookMoreAdapter.OnLookMoreItemClick {
     @BindView(R.id.look_more_recyclerView)
     XRecyclerView mLookMoreRecyclerView;
     @BindView(R.id.tv_title)
@@ -72,12 +72,13 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
     private IAIUIService aiuiService;
     private Gson gson;
     private boolean isBind = false;
+    private boolean isLoadMore = true;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-
+        isLoadMore = true;
         setContentView(R.layout.activity_look_more);
         ButterKnife.bind(this);
 
@@ -105,7 +106,11 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
             @Override
             public void onLoadMore() {
                 // load more data here
-                lookMorePresenter.loadMore();
+                if (isLoadMore) {
+                    lookMorePresenter.loadMore();
+                } else {
+                    noMoreDataWithTip();
+                }
             }
         });
 
@@ -131,13 +136,25 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
     @Override
     public void noMoreData() {
         mLookMoreRecyclerView.loadMoreComplete();
-        mLookMoreRecyclerView.setFootViewText(null, null);
+        mLookMoreRecyclerView.setFootViewText("", "");
+        isLoadMore = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        ToastUtil.cancelToast();
+        super.onStop();
     }
 
     @Override
     public void noMoreDataWithTip() {
         noMoreData();
-        T.show(this, "没有更多数据了哦", 300);
+        ToastUtil.show(this, "没有更多数据了哦", 1000);
     }
 
     /**
@@ -192,7 +209,10 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        ToastUtil.cancelToast();
         lookMorePresenter.destroy();
+        if (null != aiuiService) {
+        }
         if (isBind) {
             unbindService(connection);
         }

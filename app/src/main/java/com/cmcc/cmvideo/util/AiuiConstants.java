@@ -60,6 +60,15 @@ public class AiuiConstants {
     //商店技能 世界杯
     public final static String WORLD_CUP_SERVICE = "AIUI.WorldCup";
 
+    //百科词条查询技能
+    public final static String QUERY_ENCYCLO_SERVICE = "LEIQIAO.cyclopedia";
+    //意图名 百科词条
+    public final static String KEYWORD_QUERY_INTENT = "KEYWORD_QUERY";
+
+    //天气查询技能
+    public final static String QUERY_WEATHER_SERVICE = "weather";
+
+
     //世界杯意图名
     public final static String WORLD_CUP_QUERY_OPEN = "QUERY_OPEN";
     public final static String WORLD_CUP_SERCH_BY_DATE = "SERCH_BY_DATE";
@@ -137,7 +146,6 @@ public class AiuiConstants {
     public final static int VDO_FASTWORD_TO = 10;
     public final static int VDO_CHANGE = 11;
     public final static int VDO_WHICH_EPISODE = 12;
-
 
 
     //自定义直播技能

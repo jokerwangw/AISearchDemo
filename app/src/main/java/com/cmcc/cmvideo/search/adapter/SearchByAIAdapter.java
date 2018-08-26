@@ -3,6 +3,7 @@ package com.cmcc.cmvideo.search.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -199,6 +200,8 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 } else if (videoList.size() == 2) {
                     itemSearchByAIEveryoneISWatchingViewHolder.itemImg1.setImageURI(getImageUrl(videoList.get(0).image));
                     itemSearchByAIEveryoneISWatchingViewHolder.itemImg2.setImageURI(getImageUrl(videoList.get(1).image));
+                    Log.d("SearchByAIAdapter", getImageUrl(videoList.get(0).image));
+                    Log.d("SearchByAIAdapter", getImageUrl(videoList.get(1).image));
                     itemSearchByAIEveryoneISWatchingViewHolder.itemImg3.setVisibility(View.INVISIBLE);
                     itemSearchByAIEveryoneISWatchingViewHolder.itemName1.setText(videoList.get(0).name);
                     itemSearchByAIEveryoneISWatchingViewHolder.itemName2.setText(videoList.get(1).name);
@@ -267,10 +270,13 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                             String imgUrl = jsonObject.optString("highResolutionV");
                             if (!TextUtils.isEmpty(imgUrl)) {
                                 if (imgUrl.startsWith("http")) {
+
                                     itemSearchByAIGuessWhatYouLikeViewHolder.itemDetailImg.setImageURI(imgUrl);
                                 } else {
-                                    itemSearchByAIGuessWhatYouLikeViewHolder.itemDetailImg.setImageURI(IMG_BASE_URL + imgUrl);
+                                    imgUrl=  IMG_BASE_URL + imgUrl;
+                                    itemSearchByAIGuessWhatYouLikeViewHolder.itemDetailImg.setImageURI(imgUrl);
                                 }
+
                             }
 
                         } catch (Exception e) {

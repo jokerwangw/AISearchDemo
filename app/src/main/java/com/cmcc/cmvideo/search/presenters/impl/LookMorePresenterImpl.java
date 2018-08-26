@@ -13,7 +13,6 @@ import com.cmcc.cmvideo.search.aiui.bean.NlpData;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.presenters.LookMorePresenter;
 import com.cmcc.cmvideo.util.AiuiConstants;
-import com.cmcc.cmvideo.util.T;
 import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIEvent;
 
