@@ -224,8 +224,6 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 } else if (videoList.size() == 2) {
                     itemSearchByAIEveryoneISWatchingViewHolder.itemImg1.setImageURI(getImageUrl(videoList.get(0).image));
                     itemSearchByAIEveryoneISWatchingViewHolder.itemImg2.setImageURI(getImageUrl(videoList.get(1).image));
-                    Log.d("SearchByAIAdapter", getImageUrl(videoList.get(0).image));
-                    Log.d("SearchByAIAdapter", getImageUrl(videoList.get(1).image));
                     itemSearchByAIEveryoneISWatchingViewHolder.itemImg3.setVisibility(View.INVISIBLE);
                     itemSearchByAIEveryoneISWatchingViewHolder.itemName1.setText(videoList.get(0).name);
                     itemSearchByAIEveryoneISWatchingViewHolder.itemName2.setText(videoList.get(1).name);
