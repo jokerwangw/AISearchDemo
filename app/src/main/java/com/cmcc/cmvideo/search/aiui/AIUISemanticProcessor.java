@@ -193,19 +193,37 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
                 break;
             case AiuiConstants.QUERY_ENCYCLO_SERVICE:
                 //百科词条查询
-                intentBaiKeQuery(mData);
+//                intentBaiKeQuery(mData);
                 break;
             case AiuiConstants.QUERY_WEATHER_SERVICE:
                 intentWeatherQuery(mData);
                 break;
+            case AiuiConstants.JOKE_SERVICE:
+                intentJokeQuery(mData);
+                break;
+
             default:
                 break;
         }
     }
 
+    /**
+     * 笑话技能
+     *
+     * @param nlpData
+     */
+    private void intentJokeQuery(NlpData nlpData) {
+        if ((nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text))) {
+            aiuiService.tts(nlpData.getAnswer().text);
+            sendMessage(nlpData.getAnswer().text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
+        }
+
+    }
+
 
     /**
      * 天气查询技能
+     *
      * @param nlpData
      */
     private void intentWeatherQuery(NlpData nlpData) {
@@ -217,6 +235,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
 
     /**
      * 百科词条技能
+     *
      * @param nlpData
      */
     private void intentBaiKeQuery(NlpData nlpData) {

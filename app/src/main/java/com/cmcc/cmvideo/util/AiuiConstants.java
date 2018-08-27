@@ -60,6 +60,10 @@ public class AiuiConstants {
     //商店技能 世界杯
     public final static String WORLD_CUP_SERVICE = "AIUI.WorldCup";
 
+    //笑话技能
+    public final static String JOKE_SERVICE = "joke";
+
+
     //百科词条查询技能
     public final static String QUERY_ENCYCLO_SERVICE = "LEIQIAO.cyclopedia";
     //意图名 百科词条

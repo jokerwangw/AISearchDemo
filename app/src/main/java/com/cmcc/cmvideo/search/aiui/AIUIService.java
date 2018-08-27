@@ -773,7 +773,7 @@ public class AIUIService extends Service {
                         semanticProcessor.setIsMicConnect(false);
                         navigation.isHeadset(false);
                         //切换为外放模式
-                        //                        PlayerManager.getInstance().changeToReceiver();
+                        //PlayerManager.getInstance().changeToReceiver();
                         if (isIvwModel) {
                             standardMode();
                         }
