@@ -1,6 +1,7 @@
 package com.cmcc.cmvideo.search.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -19,6 +20,7 @@ import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.interactors.ItemSearchByAIClickListener;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -173,11 +175,33 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 });
             } else if (holder instanceof ItemSearchByAIAppointmentViewHolder) {
             } else if (holder instanceof ItemSearchByAIEveryoneISWatchingViewHolder) {
-                final List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
-                if (null == videoList) {
+                if (null == searchByAIBean) {
                     return;
                 }
+                final List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
+                String deailsJson = searchByAIBean.getDeailsJson();
+                if (null == videoList || TextUtils.isEmpty(deailsJson)) {
+                    return;
+                }
+
+                boolean satisfy = false;
                 final ItemSearchByAIEveryoneISWatchingViewHolder itemSearchByAIEveryoneISWatchingViewHolder = (ItemSearchByAIEveryoneISWatchingViewHolder) holder;
+
+                try {
+                    JSONObject jsonObject = new JSONObject(deailsJson);
+                    satisfy = jsonObject.optJSONObject("data").optJSONObject("lxresult").optBoolean("satisfy");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if (!satisfy || videoList.size() <= 2) {
+                    itemSearchByAIEveryoneISWatchingViewHolder.tvMovieList.setTextColor(Color.parseColor("#999999"));
+                    itemSearchByAIEveryoneISWatchingViewHolder.tvMovieList.setEnabled(false);
+                }else {
+                    itemSearchByAIEveryoneISWatchingViewHolder.tvMovieList.setTextColor(Color.parseColor("#FF4F16"));
+                    itemSearchByAIEveryoneISWatchingViewHolder.tvMovieList.setEnabled(true);
+                }
+
                 if (!TextUtils.isEmpty(searchByAIBean.getMessage())) {
                     itemSearchByAIEveryoneISWatchingViewHolder.title.setText(searchByAIBean.getMessage());
                 }
@@ -273,7 +297,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
 
                                     itemSearchByAIGuessWhatYouLikeViewHolder.itemDetailImg.setImageURI(imgUrl);
                                 } else {
-                                    imgUrl=  IMG_BASE_URL + imgUrl;
+                                    imgUrl = IMG_BASE_URL + imgUrl;
                                     itemSearchByAIGuessWhatYouLikeViewHolder.itemDetailImg.setImageURI(imgUrl);
                                 }
 
