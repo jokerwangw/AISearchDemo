@@ -203,6 +203,10 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 break;
             case AiuiConstants.VIDEO_SERVICE:
                 aiuiService.setLastNlp(nlpResult);
+                break;
+            case AiuiConstants.USER_VIDEO_SERVICE:
+                aiuiService.setLastNlp(nlpResult);
+                break;
             default:
                 break;
         }
@@ -213,19 +217,23 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         if (nlpData.semantic != null &&
                 !isPauseing &&
                 AiuiConstants.VIEWCMD_INTENT.equals(nlpData.semantic.get(0).intent)) {
-
             switch (nlpData.semantic.get(0).slots.get(0).name) {
                 case "LOOK_MORE":
-                    Intent intent = new Intent(mContext, LookMoreActivity.class);
-                    intent.putExtra(LookMoreActivity.KEY_TITLE, TextUtils.isEmpty(realVideoTitle) ? lastResponseVideoTitle : realVideoTitle);
-                    intent.putExtra(LookMoreActivity.KEY_MORE_DATE, result);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startActivity(intent);
-                    realVideoTitle = "";
+                    if (!nlpData.data.lxresult.satisfy || (null != nlpData.data.lxresult.data && nlpData.data.lxresult.data.detailslist.size() < 3)) {
+                        aiuiService.tts("小主，没有更多数据了哦");
+                    } else {
+                        Intent intent = new Intent(mContext, LookMoreActivity.class);
+                        intent.putExtra(LookMoreActivity.KEY_TITLE, TextUtils.isEmpty(realVideoTitle) ? lastResponseVideoTitle : realVideoTitle);
+                        intent.putExtra(LookMoreActivity.KEY_MORE_DATE, result);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivity(intent);
+                        realVideoTitle = "";
+                    }
                     break;
                 default:
                     break;
             }
+            return;
         }
 
         //判断是否解出了语义，并且当前技能是video

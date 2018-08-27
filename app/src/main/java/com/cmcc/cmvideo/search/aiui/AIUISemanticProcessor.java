@@ -380,7 +380,7 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
                         break;
                     case AiuiConstants.VIDEO_INDEX:
                         //第几集
-                        EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_WHICH_EPISODE));
+//                        EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_WHICH_EPISODE));
                         break;
                     default:
                         break;
