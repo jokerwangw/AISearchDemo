@@ -97,6 +97,12 @@ public class NavigationImpl implements INavigation {
 
     }
 
+    @Override
+    public void exitAiui() {
+        //关闭助手指令
+    }
+
+
     /**
      * Live模块分类跳转
      *

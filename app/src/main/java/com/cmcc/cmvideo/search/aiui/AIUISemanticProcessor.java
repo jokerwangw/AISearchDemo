@@ -312,6 +312,13 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
                             Logger.debug("VDO_OPEN=============");
                         } else if (norMalValue.equals("close")) {
                             EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_CLOSE));
+                            aiuiService.resetWakeUp();
+                            if (isAvailableVideo) {
+                                //插入耳机
+                                aiuiService.tts(AiResponse.getInstance().getSleep().response);
+                            }
+                            //不是耳机模式下 直接退出助手
+                            aiuiService.getNavigation().exitAiui();
                             Logger.debug("VDO_CLOSE============");
                         }
                     }
@@ -378,13 +385,28 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
                         swControl(mData);
                         Logger.debug("快进到XXXXX===" + intent);
                         break;
-                    case AiuiConstants.VIDEO_INDEX:
-                        //第几集
-//                        EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_WHICH_EPISODE));
+
+                    case AiuiConstants.VIDEO_VOLUME_PLUS:
+                        //音量增加
                         break;
+                    case AiuiConstants.VIDEO_VOLUME_MINUS:
+                        //音量减小
+                        break;
+                    case AiuiConstants.VIDEO_MUTE:
+                        //静音
+                        break;
+                    case AiuiConstants.VIDEO_VOLUME_MAX:
+                        //最大音量
+                        break;
+
                     default:
                         break;
                 }
+            } else if (solts.containsKey(AiuiConstants.VIDEO_INDEX)) {
+                //第几集
+                EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_WHICH_EPISODE, solts.get(AiuiConstants.VIDEO_INDEX)));
+                Logger.debug("第几集的几=========" + solts.get(AiuiConstants.VIDEO_INDEX));
+
             }
         }
     }

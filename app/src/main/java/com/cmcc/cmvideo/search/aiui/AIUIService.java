@@ -305,6 +305,12 @@ public class AIUIService extends Service {
         }
 
         @Override
+        public void resetWakeUp() {
+            //外部强制休眠 arg1取值为1
+            mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_RESET_WAKEUP, AIUIConstant.TYPE_COMPEL, 0, "", null));
+        }
+
+        @Override
         public void setAttached(boolean isAttached) {
             uiAttached = isAttached;
         }
@@ -434,6 +440,7 @@ public class AIUIService extends Service {
                     break;
                 case AIUIConstant.EVENT_SLEEP:
                     Logger.debug(">>>>>>>>>>>>EVENT_SLEEP>>>>>>>>>>>>");
+                    Logger.debug(">>>>>>>>>>>>EVENT_SLEEP+++++++++++++++++++" + event.arg1);
                     if (isIvwModel) {
                         if (!isTtsing) {
                             tts(AiResponse.getInstance().getSleep().response);

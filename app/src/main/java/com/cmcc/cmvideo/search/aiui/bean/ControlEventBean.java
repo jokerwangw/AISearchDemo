@@ -21,7 +21,7 @@ public class ControlEventBean {
      * public final static int VDO_BACKWORD = 9;
      * public final static int VDO_FASTWORD_TO = 10;
      * public final static int VDO_CHANGE = 11;
-     * 快进 快退 快进（快退） 换一集
+     * 快进 快退 快进（快退） 换一集  第几集
      */
 
     private int controlType;
@@ -29,12 +29,21 @@ public class ControlEventBean {
     private String minute;
     private String second;
 
+    //第几集 的 几
+    private String episode;
+
     public ControlEventBean() {
     }
 
     public ControlEventBean(int controlType) {
         this.controlType = controlType;
     }
+
+    public ControlEventBean(int controlType, String episode) {
+        this.controlType = controlType;
+        this.episode = episode;
+    }
+
 
     public ControlEventBean(int controlType, String hour, String minute, String second) {
         this.controlType = controlType;

@@ -131,6 +131,13 @@ public class AiuiConstants {
     //快进到or快退到多少时刻
     public final static String VIDEO_FASTWORD_TO = "fastForwardTo";
 
+    //音量增加
+    public final static String VIDEO_VOLUME_PLUS = "volume_plus";
+    public final static String VIDEO_VOLUME_MINUS = "volume_minus";
+    public final static String VIDEO_MUTE = "mute";
+    public final static String VIDEO_VOLUME_MAX = "volume_max";
+
+
     public final static String HOURS = "hour";
     public final static String MINUTE = "minute";
     public final static String SECOND = "second";

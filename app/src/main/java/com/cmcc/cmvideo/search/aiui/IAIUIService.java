@@ -153,4 +153,9 @@ public interface IAIUIService {
      */
     void resetLastNlp();
 
+    /**
+     * 通过语音强制让助手进入休眠状态，语音播报  念动咒语咪咕咪咕我会回来
+     */
+    void resetWakeUp();
+
 }

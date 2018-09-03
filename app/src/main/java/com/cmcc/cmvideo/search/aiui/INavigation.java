@@ -65,4 +65,9 @@ public interface INavigation {
      * 是否插入耳机
      */
     void isHeadset(boolean isConnectEarphone);
+
+    /**
+     * 关闭助手指令
+     */
+    void exitAiui();
 }

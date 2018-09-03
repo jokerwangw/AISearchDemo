@@ -32,6 +32,7 @@
     <string name="vdo_backword">快退</string>
     <string name="vdo_fastword_to">快进（快退）至</string>
     <string name="vdo_change">换一集</string>
+    <string name="vdo_episode">第几集</string>
 
     <string name="look_more_resource">查看更多 >></string>
 </resources>
