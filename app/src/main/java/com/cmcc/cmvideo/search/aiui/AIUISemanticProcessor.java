@@ -252,8 +252,9 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
             aiuiService.showAiUi(tppResult);
         }
 
-        if (mData.moreResults != null && mData.moreResults.size() > 0 &&
-                AiuiConstants.VIDEO_SERVICE.equals(mData.moreResults.get(0).service)) {
+        if (null != mData.service && !mData.service.equals(AiuiConstants.VIDEO_CMD) && mData.moreResults != null
+                && mData.moreResults.size() > 0
+                && AiuiConstants.VIDEO_SERVICE.equals(mData.moreResults.get(0).service)) {
             aiuiService.showAiUi(tppResult);
         }
 
