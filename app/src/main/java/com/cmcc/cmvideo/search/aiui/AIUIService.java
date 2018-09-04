@@ -311,6 +311,20 @@ public class AIUIService extends Service {
         }
 
         @Override
+        public void wakeup() {
+            mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START, 0, 0, "", null));
+            //唤醒AIUI
+            if (mCurrentState != AIUIConstant.STATE_WORKING) {
+                mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
+            }
+        }
+
+        @Override
+        public void stopAiui() {
+            mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
+        }
+
+        @Override
         public void setAttached(boolean isAttached) {
             uiAttached = isAttached;
         }
@@ -443,10 +457,10 @@ public class AIUIService extends Service {
                     Logger.debug(">>>>>>>>>>>>EVENT_SLEEP+++++++++++++++++++" + event.arg1);
                     if (isIvwModel) {
                         if (!isTtsing) {
-                            if (AIUIConstant.TYPE_COMPEL == event.arg1){
+                            if (AIUIConstant.TYPE_COMPEL == event.arg1) {
                                 //如果是用户主动退出助手则播报 好的 那么下次见
                                 tts(AiResponse.getInstance().getResetSleep().response);
-                            }else {
+                            } else {
                                 tts(AiResponse.getInstance().getSleep().response);
                             }
                         } else {

@@ -375,6 +375,9 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     @OnClick(R.id.tv_cancel_search)
     public void clickCancelSearch() {
         closeSearch();
+        if (null != aiuiService) {
+            aiuiService.stopAiui();
+        }
     }
 
     /**
@@ -446,6 +449,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private void startSearch() {
         if (aiuiService != null) {
             aiuiService.startRecordAudio();
+            aiuiService.wakeup();
             tvTitle.setText(getResources().getString(R.string.listening));
             rlSearchVoiceInputRing.setVisibility(View.VISIBLE);
             tvSlideCancelSearch.setVisibility(View.VISIBLE);

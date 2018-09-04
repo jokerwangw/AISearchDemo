@@ -158,4 +158,14 @@ public interface IAIUIService {
      */
     void resetWakeUp();
 
+    /**
+     * 取消搜索后在进行录音需要唤醒AIUI
+     */
+    void wakeup();
+
+    /**
+     * 停止AIUI
+     */
+    void stopAiui();
+
 }
