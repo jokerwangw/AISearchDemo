@@ -443,7 +443,12 @@ public class AIUIService extends Service {
                     Logger.debug(">>>>>>>>>>>>EVENT_SLEEP+++++++++++++++++++" + event.arg1);
                     if (isIvwModel) {
                         if (!isTtsing) {
-                            tts(AiResponse.getInstance().getSleep().response);
+                            if (AIUIConstant.TYPE_COMPEL == event.arg1){
+                                //如果是用户主动退出助手则播报 好的 那么下次见
+                                tts(AiResponse.getInstance().getResetSleep().response);
+                            }else {
+                                tts(AiResponse.getInstance().getSleep().response);
+                            }
                         } else {
                             mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
                         }

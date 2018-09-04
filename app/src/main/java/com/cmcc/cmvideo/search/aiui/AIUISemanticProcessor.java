@@ -313,10 +313,6 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
                         } else if (norMalValue.equals("close")) {
                             EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VDO_CLOSE));
                             aiuiService.resetWakeUp();
-                            if (isAvailableVideo) {
-                                //插入耳机
-                                aiuiService.tts(AiResponse.getInstance().getSleep().response);
-                            }
                             //不是耳机模式下 直接退出助手
                             aiuiService.getNavigation().exitAiui();
                             Logger.debug("VDO_CLOSE============");

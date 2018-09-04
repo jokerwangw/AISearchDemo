@@ -122,6 +122,10 @@ public class AiResponse {
             new Response("念动咒语咪咕咪咕我会回来", RespType.NORMAL)
     ));
 
+    private List<Response> ResetSleepList = new ArrayList<Response>(Arrays.asList(
+            new Response("好的，那么下次见", RespType.NORMAL)
+    ));
+
     private List<Response> changeList = new ArrayList<Response>(Arrays.asList(
             new Response("我的墨水被榨干了呢", RespType.NORMAL),
             new Response("不要急，让我再想想", RespType.NORMAL),
@@ -248,6 +252,16 @@ public class AiResponse {
      */
     public Response getSleep() {
         return sleepList.get(0);
+    }
+
+
+    /**
+     * 获取休眠反馈语
+     *
+     * @return
+     */
+    public Response getResetSleep() {
+        return ResetSleepList.get(0);
     }
 
 
