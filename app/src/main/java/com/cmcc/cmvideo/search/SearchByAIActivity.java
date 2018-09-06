@@ -31,6 +31,7 @@ import com.cmcc.cmvideo.search.adapter.SearchByAIAdapter;
 import com.cmcc.cmvideo.search.aiui.AIUIService;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.aiui.Logger;
+import com.cmcc.cmvideo.search.aiui.bean.MicBean;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.interactors.ItemSearchByAIClickListener;
 import com.cmcc.cmvideo.search.model.LastTextDataBean;
@@ -110,6 +111,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private int mViewCacheSize = 100;
     private String lastText = "";
     private boolean isBindService = false;
+    private boolean isAvailableVideo = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -132,6 +134,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     }
 
     private void initData() {
+        EventBus.getDefault().register(this);
         mSearchByAIPresenter = new SearchByAIPresenterImpl(
                 ThreadExecutor.getInstance(),
                 MainThreadImpl.getInstance(),
@@ -370,13 +373,24 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     }
 
     /**
+     * 耳机接入状态
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void getMicStatus(MicBean result) {
+        isAvailableVideo = result.isConnect();
+        Logger.debug("isAvailableVideo>>>>>>>>>>" + isAvailableVideo);
+    }
+
+    /**
      * 取消搜索
      */
     @OnClick(R.id.tv_cancel_search)
     public void clickCancelSearch() {
         closeSearch();
-        if (null != aiuiService) {
-            aiuiService.stopAiui();
+        if (!isAvailableVideo) {
+            if (null != aiuiService) {
+                aiuiService.stopAiui();
+            }
         }
     }
 
@@ -449,7 +463,9 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private void startSearch() {
         if (aiuiService != null) {
             aiuiService.startRecordAudio();
-            aiuiService.wakeup();
+            if (!isAvailableVideo) {
+                aiuiService.wakeup();
+            }
             tvTitle.setText(getResources().getString(R.string.listening));
             rlSearchVoiceInputRing.setVisibility(View.VISIBLE);
             tvSlideCancelSearch.setVisibility(View.VISIBLE);

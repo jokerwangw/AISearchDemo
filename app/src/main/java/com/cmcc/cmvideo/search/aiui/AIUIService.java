@@ -16,6 +16,7 @@ import android.util.Log;
 import com.alibaba.fastjson.JSON;
 import com.cmcc.cmvideo.search.SearchByAIActivity;
 import com.cmcc.cmvideo.search.aiui.bean.IatBean;
+import com.cmcc.cmvideo.search.aiui.bean.MicBean;
 import com.cmcc.cmvideo.search.aiui.impl.NavigationImpl;
 import com.cmcc.cmvideo.search.model.LookMoreEventDataBean;
 import com.cmcc.cmvideo.util.AiResponse;
@@ -798,6 +799,7 @@ public class AIUIService extends Service {
                     if (intent.getIntExtra("state", 0) == 0) {
                         semanticProcessor.setIsMicConnect(false);
                         navigation.isHeadset(false);
+                        EventBus.getDefault().post(new MicBean(false));
                         //切换为外放模式
                         //PlayerManager.getInstance().changeToReceiver();
                         if (isIvwModel) {
@@ -806,6 +808,7 @@ public class AIUIService extends Service {
                     } else if (intent.getIntExtra("state", 0) == 1) {
                         navigation.isHeadset(true);
                         semanticProcessor.setIsMicConnect(true);
+                        EventBus.getDefault().post(new MicBean(true));
                         //切换为耳机模式
                         //PlayerManager.getInstance().changeToHeadset();
                         if (!isIvwModel) {
