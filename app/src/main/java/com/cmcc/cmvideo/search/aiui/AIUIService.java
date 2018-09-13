@@ -313,7 +313,6 @@ public class AIUIService extends Service {
 
         @Override
         public void wakeup() {
-            mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START, 0, 0, "", null));
             //唤醒AIUI
             if (mCurrentState != AIUIConstant.STATE_WORKING) {
                 mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null));
@@ -322,7 +321,7 @@ public class AIUIService extends Service {
 
         @Override
         public void stopAiui() {
-            mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP, 0, 0, "", null));
+            mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_RESET, 0, 0, "", null));
         }
 
         @Override

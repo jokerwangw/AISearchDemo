@@ -387,6 +387,8 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     @OnClick(R.id.tv_cancel_search)
     public void clickCancelSearch() {
         closeSearch();
+        //耳机模式下要是手动点击了 "取消搜索" 后 ，需要用户再次唤醒才可以交互 ，
+        //否则就处理为 ：耳机模式下不支持  取消搜索  ，该咋样还是咋样
         if (!isAvailableVideo) {
             if (null != aiuiService) {
                 aiuiService.stopAiui();
@@ -463,9 +465,6 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private void startSearch() {
         if (aiuiService != null) {
             aiuiService.startRecordAudio();
-            if (!isAvailableVideo) {
-                aiuiService.wakeup();
-            }
             tvTitle.setText(getResources().getString(R.string.listening));
             rlSearchVoiceInputRing.setVisibility(View.VISIBLE);
             tvSlideCancelSearch.setVisibility(View.VISIBLE);
