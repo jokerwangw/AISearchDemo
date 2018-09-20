@@ -22,11 +22,6 @@ public interface IAIUIService {
     void tts(String ttsText);
 
     /**
-     * 停止语音合成
-     */
-    void cancelTts();
-
-    /**
      * 开始录音
      */
     void startRecordAudio();

@@ -163,7 +163,10 @@ public class AIUIService extends Service {
      * 标准模式
      */
     private void standardMode() {
-        AIUIService.this.cancelTts();
+        //如果正在合成才取消合成，防止耳机模式切换到正常模式还在语音播报
+        if (isTtsing) {
+            AIUIService.this.cancelTts();
+        }
         sendMessage(new AIUIMessage(AIUIConstant.CMD_STOP_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
         setParam("60000", "off", "oneshot", "sdk");
         isIvwModel = false;
@@ -198,12 +201,6 @@ public class AIUIService extends Service {
         @Override
         public void tts(String ttsText) {
             AIUIService.this.tts(ttsText);
-        }
-
-        @Override
-        public void cancelTts() {
-            //取消语音合成
-            AIUIService.this.cancelTts();
         }
 
         @Override
@@ -469,13 +466,15 @@ public class AIUIService extends Service {
                     }
                     break;
                 case AIUIConstant.EVENT_VAD:
-                    //                Logger.debug("arg【" + event.arg1 + "】【" + event.arg2 + "】");
+                    //Logger.debug("arg【" + event.arg1 + "】【" + event.arg2 + "】");
                     //用arg1标识前后端点或者音量信息:0(前端点)、1(音量)、2(后端点)、3（前端点超时）。
                     //当arg1取值为1时，arg2为音量大小。
                     if (event.arg1 == 0) {
-                        //检测到前端点表示正在录音
-                        AIUIService.this.cancelTts();
-                        isTtsing = false;
+                        //检测到前端点表示正在录音 并且 此时正在合成
+                        if (isTtsing) {
+                            AIUIService.this.cancelTts();
+                            isTtsing = false;
+                        }
                     }
                     break;
                 case AIUIConstant.EVENT_STATE:
