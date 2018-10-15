@@ -158,6 +158,13 @@ public class AiuiConstants {
     public final static int VDO_CHANGE = 11;
     public final static int VDO_WHICH_EPISODE = 12;
 
+    //音量增加  音量减小  静音  最大音量
+    public final static int VOLUME_PLUS = 13;
+    public final static int VOLUME_MINUS = 14;
+    public final static int VOLUME_MUTE = 15;
+    public final static int VOLUME_MAX = 16;
+
+
 
     //自定义直播技能
     public final static String VIDEO_ON_SERVICE = "LINGXI2018.onlive";

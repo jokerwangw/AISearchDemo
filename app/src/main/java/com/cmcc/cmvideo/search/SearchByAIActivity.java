@@ -305,6 +305,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
 
         @Override
         public void clickItemSearchByAITheLatestVideo() {
+
         }
     };
 

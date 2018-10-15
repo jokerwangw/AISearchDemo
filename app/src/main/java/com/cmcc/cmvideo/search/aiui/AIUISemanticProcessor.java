@@ -385,15 +385,23 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
 
                     case AiuiConstants.VIDEO_VOLUME_PLUS:
                         //音量增加
+                        EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VOLUME_PLUS));
+                        Logger.debug("音量增加===" + intent);
                         break;
                     case AiuiConstants.VIDEO_VOLUME_MINUS:
                         //音量减小
+                        EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VOLUME_MINUS));
+                        Logger.debug("音量减小===" + intent);
                         break;
                     case AiuiConstants.VIDEO_MUTE:
                         //静音
+                        EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VOLUME_MUTE));
+                        Logger.debug("静音===" + intent);
                         break;
                     case AiuiConstants.VIDEO_VOLUME_MAX:
                         //最大音量
+                        EventBus.getDefault().post(new ControlEventBean(AiuiConstants.VOLUME_MAX));
+                        Logger.debug("最大音量===" + intent);
                         break;
 
                     default:
