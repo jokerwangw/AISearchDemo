@@ -122,6 +122,7 @@ public class TppData {
                  * title : 18/19赛季西甲第9轮全场集锦：巴塞罗那4:2塞维利亚
                  * type : 1
                  * winner : 7724250
+                 * CompetitionTimeDesc : 7天赛事日期标识 默认当天是4 ，前一天-1，前两天是-2 ；后一天是1 ，后两天是2
                  */
 
                 public int CompetitionCountDownTime;
@@ -154,6 +155,7 @@ public class TppData {
                 public String title;
                 public String type;
                 public String winner;
+                public String CompetitionTimeDesc;
 
             }
         }
