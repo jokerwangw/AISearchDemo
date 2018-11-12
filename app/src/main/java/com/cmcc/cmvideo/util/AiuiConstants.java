@@ -38,6 +38,7 @@ public class AiuiConstants {
         public final static int MESSAGE_TYPE_LIST_OF_SPORTS = 9;
         /*** 体育赛事视频*/
         public final static int MESSAGE_TYPE_VIDEO_OF_SPORTS = 10;
+
     }
 
     /*** 图片地址*/
