@@ -123,7 +123,6 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 View view = layoutInflater.inflate(R.layout.item_search_by_ai_video_of_sports, null);
                 return new ItemSearchByAITheLatestVideoViewHolder(view);
             }
-            
         }
         return null;
     }
