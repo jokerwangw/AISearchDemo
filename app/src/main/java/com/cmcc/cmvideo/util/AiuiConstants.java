@@ -34,6 +34,10 @@ public class AiuiConstants {
         public final static int MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL = 7;
         /*** 最新影讯*/
         public final static int MESSAGE_TYPE_THE_LATEST_VIDEO = 5;
+        /*** 体育赛事列表*/
+        public final static int MESSAGE_TYPE_LIST_OF_SPORTS = 9;
+        /*** 体育赛事视频*/
+        public final static int MESSAGE_TYPE_VIDEO_OF_SPORTS = 10;
     }
 
     /*** 图片地址*/

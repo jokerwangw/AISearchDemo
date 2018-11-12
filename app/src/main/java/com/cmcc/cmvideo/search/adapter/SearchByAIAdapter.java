@@ -34,8 +34,10 @@ import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_GUESS
 import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
 import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
 import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_I_WANT_TO_SEE;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_LIST_OF_SPORTS;
 import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_NORMAL;
 import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_THE_LATEST_VIDEO;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_VIDEO_OF_SPORTS;
 
 /**
  * Created by Yyw on 2018/5/21.
@@ -74,6 +76,10 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 return MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
             } else if (MESSAGE_TYPE_THE_LATEST_VIDEO == searchByAIBean.getMessageType()) {
                 return MESSAGE_TYPE_THE_LATEST_VIDEO;
+            } else if (MESSAGE_TYPE_LIST_OF_SPORTS == searchByAIBean.getMessageType()) {
+                return MESSAGE_TYPE_LIST_OF_SPORTS;
+            } else if (MESSAGE_TYPE_VIDEO_OF_SPORTS == searchByAIBean.getMessageType()) {
+                return MESSAGE_TYPE_VIDEO_OF_SPORTS;
             }
         }
         return -1;
@@ -109,6 +115,12 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 return new ItemSearchByAIGuessWhatYouLikeListVerticalViewHolder(view);
             } else if (MESSAGE_TYPE_THE_LATEST_VIDEO == viewType) {
                 View view = layoutInflater.inflate(R.layout.item_search_by_ai_the_latest_video, null);
+                return new ItemSearchByAITheLatestVideoViewHolder(view);
+            } else if (MESSAGE_TYPE_LIST_OF_SPORTS == viewType) {
+                View view = layoutInflater.inflate(R.layout.item_search_by_ai_list_of_sports, null);
+                return new ItemSearchByAITheLatestVideoViewHolder(view);
+            } else if (MESSAGE_TYPE_VIDEO_OF_SPORTS == viewType) {
+                View view = layoutInflater.inflate(R.layout.item_search_by_ai_video_of_sports, null);
                 return new ItemSearchByAITheLatestVideoViewHolder(view);
             }
         }
@@ -197,7 +209,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 if (!satisfy || videoList.size() <= 2) {
                     itemSearchByAIEveryoneISWatchingViewHolder.tvMovieList.setTextColor(Color.parseColor("#999999"));
                     itemSearchByAIEveryoneISWatchingViewHolder.tvMovieList.setEnabled(false);
-                }else {
+                } else {
                     itemSearchByAIEveryoneISWatchingViewHolder.tvMovieList.setTextColor(Color.parseColor("#FF4F16"));
                     itemSearchByAIEveryoneISWatchingViewHolder.tvMovieList.setEnabled(true);
                 }
