@@ -169,7 +169,6 @@ public class AiuiConstants {
     public final static int VOLUME_MAX = 16;
 
 
-
     //自定义直播技能
     public final static String VIDEO_ON_SERVICE = "LINGXI2018.onlive";
     public final static String VIDEO_CHANNEL_INTENT = "channel_query";
@@ -198,4 +197,20 @@ public class AiuiConstants {
     public final static String VIDEO_NAME = "name";
     public final static String VIDEO_ARTIST = "artist";
     public final static String VIDEO_TIME = "datetime.dateOrig";
+
+
+    /**
+     * 体育赛事
+     */
+
+    //体育赛事技能名
+    public static final String SPORTS_FOOTBALL = "match";
+
+    /**
+     * 体育赛事意图名
+     */
+    public static final String SPORTS_QUERY = "QUERY";
+    //直接播报answer内容
+    public static final String SPORTS_WATCH = "WATCH";
+
 }
