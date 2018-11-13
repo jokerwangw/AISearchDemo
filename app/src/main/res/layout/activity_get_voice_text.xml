@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tv_show_voice_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/view_line"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/dimen_18dp"
+        android:text="请按开始按钮开始录音"
+        android:textColor="@color/appointment_movie_list"
+        android:textSize="@dimen/dimen_18dp" />
+
+    <View
+        android:id="@+id/view_line"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_1dp"
+        android:layout_above="@+id/bt_start_recording"
+        android:background="@color/appointment_movie_name" />
+
+    <Button
+        android:id="@+id/bt_start_recording"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_margin="@dimen/dimen_10dp"
+        android:text="@string/start_recording" />
+
+    <Button
+        android:id="@+id/bt_stop_recording"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="@dimen/dimen_10dp"
+        android:text="@string/stop_recording" />
+</RelativeLayout>

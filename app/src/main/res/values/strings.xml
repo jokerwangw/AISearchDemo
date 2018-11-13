@@ -20,6 +20,9 @@
     <string name="ai_ask_recommend5">我的流量还剩余多少</string>
 
     <string name="page_player">播放器</string>
+    <string name="get_voice_text">获取语音文本</string>
+    <string name="start_recording">开始录音</string>
+    <string name="stop_recording">结束录音</string>
     <string name="page_player_control">响应操作:</string>
     <string name="vdo_pause">暂停</string>
     <string name="vdo_play">播放</string>

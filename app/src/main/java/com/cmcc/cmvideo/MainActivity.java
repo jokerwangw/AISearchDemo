@@ -18,6 +18,7 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.cmcc.cmvideo.search.GetVoiceTextActivity;
 import com.cmcc.cmvideo.search.PlayVideoActivity;
 import com.cmcc.cmvideo.search.SearchByAIActivity;
 import com.cmcc.cmvideo.search.aiui.AIUIService;
@@ -65,9 +66,9 @@ public class MainActivity extends AppCompatActivity {
             tvCurrentVersion.setVisibility(View.GONE);
         }
 
-        //开启智能语音服务
-        Intent aiService = new Intent(this, AIUIService.class);
-        startService(aiService);
+        //开启智能语音耳机服务
+        //Intent aiService = new Intent(this, AIUIService.class);
+        //startService(aiService);
     }
 
     @OnClick(R.id.turn_to_ai_search)
@@ -79,6 +80,12 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.turn_to_player)
     public void turnToPlayer() {
         Intent intent = new Intent(MainActivity.this, PlayVideoActivity.class);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.turn_to_get_voice_text)
+    public void turnToGetVoiceText() {
+        Intent intent = new Intent(MainActivity.this, GetVoiceTextActivity.class);
         startActivity(intent);
     }
 

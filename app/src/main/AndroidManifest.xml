@@ -51,6 +51,7 @@
         <activity android:name=".search.LookMoreActivity"/>
         <activity android:name=".search.PlayVideoActivity"/>
         <activity android:name=".search.CastScreenActivity"/>
+        <activity android:name=".search.GetVoiceTextActivity"/>
         <service android:name=".search.aiui.AIUIService"/>
     </application>
 

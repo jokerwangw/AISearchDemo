@@ -176,7 +176,6 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         }
         if (!TextUtils.isEmpty(tppResult)) {
             onTppResult(tppResult);
-
         }
     }
 
