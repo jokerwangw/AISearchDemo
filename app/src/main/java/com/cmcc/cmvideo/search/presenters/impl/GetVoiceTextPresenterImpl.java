@@ -2,8 +2,6 @@ package com.cmcc.cmvideo.search.presenters.impl;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -33,9 +31,6 @@ public class GetVoiceTextPresenterImpl extends AbstractPresenter implements GetV
 
     @Override
     public void resume() {
-        if (aiuiService != null) {
-            aiuiService.resetLastNlp();
-        }
     }
 
     @Override
@@ -61,14 +56,6 @@ public class GetVoiceTextPresenterImpl extends AbstractPresenter implements GetV
         aiuiService = service;
         aiuiService.setAttached(true);
         aiuiService.addAIUIEventListener(this);
-        //暂时就这么做吧
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //清理所见即可说的数据
-                aiuiService.clearSpeakableData();
-            }
-        }, 500);
     }
 
     @SuppressLint("LongLogTag")
@@ -101,7 +88,7 @@ public class GetVoiceTextPresenterImpl extends AbstractPresenter implements GetV
 
     private void onTppResult(String tppResult) {
         NlpData nlpData = new Gson().fromJson(tppResult, NlpData.class);
-        if (null != nlpData) {
+        if (null != nlpData && !TextUtils.isEmpty(nlpData.text)) {
             mView.showVoiceText(false, nlpData.text);
         } else {
             mView.showVoiceText(true, "error");
