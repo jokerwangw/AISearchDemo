@@ -75,14 +75,8 @@ public class GetVoiceTextPresenterImpl extends AbstractPresenter implements GetV
     @Override
     public void onResult(String iatResult, String nlpReslult, String tppResult) {
         Log.d("GetVoiceTextPresenterImpl", "iatResult====" + iatResult);
-        //TODO 不知道为啥会走两次，弄个Boolean值做限制
-        if (isFirst && null != mView) {
-            isFirst = false;
-            if (TextUtils.isEmpty(iatResult)) {
-                mView.showVoiceText(true, "error");
-            } else {
-                mView.showVoiceText(false, iatResult);
-            }
+        if (!TextUtils.isEmpty(tppResult)) {
+            onTppResult(tppResult);
         }
     }
 
@@ -102,6 +96,15 @@ public class GetVoiceTextPresenterImpl extends AbstractPresenter implements GetV
     public void stopRecording() {
         if (aiuiService != null) {
             aiuiService.stopRecordAudio();
+        }
+    }
+
+    private void onTppResult(String tppResult) {
+        NlpData nlpData = new Gson().fromJson(tppResult, NlpData.class);
+        if (null != nlpData) {
+            mView.showVoiceText(false, nlpData.text);
+        } else {
+            mView.showVoiceText(true, "error");
         }
     }
 }
