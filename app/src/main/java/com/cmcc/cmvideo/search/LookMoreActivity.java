@@ -1,20 +1,15 @@
 package com.cmcc.cmvideo.search;
 
-import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,30 +19,16 @@ import com.cmcc.cmvideo.base.ThreadExecutor;
 import com.cmcc.cmvideo.search.adapter.LookMoreAdapter;
 import com.cmcc.cmvideo.search.aiui.AIUIService;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
-import com.cmcc.cmvideo.search.aiui.Logger;
-import com.cmcc.cmvideo.search.aiui.bean.NlpData;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
-import com.cmcc.cmvideo.search.model.LookMoreEventDataBean;
 import com.cmcc.cmvideo.search.presenters.LookMorePresenter;
 import com.cmcc.cmvideo.search.presenters.impl.LookMorePresenterImpl;
-import com.cmcc.cmvideo.util.AiuiConstants;
-import com.cmcc.cmvideo.util.SharedPreferencesHelper;
 import com.cmcc.cmvideo.util.ToastUtil;
 import com.google.gson.Gson;
-import com.iflytek.aiui.AIUIConstant;
-import com.iflytek.aiui.AIUIEvent;
-import com.iflytek.aiui.AIUIMessage;
 import com.jcodecraeer.xrecyclerview.ProgressStyle;
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -177,7 +158,11 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+            if (null == service) {
+                return;
+            }
             aiuiService = (IAIUIService) service;
+            aiuiService.setIsPlayAIVoice(true);
             String lockMoreData = getIntent().getStringExtra(KEY_MORE_DATE);
             lookMorePresenter.setAIUIService(aiuiService);
             lookMorePresenter.loadData(lockMoreData);

@@ -65,6 +65,7 @@ public class AIUIService extends Service {
     private boolean isTextRequest = false;
     private String lastNlp;
     private String lastLoadMoreNlp;
+    private boolean mPlayAIVoice = true;
 
     @Override
     public void onCreate() {
@@ -322,6 +323,11 @@ public class AIUIService extends Service {
         }
 
         @Override
+        public void setIsPlayAIVoice(boolean playAIVoice) {
+            mPlayAIVoice = playAIVoice;
+        }
+
+        @Override
         public void setAttached(boolean isAttached) {
             uiAttached = isAttached;
         }
@@ -542,7 +548,7 @@ public class AIUIService extends Service {
     }
 
     private void tts(String ttsText) {
-        if (TextUtils.isEmpty(ttsText)) {
+        if (TextUtils.isEmpty(ttsText) || !mPlayAIVoice) {
             return;
         }
         //转为二进制数据

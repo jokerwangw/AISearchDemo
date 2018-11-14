@@ -163,4 +163,10 @@ public interface IAIUIService {
      */
     void stopAiui();
 
+    /**
+     * 设置是否播报智能语音
+     *
+     * @param playAIVoice
+     */
+    void setIsPlayAIVoice(boolean playAIVoice);
 }

@@ -534,8 +534,12 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+            if (null == service) {
+                return;
+            }
             isBindService = true;
             aiuiService = (IAIUIService) service;
+            aiuiService.setIsPlayAIVoice(true);
             mSearchByAIPresenter.setAIUIService(aiuiService);
 
             new Handler().postDelayed(new Runnable() {

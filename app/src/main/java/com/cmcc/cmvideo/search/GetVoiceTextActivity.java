@@ -20,8 +20,6 @@ import com.cmcc.cmvideo.search.presenters.GetVoiceTextPresenter;
 import com.cmcc.cmvideo.search.presenters.impl.GetVoiceTextPresenterImpl;
 import com.cmcc.cmvideo.util.ToastUtil;
 
-import org.greenrobot.eventbus.EventBus;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -120,8 +118,12 @@ public class GetVoiceTextActivity extends AppCompatActivity implements GetVoiceT
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+            if (null == service) {
+                return;
+            }
             isBindService = true;
             aiuiService = (IAIUIService) service;
+            aiuiService.setIsPlayAIVoice(false);
             if (null != mGetVoiceTextPresenter) {
                 mGetVoiceTextPresenter.setAIUIService(aiuiService);
             }
