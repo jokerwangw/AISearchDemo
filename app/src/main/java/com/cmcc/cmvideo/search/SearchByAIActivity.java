@@ -540,6 +540,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
             isBindService = true;
             aiuiService = (IAIUIService) service;
             aiuiService.setIsPlayAIVoice(true);
+            aiuiService.setEnableVadEos(true);
             mSearchByAIPresenter.setAIUIService(aiuiService);
 
             new Handler().postDelayed(new Runnable() {

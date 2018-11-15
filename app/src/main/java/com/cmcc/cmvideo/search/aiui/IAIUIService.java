@@ -8,13 +8,6 @@ import java.util.Map;
 public interface IAIUIService {
 
     /**
-     * 设置交互模式
-     *
-     * @param isOnShot
-     */
-    void setInteractMode(boolean isOnShot);
-
-    /**
      * 语音合成
      *
      * @param ttsText 要合成的文本
@@ -169,4 +162,10 @@ public interface IAIUIService {
      * @param playAIVoice
      */
     void setIsPlayAIVoice(boolean playAIVoice);
+
+    /**
+     * 设置动态改变语音后端点参数vad_eos 默认不设置 1s
+     * @param isVadEos
+     */
+    void setEnableVadEos(boolean isVadEos);
 }

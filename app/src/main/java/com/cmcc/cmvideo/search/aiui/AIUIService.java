@@ -185,15 +185,16 @@ public class AIUIService extends Service {
     }
 
     private class AIUIServiceImpl extends Binder implements IAIUIService {
-
         @Override
-        public void setInteractMode(boolean isOnShot) {
-            if (isOnShot) {
-                String setParams = "{\"speech\":{\"interact_mode\":\"oneshot\"}}";
+        public void setEnableVadEos(boolean isVadEos) {
+            if (isVadEos) {
+                //正常视频搜索时候设置
+                String setParams = "{\"vad\":{\"vad_eos\":\"1500\"}}";
                 AIUIMessage setMsg = new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, setParams, null);
                 mAIUIAgent.sendMessage(setMsg);
             } else {
-                String setParams = "{\"speech\":{\"interact_mode\":\"continuous\"}}";
+                //大屏遥控器设置
+                String setParams = "{\"vad\":{\"vad_eos\":\"10000\"}}";
                 AIUIMessage setMsg = new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, setParams, null);
                 mAIUIAgent.sendMessage(setMsg);
             }
@@ -326,6 +327,7 @@ public class AIUIService extends Service {
         public void setIsPlayAIVoice(boolean playAIVoice) {
             mPlayAIVoice = playAIVoice;
         }
+
 
         @Override
         public void setAttached(boolean isAttached) {
