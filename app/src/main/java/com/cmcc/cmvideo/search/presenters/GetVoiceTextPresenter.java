@@ -2,6 +2,7 @@ package com.cmcc.cmvideo.search.presenters;
 
 import com.cmcc.cmvideo.base.BasePresenter;
 import com.cmcc.cmvideo.base.BaseView;
+import com.cmcc.cmvideo.search.aiui.IAIUIControlService;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 
@@ -27,7 +28,7 @@ public interface GetVoiceTextPresenter extends BasePresenter {
      *
      * @param service
      */
-    void setAIUIService(IAIUIService service);
+    void setAIUIService(IAIUIControlService service);
 
     /**
      * 开始录音

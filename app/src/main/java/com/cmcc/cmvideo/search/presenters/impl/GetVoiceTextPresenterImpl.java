@@ -8,7 +8,9 @@ import android.util.Log;
 import com.cmcc.cmvideo.base.AbstractPresenter;
 import com.cmcc.cmvideo.base.Executor;
 import com.cmcc.cmvideo.base.MainThread;
+import com.cmcc.cmvideo.search.aiui.AIUIControlService;
 import com.cmcc.cmvideo.search.aiui.AIUIService;
+import com.cmcc.cmvideo.search.aiui.IAIUIControlService;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.aiui.bean.NlpData;
 import com.cmcc.cmvideo.search.presenters.GetVoiceTextPresenter;
@@ -19,9 +21,9 @@ import com.iflytek.aiui.AIUIEvent;
  * Created by Yyw on 2018/11/13.
  * Describe:
  */
-public class GetVoiceTextPresenterImpl extends AbstractPresenter implements GetVoiceTextPresenter, AIUIService.AIUIEventListener {
+public class GetVoiceTextPresenterImpl extends AbstractPresenter implements GetVoiceTextPresenter, AIUIControlService.AIUIEventListener {
     private View mView;
-    private IAIUIService aiuiService = null;
+    private IAIUIControlService iaiuiControlService = null;
     private boolean isFirst = false;
 
     public GetVoiceTextPresenterImpl(Executor executor, MainThread mainThread, View view, Context context) {
@@ -43,8 +45,7 @@ public class GetVoiceTextPresenterImpl extends AbstractPresenter implements GetV
 
     @Override
     public void destroy() {
-        aiuiService.setAttached(false);
-        aiuiService.removeAIUIEventListener(this);
+        iaiuiControlService.removeAIUIEventListener(this);
     }
 
     @Override
@@ -52,10 +53,9 @@ public class GetVoiceTextPresenterImpl extends AbstractPresenter implements GetV
     }
 
     @Override
-    public void setAIUIService(IAIUIService service) {
-        aiuiService = service;
-        aiuiService.setAttached(true);
-        aiuiService.addAIUIEventListener(this);
+    public void setAIUIService(IAIUIControlService service) {
+        iaiuiControlService = service;
+        iaiuiControlService.addAIUIEventListener(this);
     }
 
     @SuppressLint("LongLogTag")
@@ -73,16 +73,16 @@ public class GetVoiceTextPresenterImpl extends AbstractPresenter implements GetV
 
     @Override
     public void startRecording() {
-        if (aiuiService != null) {
+        if (iaiuiControlService != null) {
             isFirst = true;
-            aiuiService.startRecordAudio();
+            iaiuiControlService.startRecordAudio();
         }
     }
 
     @Override
     public void stopRecording() {
-        if (aiuiService != null) {
-            aiuiService.stopRecordAudio();
+        if (iaiuiControlService != null) {
+            iaiuiControlService.stopRecordAudio();
         }
     }
 

@@ -53,6 +53,7 @@
         <activity android:name=".search.CastScreenActivity"/>
         <activity android:name=".search.GetVoiceTextActivity"/>
         <service android:name=".search.aiui.AIUIService"/>
+        <service android:name=".search.aiui.AIUIControlService"/>
     </application>
 
 </manifest>

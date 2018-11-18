@@ -14,7 +14,9 @@ import android.widget.TextView;
 import com.cmcc.cmvideo.R;
 import com.cmcc.cmvideo.base.MainThreadImpl;
 import com.cmcc.cmvideo.base.ThreadExecutor;
+import com.cmcc.cmvideo.search.aiui.AIUIControlService;
 import com.cmcc.cmvideo.search.aiui.AIUIService;
+import com.cmcc.cmvideo.search.aiui.IAIUIControlService;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.presenters.GetVoiceTextPresenter;
 import com.cmcc.cmvideo.search.presenters.impl.GetVoiceTextPresenterImpl;
@@ -32,7 +34,7 @@ public class GetVoiceTextActivity extends AppCompatActivity implements GetVoiceT
     @BindView(R.id.tv_show_voice_text)
     TextView tvShowVoiceText;
 
-    private IAIUIService aiuiService = null;
+    private IAIUIControlService iaiuiControlService = null;
     private GetVoiceTextPresenterImpl mGetVoiceTextPresenter = null;
     private boolean isBindService = false;
 
@@ -54,7 +56,7 @@ public class GetVoiceTextActivity extends AppCompatActivity implements GetVoiceT
                 MainThreadImpl.getInstance(),
                 this,
                 this);
-        bindService(new Intent(this, AIUIService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
+        bindService(new Intent(this, AIUIControlService.class), connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
     }
 
     @OnClick(R.id.bt_start_recording)
@@ -122,11 +124,10 @@ public class GetVoiceTextActivity extends AppCompatActivity implements GetVoiceT
                 return;
             }
             isBindService = true;
-            aiuiService = (IAIUIService) service;
-            aiuiService.setIsPlayAIVoice(false);
-            aiuiService.setEnableVadEos(false);
+            iaiuiControlService = (IAIUIControlService) service;
+            iaiuiControlService.setEnableVadEos(false);
             if (null != mGetVoiceTextPresenter) {
-                mGetVoiceTextPresenter.setAIUIService(aiuiService);
+                mGetVoiceTextPresenter.setAIUIService(iaiuiControlService);
             }
         }
 
