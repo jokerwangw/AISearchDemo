@@ -465,6 +465,10 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
      */
     private void startSearch() {
         if (aiuiService != null) {
+            if (aiuiService.isTtsing()) {
+                //如果正在合成的话，用户点击搜索按钮需要取消合成，不然合成的音会当做输入源录入
+                aiuiService.cancelTts();
+            }
             aiuiService.startRecordAudio();
             tvTitle.setText(getResources().getString(R.string.listening));
             rlSearchVoiceInputRing.setVisibility(View.VISIBLE);

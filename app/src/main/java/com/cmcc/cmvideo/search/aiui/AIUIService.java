@@ -201,6 +201,16 @@ public class AIUIService extends Service {
         }
 
         @Override
+        public boolean isTtsing() {
+            return isTtsing ;
+        }
+
+        @Override
+        public void cancelTts() {
+            AIUIService.this.cancelTts();
+        }
+
+        @Override
         public void tts(String ttsText) {
             AIUIService.this.tts(ttsText);
         }
