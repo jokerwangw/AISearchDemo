@@ -5,6 +5,7 @@ apply plugin: 'com.jakewharton.butterknife'
 def releaseTime() {
     return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
 }
+
 android {
     compileSdkVersion var.compileSdkVersion
     buildToolsVersion var.buildToolsVersion
@@ -38,16 +39,17 @@ android {
     }
 
     //修改生成的apk名字
-    android.applicationVariants.all {
-        variant ->
-            variant.outputs.each { output ->
-                def outputFile = output.outputFile
-                if (outputFile != null && outputFile.name.endsWith('.apk')) {
-                    def name = "${releaseTime()}_v${defaultConfig.versionName}.apk"
-                    output.outputFile = new File(outputFile.parent, name)
-                }
-            }
-    }
+    //TODO 打包的时候再打开
+//    android.applicationVariants.all {
+//        variant ->
+//            variant.outputs.each { output ->
+//                def outputFile = output.outputFile
+//                if (outputFile != null && outputFile.name.endsWith('.apk')) {
+//                    def name = "${releaseTime()}_v${defaultConfig.versionName}.apk"
+//                    output.outputFile = new File(outputFile.parent, name)
+//                }
+//            }
+//    }
 
 }
 

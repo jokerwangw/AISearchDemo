@@ -2,6 +2,7 @@ package com.cmcc.cmvideo.search.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -18,11 +19,14 @@ import com.cmcc.cmvideo.base.BaseRecyclerAdapter;
 import com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.interactors.ItemSearchByAIClickListener;
+import com.cmcc.cmvideo.search.interactors.ItemSportsVideoClickListener;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
+import com.cmcc.cmvideo.widget.WrapContentLinearLayoutManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.cmcc.cmvideo.util.AiuiConstants.IMG_BASE_URL;
@@ -88,7 +92,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (-1 != viewType) {
-            LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+            LayoutInflater layoutInflater = LayoutInflater.from(mContext);
             if (MESSAGE_TYPE_NORMAL == viewType) {
                 View view = layoutInflater.inflate(R.layout.item_search_by_ai_normal, null);
                 return new ItemSearchByAINormalViewHolder(view);
@@ -884,7 +888,30 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 }
             }
         });
+
+        showSportsList(itemSearchByAIListOfSportViewHolder);
     }
+
+    /**
+     * 展示体育赛事列表
+     */
+    private void showSportsList(ItemSearchByAIListOfSportViewHolder itemSearchByAIListOfSportViewHolder) {
+        SportsVideoAdapter sportsVideoAdapter = new SportsVideoAdapter(mContext, itemSportsVideoClickListener);
+        WrapContentLinearLayoutManager wrapContentLinearLayoutManager = new WrapContentLinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+        itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setHasFixedSize(true);
+        itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setItemViewCacheSize(100);
+        itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setLayoutManager(wrapContentLinearLayoutManager);
+        itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setAdapter(sportsVideoAdapter);
+
+        sportsVideoAdapter.bindData(new ArrayList<SearchByAIBean>(),true);
+    }
+
+    private ItemSportsVideoClickListener itemSportsVideoClickListener = new ItemSportsVideoClickListener() {
+        @Override
+        public void clickItem() {
+
+        }
+    };
 
     /**
      * 体育赛事视频

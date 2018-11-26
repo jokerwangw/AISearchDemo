@@ -168,9 +168,15 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         setAdapterData(true, searchByAIBeanList);
     }
 
+    /**
+     * 显示体育赛事视频
+     *
+     * @param position           刷新item第position个
+     * @param searchByAIBeanList
+     */
     @Override
     public void showSportsVideoList(int position, List<SearchByAIBean> searchByAIBeanList) {
-
+        updataAdapterItemData(position, searchByAIBeanList);
     }
 
     /**
@@ -436,6 +442,16 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                 mSearchRecyclerView.scrollToPosition(position);
             }
         }
+    }
+
+    /**
+     * 更新某个item
+     *
+     * @param position
+     * @param searchByAIBeanList
+     */
+    private void updataAdapterItemData(int position, List<SearchByAIBean> searchByAIBeanList) {
+        mSearchByAIAdapter.notifyItemChanged(position);
     }
 
     /**
