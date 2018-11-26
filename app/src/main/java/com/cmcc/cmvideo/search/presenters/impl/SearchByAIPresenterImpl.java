@@ -591,7 +591,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
      * @return
      */
     private boolean isCategory(Map<String, String> solts) {
-        if (solts == null || solts.size() > 3) {
+        if (solts == null || solts.size() >= 3) {
             return false;
         }
 
