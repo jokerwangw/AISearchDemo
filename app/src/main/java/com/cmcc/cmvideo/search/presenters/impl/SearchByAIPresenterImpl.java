@@ -135,7 +135,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     @Override
     public void onInitSearchByAIListData(List<SearchByAIBean> searchByAIBeanList) {
-        mView.showInitList(searchByAIBeanList);
+        if (null != mView) {
+            mView.showInitList(searchByAIBeanList);
+        }
     }
 
     @Override
@@ -727,8 +729,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                     }
                     List<TppData.DetailsListBean> selectedVideoList = new ArrayList<>();
 
-//                    对names去重
-//                    Arrays.sort(names);
+                    //                    对names去重
+                    //                    Arrays.sort(names);
                     List<String> namesList = new ArrayList<>();
                     namesList.add(names[0]);
                     for (int i = 1; i < names.length; i++) {
@@ -985,6 +987,26 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             imgUrl = "";
         }
         return imgUrl;
+    }
+
+    @Override
+    public void clickTheDayBefore(int position) {
+        //TODO 这里做请求数据操作
+        List<SearchByAIBean> searchByAIBeanList = new ArrayList<>();
+        //刷新数据
+        if (null != mView) {
+            mView.showSportsVideoList(position, searchByAIBeanList);
+        }
+    }
+
+    @Override
+    public void clickTheNextDay(int position) {
+        //TODO 这里做请求数据操作
+        List<SearchByAIBean> searchByAIBeanList = new ArrayList<>();
+        //刷新数据
+        if (null != mView) {
+            mView.showSportsVideoList(position, searchByAIBeanList);
+        }
     }
 
     /**

@@ -168,6 +168,11 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         setAdapterData(true, searchByAIBeanList);
     }
 
+    @Override
+    public void showSportsVideoList(int position, List<SearchByAIBean> searchByAIBeanList) {
+
+    }
+
     /**
      * 更新list数据
      *
@@ -245,7 +250,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
 
         @Override
         public void clickItemSearchByAIEveryoneISWatching(boolean isClickMore, int position, String deailsJson, String titleText) {
-            if (isClickMore) {
+            if (isClickMore && null != mSearchByAIPresenter) {
                 //查看更多
                 mSearchByAIPresenter.lookMore(titleText, deailsJson);
             } else {
@@ -261,7 +266,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
 
         @Override
         public void clickItemSearchByAIGuessWhatYouLike(boolean isChangeBt, TppData.DetailsListBean detailsListBean) {
-            if (null != aiuiService && null != detailsListBean) {
+            if (null != aiuiService && null != mSearchByAIPresenter && null != detailsListBean) {
                 if (isChangeBt) {
                     aiuiService.textUnderstander("换一个");
                 } else {
@@ -273,7 +278,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
 
         @Override
         public void clickItemSearchByAIGuessWhatYouLikeListHorizontal(boolean isChangeBt, boolean isClickLookMore, TppData.DetailsListBean detailsListBean, int position) {
-            if (null != aiuiService) {
+            if (null != aiuiService && null != mSearchByAIPresenter) {
                 if (isChangeBt) {
                     aiuiService.textUnderstander("换一个");
                 } else if (isClickLookMore) {
@@ -289,7 +294,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
 
         @Override
         public void clickItemSearchByAIGuessWhatYouLikeListVertical(boolean isChangeBt, boolean isClickLookMore, TppData.DetailsListBean detailsListBean, int position) {
-            if (null != aiuiService) {
+            if (null != aiuiService && null != mSearchByAIPresenter) {
                 if (isChangeBt) {
                     aiuiService.textUnderstander("换一个");
                 } else if (isClickLookMore) {
@@ -305,6 +310,22 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
 
         @Override
         public void clickItemSearchByAITheLatestVideo() {
+
+        }
+
+        @Override
+        public void clickItemSearchByAIListOfSports(int position, boolean isClickTheDayBefore) {
+            if (null != mSearchByAIPresenter) {
+                if (isClickTheDayBefore) {
+                    mSearchByAIPresenter.clickTheDayBefore(position);
+                } else {
+                    mSearchByAIPresenter.clickTheNextDay(position);
+                }
+            }
+        }
+
+        @Override
+        public void clickItemSearchByAIVideoOfSports() {
 
         }
     };

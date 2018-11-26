@@ -1,13 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="赛事列表"
-        android:textColor="#666666"
-        android:textSize="@dimen/dimen_18dp" />
+        android:layout_margin="@dimen/dimen_20dp"
+        android:background="@drawable/search_by_ai_list_of_sports_bg"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/sports_list_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_270dp"
+            android:layout_marginLeft="@dimen/dimen_10dp"
+            android:layout_marginRight="@dimen/dimen_10dp"
+            android:layout_marginTop="@dimen/dimen_25dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_2dp"
+            android:layout_marginLeft="@dimen/dimen_20dp"
+            android:layout_marginRight="@dimen/dimen_20dp"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:background="@drawable/desh_line"
+            android:layerType="software" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_50dp"
+            android:layout_marginLeft="@dimen/dimen_20dp"
+            android:layout_marginRight="@dimen/dimen_20dp">
+
+            <TextView
+                android:id="@+id/tv_the_day_before"
+                android:layout_width="78dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/video_list_the_day_before"
+                android:textColor="@color/guess_you_like_movie_name"
+                android:textSize="@dimen/dimen_16dp" />
+
+            <TextView
+                android:id="@+id/tv_cur_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="2018.10.18"
+                android:textColor="@color/video_list_cur_time"
+                android:textSize="@dimen/dimen_16dp" />
+
+            <TextView
+                android:id="@+id/tv_the_next_day"
+                android:layout_width="78dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:gravity="center"
+                android:text="@string/video_list_the_next_day"
+                android:textColor="@color/guess_you_like_movie_name"
+                android:textSize="@dimen/dimen_16dp" />
+        </RelativeLayout>
+    </LinearLayout>
+
 </RelativeLayout>

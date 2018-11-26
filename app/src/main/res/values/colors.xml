@@ -24,4 +24,7 @@
 
     <color name="desh_line">#CBCACD</color>
 
+    <color name="video_list_cur_time">#ff0092dc</color>
+    <color name="sport_video_title">#000000</color>
+
 </resources>

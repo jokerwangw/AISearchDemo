@@ -63,4 +63,13 @@ public interface ItemSearchByAIClickListener {
      */
     public void clickItemSearchByAITheLatestVideo();
 
+    /**
+     * 点击了类型为MESSAGE_TYPE_LIST_OF_SPORTS的条目
+     */
+    public void clickItemSearchByAIListOfSports(int position, boolean isClickTheDayBefore);
+
+    /**
+     * 点击了类型为MESSAGE_TYPE_VIDEO_OF_SPORTS的条目
+     */
+    public void clickItemSearchByAIVideoOfSports();
 }

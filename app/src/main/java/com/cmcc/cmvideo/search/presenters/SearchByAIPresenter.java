@@ -22,6 +22,12 @@ public interface SearchByAIPresenter extends BasePresenter {
          * @param searchByAIBeanList
          */
         void showInitList(List<SearchByAIBean> searchByAIBeanList);
+
+        /**
+         * @param position           刷新item第position个
+         * @param searchByAIBeanList
+         */
+        void showSportsVideoList(int position, List<SearchByAIBean> searchByAIBeanList);
     }
 
     /**
@@ -62,5 +68,19 @@ public interface SearchByAIPresenter extends BasePresenter {
     /**
      * 查看更多
      */
-    void lookMore(String title,String itemNlp);
+    void lookMore(String title, String itemNlp);
+
+    /**
+     * 点击前一天
+     *
+     * @param position 刷新item第position个
+     */
+    void clickTheDayBefore(int position);
+
+    /**
+     * 点击后一天
+     *
+     * @param position 刷新item第position个
+     */
+    void clickTheNextDay(int position);
 }

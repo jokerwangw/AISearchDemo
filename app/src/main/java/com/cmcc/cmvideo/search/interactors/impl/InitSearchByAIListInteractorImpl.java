@@ -13,7 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.cmcc.cmvideo.util.AiuiConstants.MessageFrom.MESSAGE_FROM_AI;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_LIST_OF_SPORTS;
 import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_NORMAL;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_THE_LATEST_VIDEO;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_VIDEO_OF_SPORTS;
 
 
 /**
@@ -39,8 +42,11 @@ public class InitSearchByAIListInteractorImpl extends AbstractInteractor impleme
 
     @Override
     public void run() {
-        final List<SearchByAIBean> searchByAIBeanList = new ArrayList<SearchByAIBean>();
+        final List<SearchByAIBean> searchByAIBeanList = new ArrayList<>();
         searchByAIBeanList.add(new SearchByAIBean("您希望我做什么", MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI));
+        //测试测试
+        searchByAIBeanList.add(new SearchByAIBean("测试测试", MESSAGE_TYPE_LIST_OF_SPORTS, MESSAGE_FROM_AI));
+        searchByAIBeanList.add(new SearchByAIBean("测试测试", MESSAGE_TYPE_VIDEO_OF_SPORTS, MESSAGE_FROM_AI));
 
         mMainThread.post(new Runnable() {
             @Override

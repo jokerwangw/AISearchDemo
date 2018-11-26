@@ -38,4 +38,7 @@
     <string name="vdo_episode">第几集</string>
 
     <string name="look_more_resource">查看更多 >></string>
+
+    <string name="video_list_the_day_before">前一天</string>
+    <string name="video_list_the_next_day">后一天</string>
 </resources>
