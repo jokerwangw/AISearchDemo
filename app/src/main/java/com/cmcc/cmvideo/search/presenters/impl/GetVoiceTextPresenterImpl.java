@@ -12,10 +12,15 @@ import com.cmcc.cmvideo.search.aiui.AIUIControlService;
 import com.cmcc.cmvideo.search.aiui.AIUIService;
 import com.cmcc.cmvideo.search.aiui.IAIUIControlService;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
+import com.cmcc.cmvideo.search.aiui.Logger;
 import com.cmcc.cmvideo.search.aiui.bean.NlpData;
 import com.cmcc.cmvideo.search.presenters.GetVoiceTextPresenter;
 import com.google.gson.Gson;
 import com.iflytek.aiui.AIUIEvent;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by Yyw on 2018/11/13.
@@ -24,7 +29,6 @@ import com.iflytek.aiui.AIUIEvent;
 public class GetVoiceTextPresenterImpl extends AbstractPresenter implements GetVoiceTextPresenter, AIUIControlService.AIUIEventListener {
     private View mView;
     private IAIUIControlService iaiuiControlService = null;
-    private boolean isFirst = false;
 
     public GetVoiceTextPresenterImpl(Executor executor, MainThread mainThread, View view, Context context) {
         super(executor, mainThread);
@@ -61,8 +65,8 @@ public class GetVoiceTextPresenterImpl extends AbstractPresenter implements GetV
     @Override
     public void onResult(String iatResult, String nlpReslult, String tppResult) {
         Log.d("GetVoiceTextPresenterImpl", "iatResult====" + iatResult);
-        if (!TextUtils.isEmpty(tppResult)) {
-            onTppResult(tppResult);
+        if (!TextUtils.isEmpty(nlpReslult)) {
+            onNlpResult(nlpReslult);
         }
     }
 
@@ -73,7 +77,6 @@ public class GetVoiceTextPresenterImpl extends AbstractPresenter implements GetV
     @Override
     public void startRecording() {
         if (iaiuiControlService != null) {
-            isFirst = true;
             iaiuiControlService.startRecordAudio();
             iaiuiControlService.addAIUIEventListener(this);
         }
@@ -92,6 +95,59 @@ public class GetVoiceTextPresenterImpl extends AbstractPresenter implements GetV
             mView.showVoiceText(false, nlpData.text);
         } else {
             mView.showVoiceText(true, "error");
+        }
+    }
+
+    private void onNlpResult(String nlpReslult) {
+        try {
+            if (TextUtils.isEmpty(nlpReslult)) {
+                mView.showVoiceText(true, "error");
+                return;
+            }
+
+            int rc = 4;
+            String text = "";
+            JSONObject jsonObject = new JSONObject(nlpReslult);
+
+            if (jsonObject.has("rc")) {
+                rc = jsonObject.optInt("rc");
+            }
+
+            if (jsonObject.has("text")) {
+                text = jsonObject.optString("text");
+            }
+
+            if (0 == rc) {
+                if (jsonObject.has("semantic")) {
+                    JSONArray jsonArraySemantic = jsonObject.getJSONArray("semantic");
+                    if (null == jsonArraySemantic || jsonArraySemantic.length() == 0) {
+                        mView.showVoiceText(false, text);
+                        return;
+                    }
+
+                    String template = "";
+                    JSONObject semantic = jsonArraySemantic.getJSONObject(0);
+                    if (null != semantic && semantic.has("template") && semantic.has("slots") && null != semantic.getJSONArray("slots")) {
+                        template = semantic.optString("template");
+                        JSONArray slots = semantic.getJSONArray("slots");
+
+                        for (int i = 0; i < slots.length(); i++) {
+                            JSONObject slot = slots.getJSONObject(i);
+                            template = template.replaceAll("\\{" + slot.getString("name") + "\\}", slot.getString("normValue"));
+                        }
+
+                        mView.showVoiceText(false, template);
+                    } else {
+                        mView.showVoiceText(false, text);
+                    }
+                } else {
+                    mView.showVoiceText(false, text);
+                }
+            } else {
+                mView.showVoiceText(false, text);
+            }
+        } catch (Exception e) {
+            Logger.error(e);
         }
     }
 }

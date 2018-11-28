@@ -137,61 +137,26 @@ public class AIUIControlService extends Service {
 
                         if (content.has("cnt_id")) {
                             String cnt_id = content.getString("cnt_id");
-                            if (cnt_id.isEmpty()) {
-                                return;
-                            }
                             String sub = params.optString("sub");
 
-                            if ("iat".equals(sub) || "nlp".equals(sub) || "tpp".equals(sub)) {
+                            if (TextUtils.isEmpty(cnt_id) || TextUtils.isEmpty(sub)) {
+                                return;
+                            }
+
+                            if (TextUtils.equals("nlp", sub)) {
                                 // 解析得到语义结果
                                 String json = new String(event.data.getByteArray(cnt_id), "utf-8");
-                                JSONObject cntJson = null;
                                 if (!TextUtils.isEmpty(json)) {
-                                    cntJson = new JSONObject(json);
-                                }
-                                if (cntJson == null) {
-                                    return;
-                                }
-
-                                if (!TextUtils.isEmpty(event.data.getString("tag"))) {
-                                    String tag = event.data.getString("tag");
-                                    Logger.debug("文本请求的标签===" + tag);
-                                }
-
-                                if ("iat".equals(sub)) {
-                                    String iat = cntJson.optString("text");
-                                    if (iat.equals("{}") || iat.isEmpty()) {
-                                        return;
-                                    }
-
-                                    String iatTxt = getIatTxt(iat);
-                                    if (TextUtils.isEmpty(iatTxt)) {
-                                        return;
-                                    }
-                                    if (null != mAIUIEventListener) {
-                                        mAIUIEventListener.onResult(iatTxt, null, null);
-                                    }
-
-                                } else if ("nlp".equals(sub)) {
+                                    JSONObject cntJson = new JSONObject(json);
                                     String resultStr = cntJson.optString("intent");
-                                    if (resultStr.equals("{}") || resultStr.isEmpty()) {
+
+                                    if (TextUtils.isEmpty(resultStr) || TextUtils.equals("{}", resultStr)) {
                                         return;
                                     }
+
                                     Logger.debug("NLP 【" + resultStr + "】");
                                     if (null != mAIUIEventListener) {
                                         mAIUIEventListener.onResult(null, resultStr, null);
-                                    }
-
-                                } else {
-                                    String resultStr = cntJson.optString("intent");
-                                    if (resultStr.equals("{}")) {
-                                        return;
-                                    }
-                                    String jsonResultStr = cntJson.toString();
-                                    //LogUtil.e("TPP===", resultStr);
-                                    Logger.debug("TPP 【" + jsonResultStr + "】");
-                                    if (null != mAIUIEventListener) {
-                                        mAIUIEventListener.onResult(null, null, jsonResultStr);
                                     }
                                 }
                             }
