@@ -71,7 +71,6 @@ public class AIUIControlService extends Service {
         if (mAIUIAgent != null) {
             mAIUIAgent.destroy();
         }
-        SpeechUtility.getUtility().destroy();
         super.onDestroy();
     }
 
