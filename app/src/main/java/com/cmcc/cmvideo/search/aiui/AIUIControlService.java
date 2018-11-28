@@ -82,8 +82,6 @@ public class AIUIControlService extends Service {
         //AIUI初始化
         mAIUIAgent = AIUIAgent.createAgent(this, getAIUIParams(), aiuiListener);
         mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_START, 0, 0, "", null));
-        //MSC初始化（登陆）
-        SpeechUtility.createUtility(this, "appid=5aceb703");
 
         setUserDataParam("", "", "", "1");
         Logger.debug(">>>>>>>>>>>onCreate>>>>>>>");

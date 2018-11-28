@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 public class AIUIService extends Service {
+    //"appid":"5b20c34f"
     public static final String AIUI_SERVICE_NAME = "com.cmcc.cmvideo.search.aiui.AIUIService";
     private static final String TAG = "AIUIService";
     private AIUIServiceImpl aiuiService;
