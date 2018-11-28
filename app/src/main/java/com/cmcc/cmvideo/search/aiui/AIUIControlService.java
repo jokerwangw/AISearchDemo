@@ -34,8 +34,6 @@ import java.util.Map;
 public class AIUIControlService extends Service {
     private AIUIAgent mAIUIAgent;
     private int mCurrentState = AIUIConstant.STATE_IDLE;
-    //文本请求tag标记
-    private boolean isTextRequest = false;
     private AIUIControlServiceImpl aiuiCtrolService = null;
     private AIUIEventListener mAIUIEventListener = null;
 
@@ -134,7 +132,6 @@ public class AIUIControlService extends Service {
         public void onEvent(AIUIEvent event) {
             switch (event.eventType) {
                 case AIUIConstant.EVENT_RESULT: {
-                    isTextRequest = false;
                     try {
                         JSONObject bizParamJson = new JSONObject(event.info);
                         JSONObject data = bizParamJson.getJSONArray("data").getJSONObject(0);
@@ -162,11 +159,6 @@ public class AIUIControlService extends Service {
                                 if (!TextUtils.isEmpty(event.data.getString("tag"))) {
                                     String tag = event.data.getString("tag");
                                     Logger.debug("文本请求的标签===" + tag);
-                                    if (tag.equals("write_data_text")) {
-                                        isTextRequest = true;
-                                    } else {
-                                        isTextRequest = false;
-                                    }
                                 }
 
                                 if ("iat".equals(sub)) {
@@ -300,7 +292,7 @@ public class AIUIControlService extends Service {
         String params = "";
         AssetManager assetManager = getResources().getAssets();
         try {
-            InputStream ins = assetManager.open("cfg/aiui_phone.cfg");
+            InputStream ins = assetManager.open("cfg/aiui_tv.cfg");
             byte[] buffer = new byte[ins.available()];
             ins.read(buffer);
             ins.close();

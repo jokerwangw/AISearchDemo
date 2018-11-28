@@ -10,15 +10,13 @@
         android:background="@drawable/search_by_ai_list_of_sports_bg"
         android:orientation="vertical">
 
-        <android.support.v7.widget.RecyclerView
+        <com.cmcc.cmvideo.widget.NestRecyclerView
             android:id="@+id/sports_list_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimen_240dp"
             android:layout_marginLeft="@dimen/dimen_10dp"
             android:layout_marginRight="@dimen/dimen_10dp"
-            android:layout_marginTop="@dimen/dimen_25dp"
-            android:focusable="true"
-            android:nestedScrollingEnabled="true" />
+            android:layout_marginTop="@dimen/dimen_25dp" />
 
         <View
             android:layout_width="match_parent"

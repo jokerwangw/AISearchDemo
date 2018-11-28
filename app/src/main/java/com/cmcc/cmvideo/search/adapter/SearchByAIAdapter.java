@@ -21,6 +21,7 @@ import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.interactors.ItemSearchByAIClickListener;
 import com.cmcc.cmvideo.search.interactors.ItemSportsVideoClickListener;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
+import com.cmcc.cmvideo.widget.NestRecyclerView;
 import com.cmcc.cmvideo.widget.WrapContentLinearLayoutManager;
 
 import org.json.JSONException;
@@ -1191,14 +1192,14 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
      * 类型：MESSAGE_TYPE_LIST_OF_SPORTS
      */
     private class ItemSearchByAIListOfSportViewHolder extends BaseViewHolder {
-        private RecyclerView sportsListRecyclerView;
+        private NestRecyclerView sportsListRecyclerView;
         private TextView tvTheDayBefore;
         private TextView tvCurDate;
         private TextView tvTheNextDay;
 
         private ItemSearchByAIListOfSportViewHolder(View itemView) {
             super(itemView);
-            sportsListRecyclerView = (RecyclerView) itemView.findViewById(R.id.sports_list_recyclerview);
+            sportsListRecyclerView = (NestRecyclerView) itemView.findViewById(R.id.sports_list_recyclerview);
             tvTheDayBefore = (TextView) itemView.findViewById(R.id.tv_the_day_before);
             tvCurDate = (TextView) itemView.findViewById(R.id.tv_cur_date);
             tvTheNextDay = (TextView) itemView.findViewById(R.id.tv_the_next_day);

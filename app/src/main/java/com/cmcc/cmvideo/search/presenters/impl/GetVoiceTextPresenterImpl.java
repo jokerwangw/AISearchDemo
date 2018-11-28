@@ -55,7 +55,6 @@ public class GetVoiceTextPresenterImpl extends AbstractPresenter implements GetV
     @Override
     public void setAIUIService(IAIUIControlService service) {
         iaiuiControlService = service;
-        iaiuiControlService.addAIUIEventListener(this);
     }
 
     @SuppressLint("LongLogTag")
@@ -76,6 +75,7 @@ public class GetVoiceTextPresenterImpl extends AbstractPresenter implements GetV
         if (iaiuiControlService != null) {
             isFirst = true;
             iaiuiControlService.startRecordAudio();
+            iaiuiControlService.addAIUIEventListener(this);
         }
     }
 
