@@ -157,20 +157,6 @@ public interface IAIUIService {
     void stopAiui();
 
     /**
-     * 设置是否播报智能语音
-     *
-     * @param playAIVoice
-     */
-    void setIsPlayAIVoice(boolean playAIVoice);
-
-    /**
-     * 设置动态改变语音后端点参数vad_eos 默认不设置 1s
-     *
-     * @param isVadEos
-     */
-    void setEnableVadEos(boolean isVadEos);
-
-    /**
      * 是否在合成
      */
     boolean isTtsing();

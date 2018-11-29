@@ -29,10 +29,4 @@ public interface IAIUIControlService {
      */
     void removeAIUIEventListener(AIUIControlService.AIUIEventListener resultDispatchListener);
 
-    /**
-     * 设置动态改变语音后端点参数vad_eos 默认不设置 1s
-     *
-     * @param isVadEos
-     */
-    void setEnableVadEos(boolean isVadEos);
 }

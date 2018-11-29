@@ -162,8 +162,6 @@ public class LookMoreActivity extends AppCompatActivity implements LookMorePrese
                 return;
             }
             aiuiService = (IAIUIService) service;
-            aiuiService.setIsPlayAIVoice(true);
-            aiuiService.setEnableVadEos(true);
             String lockMoreData = getIntent().getStringExtra(KEY_MORE_DATE);
             lookMorePresenter.setAIUIService(aiuiService);
             lookMorePresenter.loadData(lockMoreData);

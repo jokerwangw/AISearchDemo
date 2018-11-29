@@ -90,7 +90,7 @@ public class AIUIControlService extends Service {
 
         @Override
         public void startRecordAudio() {
-            sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000", null));
+            sendMessage(new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0, "data_type=audio,sample_rate=16000,pers_param={\"appid\":\"\",\"uid\":\"\"}", null));
         }
 
         @Override
@@ -108,20 +108,6 @@ public class AIUIControlService extends Service {
             mAIUIEventListener = null;
         }
 
-        @Override
-        public void setEnableVadEos(boolean isVadEos) {
-            if (isVadEos) {
-                //正常视频搜索时候设置
-                String setParams = "{\"vad\":{\"vad_eos\":\"1500\"}}";
-                AIUIMessage setMsg = new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, setParams, null);
-                mAIUIAgent.sendMessage(setMsg);
-            } else {
-                //大屏遥控器设置
-                String setParams = "{\"vad\":{\"vad_eos\":\"10000\"}}";
-                AIUIMessage setMsg = new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, setParams, null);
-                mAIUIAgent.sendMessage(setMsg);
-            }
-        }
     }
 
     private AIUIListener aiuiListener = new AIUIListener() {

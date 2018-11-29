@@ -125,7 +125,6 @@ public class GetVoiceTextActivity extends AppCompatActivity implements GetVoiceT
             }
             isBindService = true;
             iaiuiControlService = (IAIUIControlService) service;
-            iaiuiControlService.setEnableVadEos(false);
             if (null != mGetVoiceTextPresenter) {
                 mGetVoiceTextPresenter.setAIUIService(iaiuiControlService);
             }

@@ -65,7 +65,6 @@ public class AIUIService extends Service {
     private boolean isTextRequest = false;
     private String lastNlp;
     private String lastLoadMoreNlp;
-    private boolean mPlayAIVoice = true;
 
     @Override
     public void onCreate() {
@@ -185,24 +184,10 @@ public class AIUIService extends Service {
     }
 
     private class AIUIServiceImpl extends Binder implements IAIUIService {
-        @Override
-        public void setEnableVadEos(boolean isVadEos) {
-            if (isVadEos) {
-                //正常视频搜索时候设置
-                String setParams = "{\"vad\":{\"vad_eos\":\"1500\"}}";
-                AIUIMessage setMsg = new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, setParams, null);
-                mAIUIAgent.sendMessage(setMsg);
-            } else {
-                //大屏遥控器设置
-                String setParams = "{\"vad\":{\"vad_eos\":\"10000\"}}";
-                AIUIMessage setMsg = new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0, setParams, null);
-                mAIUIAgent.sendMessage(setMsg);
-            }
-        }
 
         @Override
         public boolean isTtsing() {
-            return isTtsing ;
+            return isTtsing;
         }
 
         @Override
@@ -332,12 +317,6 @@ public class AIUIService extends Service {
         public void stopAiui() {
             mAIUIAgent.sendMessage(new AIUIMessage(AIUIConstant.CMD_RESET, 0, 0, "", null));
         }
-
-        @Override
-        public void setIsPlayAIVoice(boolean playAIVoice) {
-            mPlayAIVoice = playAIVoice;
-        }
-
 
         @Override
         public void setAttached(boolean isAttached) {
@@ -560,9 +539,10 @@ public class AIUIService extends Service {
     }
 
     private void tts(String ttsText) {
-        if (TextUtils.isEmpty(ttsText) || !mPlayAIVoice) {
+        if (TextUtils.isEmpty(ttsText)) {
             return;
         }
+
         //转为二进制数据
         byte[] ttsData = new byte[0];
         try {
