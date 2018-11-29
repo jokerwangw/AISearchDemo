@@ -37,25 +37,8 @@ public class NestRecyclerView extends RecyclerView {
         setNestedScrollingEnabled(true);
     }
 
-    /*@Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        int action = ev.getAction();
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                getParent().requestDisallowInterceptTouchEvent(true);
-                break;
-            case MotionEvent.ACTION_MOVE:
-                break;
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
-                getParent().requestDisallowInterceptTouchEvent(false);
-                break;
-        }
-        return super.onInterceptTouchEvent(ev);
-    }*/
-
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean onInterceptTouchEvent(MotionEvent event) {
         int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
@@ -79,7 +62,7 @@ public class NestRecyclerView extends RecyclerView {
                 getParent().requestDisallowInterceptTouchEvent(false);
                 break;
         }
-        return super.onTouchEvent(event);
+        return super.onInterceptTouchEvent(event);
     }
 
     private void isIntercept(float nowY) {
@@ -88,7 +71,7 @@ public class NestRecyclerView extends RecyclerView {
         isBottomToTop = false;
 
         RecyclerView.LayoutManager layoutManager = getLayoutManager();
-        if (layoutManager instanceof GridLayoutManager) {
+        if (layoutManager instanceof LinearLayoutManager) {
             //得到当前界面，最后一个子视图对应的position
             lastVisibleItemPosition = ((LinearLayoutManager) layoutManager).findLastVisibleItemPosition();
             //得到当前界面，第一个子视图的position
