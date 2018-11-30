@@ -1,6 +1,7 @@
 package com.cmcc.cmvideo.search.interactors;
 
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
+import com.cmcc.cmvideo.search.model.SearchByAIBean;
 
 /**
  * Created by Yyw on 2018/6/15.
@@ -65,8 +66,12 @@ public interface ItemSearchByAIClickListener {
 
     /**
      * 点击了类型为MESSAGE_TYPE_LIST_OF_SPORTS的条目
+     *
+     * @param position
+     * @param isClickTheDayBefore
+     * @param searchByAIBean
      */
-    public void clickItemSearchByAIListOfSports(int position, boolean isClickTheDayBefore);
+    public void clickItemSearchByAIListOfSports(int position, boolean isClickTheDayBefore, SearchByAIBean searchByAIBean);
 
     /**
      * 点击了类型为MESSAGE_TYPE_VIDEO_OF_SPORTS的条目

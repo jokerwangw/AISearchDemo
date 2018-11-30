@@ -5,5 +5,5 @@ package com.cmcc.cmvideo.search.interactors;
  * Describe:
  */
 public interface ItemSportsVideoClickListener {
-    void clickItem();
+    void clickItem(int position, int videoCurType);
 }

@@ -16,8 +16,8 @@ public class SearchByAIBean {
     private String messageFrom;
     private List<TppData.DetailsListBean> videoList;
     private List<TppData.MatchBean.MatchListBean> matchList;
-
-
+    private int matchListClickType;
+    private String matchListCurDate;
 
     public SearchByAIBean() {
     }
@@ -35,11 +35,12 @@ public class SearchByAIBean {
 
     /**
      * 体育赛事模块
+     *
      * @param messageType
      * @param matchList
      * @param messageFrom
      */
-    public SearchByAIBean(int messageType,  List<TppData.MatchBean.MatchListBean> matchList,String messageFrom) {
+    public SearchByAIBean(int messageType, List<TppData.MatchBean.MatchListBean> matchList, String messageFrom) {
         this.messageType = messageType;
         this.matchList = matchList;
         this.messageFrom = messageFrom;
@@ -91,5 +92,21 @@ public class SearchByAIBean {
 
     public void setMatchList(List<TppData.MatchBean.MatchListBean> matchList) {
         this.matchList = matchList;
+    }
+
+    public int getMatchListClickType() {
+        return matchListClickType;
+    }
+
+    public void setMatchListClickType(int matchListClickType) {
+        this.matchListClickType = matchListClickType;
+    }
+
+    public String getMatchListCurDate() {
+        return matchListCurDate;
+    }
+
+    public void setMatchListCurDate(String matchListCurDate) {
+        this.matchListCurDate = matchListCurDate;
     }
 }

@@ -171,12 +171,18 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     /**
      * 显示体育赛事视频
      *
-     * @param position           刷新item第position个
-     * @param searchByAIBeanList
+     * @param position       刷新item第position个
+     * @param searchByAIBean
      */
     @Override
-    public void showSportsVideoList(int position, List<SearchByAIBean> searchByAIBeanList) {
-        updataAdapterItemData(position, searchByAIBeanList);
+    public void showSportsVideoList(int position, SearchByAIBean searchByAIBean) {
+        if (null != mSearchByAIAdapter && null != mSearchByAIAdapter.getData() && position < mSearchByAIAdapter.getData().size() && null != searchByAIBean) {
+            SearchByAIBean searchByAIBeanTemp = mSearchByAIAdapter.getData().get(position);
+            searchByAIBeanTemp.setMatchListCurDate(searchByAIBean.getMatchListCurDate());
+            searchByAIBeanTemp.setMatchListClickType(searchByAIBean.getMatchListClickType());
+
+            mSearchByAIAdapter.notifyItemChanged(position, "wangwang");
+        }
     }
 
     /**
@@ -187,7 +193,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SearchByAIEventBean event) {
         if (null != event) {
-            Logger.debug("SearchByAIEventBean=","SearchByAIEventBean=" + event);
+            Logger.debug("SearchByAIEventBean=", "SearchByAIEventBean=" + event);
             setAdapterData(false, event.getSearchByAIBeanList());
         }
     }
@@ -321,12 +327,12 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         }
 
         @Override
-        public void clickItemSearchByAIListOfSports(int position, boolean isClickTheDayBefore) {
+        public void clickItemSearchByAIListOfSports(int position, boolean isClickTheDayBefore, SearchByAIBean searchByAIBean) {
             if (null != mSearchByAIPresenter) {
                 if (isClickTheDayBefore) {
-                    mSearchByAIPresenter.clickTheDayBefore(position);
+                    mSearchByAIPresenter.clickTheDayBefore(position, searchByAIBean);
                 } else {
-                    mSearchByAIPresenter.clickTheNextDay(position);
+                    mSearchByAIPresenter.clickTheNextDay(position, searchByAIBean);
                 }
             }
         }
@@ -395,13 +401,6 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     }
 
     /**
-     * 标题栏右侧按钮
-     */
-    @OnClick(R.id.bt_title_voice)
-    public void clickTitleVoice() {
-    }
-
-    /**
      * 耳机接入状态
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -443,16 +442,6 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
                 mSearchRecyclerView.scrollToPosition(position);
             }
         }
-    }
-
-    /**
-     * 更新某个item
-     *
-     * @param position
-     * @param searchByAIBeanList
-     */
-    private void updataAdapterItemData(int position, List<SearchByAIBean> searchByAIBeanList) {
-        mSearchByAIAdapter.notifyItemChanged(position);
     }
 
     /**

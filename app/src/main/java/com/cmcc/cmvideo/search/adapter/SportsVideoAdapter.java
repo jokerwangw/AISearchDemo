@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.cmcc.cmvideo.R;
 import com.cmcc.cmvideo.base.BaseRecyclerAdapter;
+import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.interactors.ItemSportsVideoClickListener;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 
@@ -15,7 +16,7 @@ import com.cmcc.cmvideo.search.model.SearchByAIBean;
  * Created by Yyw on 2018/11/26.
  * Describe:
  */
-public class SportsVideoAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
+public class SportsVideoAdapter extends BaseRecyclerAdapter<TppData.MatchBean.MatchListBean.MatchEventInfoBean> {
     private Context mContext;
     private ItemSportsVideoClickListener mItemSportsVideoClickListener;
 
@@ -31,7 +32,7 @@ public class SportsVideoAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
     }
 
     @Override
-    public void onBindHoder(RecyclerView.ViewHolder holder, SearchByAIBean searchByAIBean, int position) {
+    public void onBindHoder(RecyclerView.ViewHolder holder, TppData.MatchBean.MatchListBean.MatchEventInfoBean matchEventInfoBean, int position) {
     }
 
     @Override

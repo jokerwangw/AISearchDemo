@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cmcc.cmvideo.R;
 import com.cmcc.cmvideo.base.BaseRecyclerAdapter;
@@ -130,6 +131,17 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             }
         }
         return null;
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
+        if (null != getData() && !getData().isEmpty() && position < getData().size()) {
+            if (payloads.isEmpty()) {
+                onBindHoder(holder, getData().get(position), position);
+            } else {
+                bindItemSearchByAIListOfSportView(holder, getData().get(position), position);
+            }
+        }
     }
 
     @Override
@@ -871,13 +883,14 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
      * @param holder
      * @param searchByAIBean
      */
-    private void bindItemSearchByAIListOfSportView(RecyclerView.ViewHolder holder, SearchByAIBean searchByAIBean, final int position) {
+    private void bindItemSearchByAIListOfSportView(RecyclerView.ViewHolder holder, final SearchByAIBean searchByAIBean, final int position) {
         final ItemSearchByAIListOfSportViewHolder itemSearchByAIListOfSportViewHolder = (ItemSearchByAIListOfSportViewHolder) holder;
+        itemSearchByAIListOfSportViewHolder.tvCurDate.setText(searchByAIBean.getMatchListCurDate());
         itemSearchByAIListOfSportViewHolder.tvTheDayBefore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (null != ItemSearchByAIClickListener) {
-                    ItemSearchByAIClickListener.clickItemSearchByAIListOfSports(position, true);
+                    ItemSearchByAIClickListener.clickItemSearchByAIListOfSports(position, true, searchByAIBean);
                 }
             }
         });
@@ -885,32 +898,39 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
             @Override
             public void onClick(View v) {
                 if (null != ItemSearchByAIClickListener) {
-                    ItemSearchByAIClickListener.clickItemSearchByAIListOfSports(position, false);
+                    ItemSearchByAIClickListener.clickItemSearchByAIListOfSports(position, false, searchByAIBean);
                 }
             }
         });
 
-        showSportsList(itemSearchByAIListOfSportViewHolder);
+        showSportsList(itemSearchByAIListOfSportViewHolder, searchByAIBean);
     }
 
     /**
      * 展示体育赛事列表
      */
-    private void showSportsList(ItemSearchByAIListOfSportViewHolder itemSearchByAIListOfSportViewHolder) {
-        SportsVideoAdapter sportsVideoAdapter = new SportsVideoAdapter(mContext, itemSportsVideoClickListener);
-        WrapContentLinearLayoutManager wrapContentLinearLayoutManager = new WrapContentLinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-        itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setHasFixedSize(true);
-        itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setItemViewCacheSize(100);
-        itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setLayoutManager(wrapContentLinearLayoutManager);
-        itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setAdapter(sportsVideoAdapter);
+    private void showSportsList(ItemSearchByAIListOfSportViewHolder itemSearchByAIListOfSportViewHolder, SearchByAIBean searchByAIBean) {
+        if (0 == searchByAIBean.getMatchListClickType() || -2 == searchByAIBean.getMatchListClickType() || 3 == searchByAIBean.getMatchListClickType()) {
+            itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setVisibility(View.VISIBLE);
+            itemSearchByAIListOfSportViewHolder.llEmptyView.setVisibility(View.GONE);
 
-        sportsVideoAdapter.bindData(new ArrayList<SearchByAIBean>(),true);
+            SportsVideoAdapter sportsVideoAdapter = new SportsVideoAdapter(mContext, itemSportsVideoClickListener);
+            WrapContentLinearLayoutManager wrapContentLinearLayoutManager = new WrapContentLinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+            itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setHasFixedSize(true);
+            itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setItemViewCacheSize(100);
+            itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setLayoutManager(wrapContentLinearLayoutManager);
+            itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setAdapter(sportsVideoAdapter);
+            sportsVideoAdapter.bindData(new ArrayList<TppData.MatchBean.MatchListBean.MatchEventInfoBean>(), true);
+        } else {
+            itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setVisibility(View.GONE);
+            itemSearchByAIListOfSportViewHolder.llEmptyView.setVisibility(View.VISIBLE);
+        }
     }
 
     private ItemSportsVideoClickListener itemSportsVideoClickListener = new ItemSportsVideoClickListener() {
         @Override
-        public void clickItem() {
-
+        public void clickItem(int position, int videoCurType) {
+            Toast.makeText(mContext, "查看==" + position, Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -1193,6 +1213,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
      */
     private class ItemSearchByAIListOfSportViewHolder extends BaseViewHolder {
         private NestRecyclerView sportsListRecyclerView;
+        private LinearLayout llEmptyView;
         private TextView tvTheDayBefore;
         private TextView tvCurDate;
         private TextView tvTheNextDay;
@@ -1200,6 +1221,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
         private ItemSearchByAIListOfSportViewHolder(View itemView) {
             super(itemView);
             sportsListRecyclerView = (NestRecyclerView) itemView.findViewById(R.id.sports_list_recyclerview);
+            llEmptyView = (LinearLayout) itemView.findViewById(R.id.ll_empty_view);
             tvTheDayBefore = (TextView) itemView.findViewById(R.id.tv_the_day_before);
             tvCurDate = (TextView) itemView.findViewById(R.id.tv_cur_date);
             tvTheNextDay = (TextView) itemView.findViewById(R.id.tv_the_next_day);

@@ -45,9 +45,12 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -140,6 +143,19 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     @Override
     public void onInitSearchByAIListData(List<SearchByAIBean> searchByAIBeanList) {
         if (null != mView) {
+            //TODO 测试代码，模拟数据
+            for (int i = 0; i < searchByAIBeanList.size(); i++) {
+                if (searchByAIBeanList.get(i).getMessageType() == 9) {
+                    SearchByAIBean searchByAIBean = searchByAIBeanList.get(i);
+                    int type = 0;
+                    //设置默认type为0
+                    searchByAIBean.setMatchListClickType(type);
+                    //设置type对应的日期
+                    searchByAIBean.setMatchListCurDate(getCurDate(type));
+                }
+            }
+            //TODO 测试代码，模拟数据
+
             mView.showInitList(searchByAIBeanList);
         }
     }
@@ -1004,22 +1020,34 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     }
 
     @Override
-    public void clickTheDayBefore(int position) {
-        //TODO 这里做请求数据操作
-        List<SearchByAIBean> searchByAIBeanList = new ArrayList<>();
+    public void clickTheDayBefore(int position, SearchByAIBean searchByAIBean) {
         //刷新数据
-        if (null != mView) {
-            mView.showSportsVideoList(position, searchByAIBeanList);
+        if (null != mView && null != searchByAIBean) {
+            if (searchByAIBean.getMatchListClickType() == -3) {
+                Toast.makeText(mContext, "老铁，不能往前点啦！！！", Toast.LENGTH_SHORT).show();
+            } else {
+                int type = searchByAIBean.getMatchListClickType();
+                type = type - 1;
+                searchByAIBean.setMatchListClickType(type);
+                searchByAIBean.setMatchListCurDate(getCurDate(type));
+                mView.showSportsVideoList(position, searchByAIBean);
+            }
         }
     }
 
     @Override
-    public void clickTheNextDay(int position) {
-        //TODO 这里做请求数据操作
-        List<SearchByAIBean> searchByAIBeanList = new ArrayList<>();
+    public void clickTheNextDay(int position, SearchByAIBean searchByAIBean) {
         //刷新数据
-        if (null != mView) {
-            mView.showSportsVideoList(position, searchByAIBeanList);
+        if (null != mView && null != searchByAIBean) {
+            if (searchByAIBean.getMatchListClickType() == 3) {
+                Toast.makeText(mContext, "老铁，不能往后点啦！！！", Toast.LENGTH_SHORT).show();
+            } else {
+                int type = searchByAIBean.getMatchListClickType();
+                type = type + 1;
+                searchByAIBean.setMatchListClickType(type);
+                searchByAIBean.setMatchListCurDate(getCurDate(type));
+                mView.showSportsVideoList(position, searchByAIBean);
+            }
         }
     }
 
@@ -1083,9 +1111,17 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
      * @param msgFrom     AI or User
      */
     private void sendSportsMessage(int messageType, List<TppData.MatchBean.MatchListBean> matchList, String msgFrom) {
-        SearchByAIBean searchByAIBean = new SearchByAIBean(messageType, matchList, msgFrom);
         List<SearchByAIBean> messageList = new ArrayList<>();
+
+        SearchByAIBean searchByAIBean = new SearchByAIBean(messageType, matchList, msgFrom);
         searchByAIBean.setDeailsJson(matchListData);
+
+        int type = 0;
+        //设置默认type为0
+        searchByAIBean.setMatchListClickType(type);
+        //设置type对应的日期
+        searchByAIBean.setMatchListCurDate(getCurDate(type));
+
         messageList.add(searchByAIBean);
         EventBus.getDefault().post(new SearchByAIEventBean(messageList));
     }
@@ -1125,5 +1161,22 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         }
     }
 
+    /**
+     * 根据type获取日期
+     *
+     * @param type
+     * @return
+     */
+    private String getCurDate(int type) {
+        String curDate = "";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd");
+
+        Calendar rightNow = Calendar.getInstance();
+        rightNow.setTime(new Date());
+        rightNow.add(Calendar.DAY_OF_YEAR, type);
+
+        curDate = simpleDateFormat.format(rightNow.getTime());
+        return curDate;
+    }
 
 }

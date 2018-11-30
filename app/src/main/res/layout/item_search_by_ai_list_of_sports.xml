@@ -10,13 +10,42 @@
         android:background="@drawable/search_by_ai_list_of_sports_bg"
         android:orientation="vertical">
 
-        <com.cmcc.cmvideo.widget.NestRecyclerView
-            android:id="@+id/sports_list_recyclerview"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimen_240dp"
-            android:layout_marginLeft="@dimen/dimen_10dp"
+            android:layout_marginLeft="@dimen/dimen_15dp"
             android:layout_marginRight="@dimen/dimen_10dp"
-            android:layout_marginTop="@dimen/dimen_25dp" />
+            android:layout_marginTop="@dimen/dimen_20dp">
+
+            <com.cmcc.cmvideo.widget.NestRecyclerView
+                android:id="@+id/sports_list_recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/ll_empty_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/dimen_90dp"
+                    android:layout_height="@dimen/dimen_90dp"
+                    android:src="@mipmap/search_by_ai_sport_empty_list_img" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:text="今天没有比赛"
+                    android:textColor="#ff696969"
+                    android:textSize="@dimen/dimen_15dp" />
+            </LinearLayout>
+
+        </RelativeLayout>
 
         <View
             android:layout_width="match_parent"
