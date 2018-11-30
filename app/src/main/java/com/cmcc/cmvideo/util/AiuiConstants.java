@@ -211,7 +211,5 @@ public class AiuiConstants {
      */
     public static final String SPORTS_PLAY = "PLAY";
     public static final String SPORTS_QUERY = "QUERY";
-    //直接播报answer内容
-    public static final String SPORTS_WATCH = "WATCH";
 
 }
