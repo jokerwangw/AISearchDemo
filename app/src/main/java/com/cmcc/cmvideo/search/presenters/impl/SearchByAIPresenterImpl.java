@@ -1106,7 +1106,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 response.response = nlpData.data.lxresult.data.match.CompetitionBroadCastText;
             }
 
-            if (nlpData.data.lxresult.data.match.matchList.size() == 1) {
+            if (nlpData.data.lxresult.data.match.matchList.size() == 1
+                    && null != nlpData.data.lxresult.data.match.matchList.get(0)
+                    && nlpData.data.lxresult.data.match.matchList.get(0).matchEventInfo.size() == 1) {
                 //赛事列表如果只有一个的话 就展示一个的模板
                 response = AiResponse.getInstance().getMatchSingle();
                 sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
