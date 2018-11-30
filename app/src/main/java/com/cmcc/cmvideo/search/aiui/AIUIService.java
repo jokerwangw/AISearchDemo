@@ -604,7 +604,7 @@ public class AIUIService extends Service {
             data.put("viewCmd::default", viewCmd);
             String params = data.toString();
             byte[] syncData = params.getBytes("utf-8");
-            AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC, AIUIConstant.SYNC_DATA_STATUS, 0, params, syncData);
+            AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC, AIUIConstant.SYNC_DATA_SPEAKABLE, 0, params, syncData);
             sendMessage(syncAthenaMessage);
             Logger.debug("删除状态数据【" + data.toString() + "】");
         } catch (Exception e) {
@@ -645,7 +645,7 @@ public class AIUIService extends Service {
             }
             String params = data.toString();
             byte[] syncData = params.getBytes("utf-8");
-            AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC, AIUIConstant.SYNC_DATA_STATUS, 0, params, syncData);
+            AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC, AIUIConstant.SYNC_DATA_SPEAKABLE, 0, params, syncData);
             mAIUIAgent.sendMessage(syncAthenaMessage);
             Logger.debug("同步状态数据【" + data.toString() + "】");
         } catch (Exception e) {
@@ -690,7 +690,7 @@ public class AIUIService extends Service {
             }
             String params = data.toString();
             byte[] syncData = params.getBytes("utf-8");
-            AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC, AIUIConstant.SYNC_DATA_STATUS, 0, params, syncData);
+            AIUIMessage syncAthenaMessage = new AIUIMessage(AIUIConstant.CMD_SYNC, AIUIConstant.SYNC_DATA_SPEAKABLE, 0, params, syncData);
             mAIUIAgent.sendMessage(syncAthenaMessage);
             Logger.debug("同步状态数据【" + data.toString() + "】");
         } catch (Exception e) {

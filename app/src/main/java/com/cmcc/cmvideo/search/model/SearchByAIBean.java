@@ -15,6 +15,9 @@ public class SearchByAIBean {
     private int messageType;
     private String messageFrom;
     private List<TppData.DetailsListBean> videoList;
+    private List<TppData.MatchBean> matchList;
+
+
 
     public SearchByAIBean() {
     }
@@ -28,6 +31,18 @@ public class SearchByAIBean {
         this.messageType = messageType;
         this.messageFrom = messageFrom;
         this.videoList = videoList;
+    }
+
+    /**
+     * 体育赛事模块
+     * @param messageType
+     * @param matchList
+     * @param messageFrom
+     */
+    public SearchByAIBean(int messageType,  List<TppData.MatchBean> matchList,String messageFrom) {
+        this.messageType = messageType;
+        this.matchList = matchList;
+        this.messageFrom = messageFrom;
     }
 
     public String getDeailsJson() {
@@ -68,5 +83,13 @@ public class SearchByAIBean {
 
     public void setVideoList(List<TppData.DetailsListBean> videoList) {
         this.videoList = videoList;
+    }
+
+    public List<TppData.MatchBean> getMatchList() {
+        return matchList;
+    }
+
+    public void setMatchList(List<TppData.MatchBean> matchList) {
+        this.matchList = matchList;
     }
 }

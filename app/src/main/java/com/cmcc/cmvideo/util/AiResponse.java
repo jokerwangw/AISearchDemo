@@ -141,6 +141,21 @@ public class AiResponse {
 
 
     /**
+     * 赛事列表单个反馈语
+     */
+    private List<Response> matchSingle = new ArrayList<Response>(Arrays.asList(
+            new Response("已为你找到比赛", RespType.NORMAL)
+    ));
+
+    /**
+     * 赛事列表反馈语
+     */
+    private List<Response> matchList = new ArrayList<Response>(Arrays.asList(
+            new Response("已为你找到%s的比赛", RespType.NORMAL)
+    ));
+
+
+    /**
      * 换一个 没有数据了 反馈语
      *
      * @return
@@ -246,6 +261,37 @@ public class AiResponse {
     }
 
     /**
+     * 获取单个赛事反馈语
+     * @return
+     */
+    public Response getMatchSingle(){
+        Response target = null;
+        try {
+            target = (Response) matchSingle.get(random.nextInt(matchSingle.size())).clone();
+        } catch (CloneNotSupportedException c) {
+            c.printStackTrace();
+        }
+        return target;
+    }
+
+
+    /**
+     * 获取赛事列表反馈语
+     * @return
+     */
+    public Response getMatchList(){
+        Response target = null;
+        try {
+            target = (Response) matchList.get(random.nextInt(matchList.size())).clone();
+        } catch (CloneNotSupportedException c) {
+            c.printStackTrace();
+        }
+        return target;
+    }
+
+
+
+    /**
      * 获取休眠反馈语
      *
      * @return
@@ -269,7 +315,6 @@ public class AiResponse {
      * 当satisfy返回false时语音播报
      */
     public Response getSatisfyResponse() {
-//        return falseSatisfyList.get(0);
         Response target = null;
         try {
             target = (Response) falseSatisfyList.get(random.nextInt(falseSatisfyList.size())).clone();

@@ -124,6 +124,7 @@ public class TppData {
                  * title : 18/19赛季西甲第9轮全场集锦：巴塞罗那4:2塞维利亚
                  * type : 1
                  * winner : 7724250
+                 * action:跳转路由
                  */
 
                 public int CompetitionCountDownTime;
@@ -156,6 +157,7 @@ public class TppData {
                 public String title;
                 public String type;
                 public String winner;
+                public ActionBean action;
 
             }
         }
