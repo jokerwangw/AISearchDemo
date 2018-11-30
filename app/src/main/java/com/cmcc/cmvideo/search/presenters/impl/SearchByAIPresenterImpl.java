@@ -13,6 +13,7 @@ import com.cmcc.cmvideo.MainActivity;
 import com.cmcc.cmvideo.MyApplication;
 import com.cmcc.cmvideo.base.AbstractPresenter;
 import com.cmcc.cmvideo.base.ApplicationContext;
+import com.cmcc.cmvideo.base.BaseRecyclerAdapter;
 import com.cmcc.cmvideo.base.Executor;
 import com.cmcc.cmvideo.base.MainThread;
 import com.cmcc.cmvideo.search.LookMoreActivity;
@@ -85,6 +86,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     private SearchByAIBean lastVideoSearchByAIBean = null;
     private String lastTextData = "";
     private boolean isPauseing = false;
+    private String matchListData = "";
 
 
     public enum CategoryType {
@@ -216,6 +218,14 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
     private void onTppResult(String result) {
         NlpData nlpData = gson.fromJson(result, NlpData.class);
+        //五大联赛
+        if (AiuiConstants.SPORTS_FOOTBALL.equals(nlpData.service)) {
+            Logger.debug(nlpData.semantic.get(0).intent);
+            if (AiuiConstants.QUERY_INTENT.equals(nlpData.semantic.get(0).intent) || AiuiConstants.SPORTS_PLAY.equals(nlpData.semantic.get(0).intent)) {
+                doSports(nlpData);
+            }
+        }
+
         if (nlpData.semantic != null &&
                 !isPauseing &&
                 AiuiConstants.VIEWCMD_INTENT.equals(nlpData.semantic.get(0).intent)) {
@@ -277,122 +287,99 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         AiResponse.Response responseTts = null;
         Map<String, String> map = formatSlotsToMap(nlpData.semantic.get(0).slots);
         lastVideoData = result;
-        //        lastResponseVideoTitle = makeCardTitle(map);
+        matchListData = result;
         String msg = nlpData.answer != null ? nlpData.answer.text : "";
         AiResponse.Response response = null;
+
         if (AiuiConstants.QUERY_INTENT.equals(nlpData.semantic.get(0).intent)) {
             int messageType = MESSAGE_TYPE_NORMAL;
-            if (hasVideoData(nlpData)) {
-                // 判断意图是使用哪个卡片展示
-                if (isCategory(map)) {
-                    //当返回字段satisfy字段为true时正常展示数据播报，为false时展示兜底数据结构不变且播报
-                    if (nlpData.data.lxresult.satisfy) {
-                        lastResponseVideoTitle = makeCardTitle(map);
-                        response = AiResponse.getInstance().getGuessWhatYouLike();
-                    } else {
-                        response = AiResponse.getInstance().getSatisfyResponse();
-                    }
-                    boolean hasSubserials = true;
-                    if (checkCategory(map, CategoryType.MOVIE) || checkCategory(map, CategoryType.TELEVISION)) {
-                        messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
-                    } else if ((checkCategory(map, CategoryType.TV) || checkCategory(map, CategoryType.DOC) || checkCategory(map, CategoryType.CARTOON)) && hasSubserials) {
-                        messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
-                    } else if (checkCategory(map, CategoryType.VARIETY) && hasSubserials) {
-                        messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
-                    }
-
-                    // 电影，电视剧，记录片，卡通，综艺
-                    //MOVIE, TV, DOC, CARTOON, VARIETY
-                    //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
-                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.MOVIE)) {
-                        response.response = String.format(response.response, "电影");
-                    }
-
-                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.MOVIE)) {
-                        response.response = String.format(response.response, "电影");
-                    }
-
-                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.TELEVISION)) {
-                        response.response = String.format(response.response, "视频");
-                    }
-
-                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.TV)) {
-                        response.response = String.format(response.response, "电视剧");
-                    }
-
-                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.DOC)) {
-                        response.response = String.format(response.response, "纪录片");
-                    }
-
-                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.CARTOON)) {
-                        response.response = String.format(response.response, "动漫");
-                    }
-
-                    if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.VARIETY)) {
-                        response.response = String.format(response.response, "综艺");
-                    }
-                    //播报电影名称的反馈语
-                    if (response.respType == AiResponse.RespType.VIDEO_NAME) {
-                        response.response = String.format(response.response, nlpData.data.lxresult.data.detailslist.get(0).name);
-                    }
-                    responseTts = response;
+            // 判断意图是使用哪个卡片展示
+            if (isCategory(map)) {
+                //当返回字段satisfy字段为true时正常展示数据播报，为false时展示兜底数据结构不变且播报
+                if (nlpData.data.lxresult.satisfy) {
+                    lastResponseVideoTitle = makeCardTitle(map);
+                    response = AiResponse.getInstance().getGuessWhatYouLike();
                 } else {
-                    if (nlpData.data.lxresult.satisfy) {
-                        lastResponseVideoTitle = makeCardTitle(map);
-                        response = AiResponse.getInstance().getEveryoneSee();
-                    } else {
-                        response = AiResponse.getInstance().getSatisfyResponse();
-                    }
-                    messageType = MESSAGE_TYPE_EVERYONE_IS_WATCHING;
-                    if (response.respType == AiResponse.RespType.VIDEO_TYPE) {
-                        //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
-                        if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "电影".equals(map.get(AiuiConstants.VIDEO_CATEGORY))) {
-                            response.response = String.format(response.response, "电影");
-                        } else {
-                            if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "电视剧".equals(map.get(AiuiConstants.VIDEO_CATEGORY))) {
-                                response.response = String.format(response.response, "电视剧");
-                            } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && ("综艺".equals(map.get(AiuiConstants.VIDEO_CATEGORY)) || "综艺".equals(map.get(AiuiConstants.VIDEO_TAG)))) {
-                                response.response = String.format(response.response, "综艺");
-                            } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "动漫".equals(map.get(AiuiConstants.VIDEO_CATEGORY))) {
-                                response.response = String.format(response.response, "动漫");
-                            } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "片".equals(map.get(AiuiConstants.VIDEO_CATEGORY))
-                                    && "纪录".equals(map.get(AiuiConstants.VIDEO_TAG))) {
-                                response.response = String.format(response.response, "纪录片");
-                            } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "片".equals(map.get(AiuiConstants.VIDEO_CATEGORY))
-                                    && "动画".equals(map.get(AiuiConstants.VIDEO_TAG))) {
-                                response.response = String.format(response.response, "动画片");
-                            } else {
-                                response.response = String.format(response.response, "视频");
-                            }
-
-                        }
-                    }
-                    responseTts = response;
+                    response = AiResponse.getInstance().getSatisfyResponse();
                 }
+                boolean hasSubserials = true;
+                if (checkCategory(map, CategoryType.MOVIE) || checkCategory(map, CategoryType.TELEVISION)) {
+                    messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
+                } else if ((checkCategory(map, CategoryType.TV) || checkCategory(map, CategoryType.DOC) || checkCategory(map, CategoryType.CARTOON)) && hasSubserials) {
+                    messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
+                } else if (checkCategory(map, CategoryType.VARIETY) && hasSubserials) {
+                    messageType = MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
+                }
+
+                // 电影，电视剧，记录片，卡通，综艺
+                //MOVIE, TV, DOC, CARTOON, VARIETY
+                //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
+                if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.MOVIE)) {
+                    response.response = String.format(response.response, "电影");
+                }
+
+                if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.MOVIE)) {
+                    response.response = String.format(response.response, "电影");
+                }
+
+                if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.TELEVISION)) {
+                    response.response = String.format(response.response, "视频");
+                }
+
+                if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.TV)) {
+                    response.response = String.format(response.response, "电视剧");
+                }
+
+                if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.DOC)) {
+                    response.response = String.format(response.response, "纪录片");
+                }
+
+                if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.CARTOON)) {
+                    response.response = String.format(response.response, "动漫");
+                }
+
+                if (response.respType == AiResponse.RespType.VIDEO_TYPE && checkCategory(map, CategoryType.VARIETY)) {
+                    response.response = String.format(response.response, "综艺");
+                }
+                //播报电影名称的反馈语
+                if (response.respType == AiResponse.RespType.VIDEO_NAME) {
+                    response.response = String.format(response.response, nlpData.data.lxresult.data.detailslist.get(0).name);
+                }
+                responseTts = response;
             } else {
-                // TODO: 2018/11/26
-                //接入体育赛事的数据处理  此时没有视频数据相关数据字段
-                if (null != nlpData.data.lxresult.data.match && null != nlpData.data.lxresult.data.match.matchList) {
-                    if (nlpData.data.lxresult.data.match.matchList.size() == 1) {
-                        //赛事列表如果只有一个的话 就展示一个的模板
-                        messageType = MESSAGE_TYPE_VIDEO_OF_SPORTS ;
-                        AiResponse.Response matchSResponse = AiResponse.getInstance().getMatchSingle();
-                        aiuiService.tts(matchSResponse.response);
-                        sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
-
+                if (nlpData.data.lxresult.satisfy) {
+                    lastResponseVideoTitle = makeCardTitle(map);
+                    response = AiResponse.getInstance().getEveryoneSee();
+                } else {
+                    response = AiResponse.getInstance().getSatisfyResponse();
+                }
+                messageType = MESSAGE_TYPE_EVERYONE_IS_WATCHING;
+                if (response.respType == AiResponse.RespType.VIDEO_TYPE) {
+                    //用户问的是电影 ，文字部分就是电影 ；用户没有指定某分类，文字部分就影是视频
+                    if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "电影".equals(map.get(AiuiConstants.VIDEO_CATEGORY))) {
+                        response.response = String.format(response.response, "电影");
                     } else {
-                        //赛事列表展示
-                        messageType = MESSAGE_TYPE_LIST_OF_SPORTS ;
-                        AiResponse.Response matchLResponse = AiResponse.getInstance().getMatchList();
-                        aiuiService.tts(matchLResponse.response);
-                        sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
+                        if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "电视剧".equals(map.get(AiuiConstants.VIDEO_CATEGORY))) {
+                            response.response = String.format(response.response, "电视剧");
+                        } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && ("综艺".equals(map.get(AiuiConstants.VIDEO_CATEGORY)) || "综艺".equals(map.get(AiuiConstants.VIDEO_TAG)))) {
+                            response.response = String.format(response.response, "综艺");
+                        } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "动漫".equals(map.get(AiuiConstants.VIDEO_CATEGORY))) {
+                            response.response = String.format(response.response, "动漫");
+                        } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "片".equals(map.get(AiuiConstants.VIDEO_CATEGORY))
+                                && "纪录".equals(map.get(AiuiConstants.VIDEO_TAG))) {
+                            response.response = String.format(response.response, "纪录片");
+                        } else if (map.containsKey(AiuiConstants.VIDEO_CATEGORY) && "片".equals(map.get(AiuiConstants.VIDEO_CATEGORY))
+                                && "动画".equals(map.get(AiuiConstants.VIDEO_TAG))) {
+                            response.response = String.format(response.response, "动画片");
+                        } else {
+                            response.response = String.format(response.response, "视频");
+                        }
 
                     }
-
                 }
-
-
+                responseTts = response;
             }
+
             if (messageType == MESSAGE_TYPE_NORMAL && nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text)) {
                 aiuiService.tts(nlpData.answer.text);
             }
@@ -1095,15 +1082,45 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
      * @param matchList   赛事数据
      * @param msgFrom     AI or User
      */
-    private void sendMessage(int messageType, List<TppData.MatchBean> matchList, String msgFrom) {
+    private void sendSportsMessage(int messageType, List<TppData.MatchBean.MatchListBean> matchList, String msgFrom) {
         SearchByAIBean searchByAIBean = new SearchByAIBean(messageType, matchList, msgFrom);
-        if (matchList != null && matchList.size() > 0) {
-            lastVideoSearchByAIBean = searchByAIBean;
-        }
-        List<SearchByAIBean> messageList = new ArrayList<SearchByAIBean>();
-        searchByAIBean.setDeailsJson(lastVideoData);
+        List<SearchByAIBean> messageList = new ArrayList<>();
+        searchByAIBean.setDeailsJson(matchListData);
         messageList.add(searchByAIBean);
         EventBus.getDefault().post(new SearchByAIEventBean(messageList));
+    }
+
+    /**
+     * 体育赛事数据处理
+     *
+     * @param nlpData
+     */
+    private void doSports(NlpData nlpData) {
+        AiResponse.Response response = null;
+        if (null != nlpData.data && null != nlpData.data.lxresult
+                && null != nlpData.data.lxresult.data
+                && null != nlpData.data.lxresult.data.match
+                && null != nlpData.data.lxresult.data.match.matchList) {
+            //如果后端返回拼接好的播报语就取后端的，比如查两个队的比分
+            if (!TextUtils.isEmpty(nlpData.data.lxresult.data.match.CompetitionBroadCastText)) {
+                response.response = nlpData.data.lxresult.data.match.CompetitionBroadCastText;
+            }
+
+            if (nlpData.data.lxresult.data.match.matchList.size() == 1) {
+                //赛事列表如果只有一个的话 就展示一个的模板
+                response = AiResponse.getInstance().getMatchSingle();
+                sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
+                sendSportsMessage(MESSAGE_TYPE_VIDEO_OF_SPORTS, nlpData.data.lxresult.data.match.matchList, MESSAGE_FROM_AI);
+
+            } else {
+                //赛事列表展示
+                response = AiResponse.getInstance().getMatchList();
+                sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
+                sendSportsMessage(MESSAGE_TYPE_LIST_OF_SPORTS, nlpData.data.lxresult.data.match.matchList, MESSAGE_FROM_AI);
+            }
+            //语音播报
+            aiuiService.tts(response.response);
+        }
     }
 
 

@@ -187,6 +187,7 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SearchByAIEventBean event) {
         if (null != event) {
+            Logger.debug("SearchByAIEventBean=","SearchByAIEventBean=" + event);
             setAdapterData(false, event.getSearchByAIBeanList());
         }
     }

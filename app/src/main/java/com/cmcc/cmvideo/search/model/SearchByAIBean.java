@@ -15,7 +15,7 @@ public class SearchByAIBean {
     private int messageType;
     private String messageFrom;
     private List<TppData.DetailsListBean> videoList;
-    private List<TppData.MatchBean> matchList;
+    private List<TppData.MatchBean.MatchListBean> matchList;
 
 
 
@@ -39,7 +39,7 @@ public class SearchByAIBean {
      * @param matchList
      * @param messageFrom
      */
-    public SearchByAIBean(int messageType,  List<TppData.MatchBean> matchList,String messageFrom) {
+    public SearchByAIBean(int messageType,  List<TppData.MatchBean.MatchListBean> matchList,String messageFrom) {
         this.messageType = messageType;
         this.matchList = matchList;
         this.messageFrom = messageFrom;
@@ -85,11 +85,11 @@ public class SearchByAIBean {
         this.videoList = videoList;
     }
 
-    public List<TppData.MatchBean> getMatchList() {
+    public List<TppData.MatchBean.MatchListBean> getMatchList() {
         return matchList;
     }
 
-    public void setMatchList(List<TppData.MatchBean> matchList) {
+    public void setMatchList(List<TppData.MatchBean.MatchListBean> matchList) {
         this.matchList = matchList;
     }
 }

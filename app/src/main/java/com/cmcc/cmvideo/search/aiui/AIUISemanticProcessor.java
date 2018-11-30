@@ -201,9 +201,23 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
             case AiuiConstants.JOKE_SERVICE:
                 intentJokeQuery(mData);
                 break;
+            case AiuiConstants.SPORTS_WATCH:
+                intentFootBall(mData);
+                break;
 
             default:
                 break;
+        }
+    }
+
+    /**
+     * 赛事查询
+     * @param nlpData
+     */
+    private void intentFootBall(NlpData nlpData) {
+        if ((nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text))) {
+            aiuiService.tts(nlpData.getAnswer().text);
+            sendMessage(nlpData.getAnswer().text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
         }
     }
 
