@@ -372,9 +372,9 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             } else {
                 // TODO: 2018/11/26
                 //接入体育赛事的数据处理  此时没有视频数据相关数据字段
-                if (null != nlpData.data.match && null != nlpData.data.match.matchList) {
-                    if (nlpData.data.match.matchList.size() == 1) {
-                        //赛事列表如果只有一个的话 就展示一个的
+                if (null != nlpData.data.lxresult.data.match && null != nlpData.data.lxresult.data.match.matchList) {
+                    if (nlpData.data.lxresult.data.match.matchList.size() == 1) {
+                        //赛事列表如果只有一个的话 就展示一个的模板
                         messageType = MESSAGE_TYPE_VIDEO_OF_SPORTS ;
                         AiResponse.Response matchSResponse = AiResponse.getInstance().getMatchSingle();
                         aiuiService.tts(matchSResponse.response);
