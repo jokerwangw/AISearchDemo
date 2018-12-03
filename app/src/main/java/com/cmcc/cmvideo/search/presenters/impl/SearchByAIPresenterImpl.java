@@ -1157,9 +1157,14 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
                 sendSportsMessage(MESSAGE_TYPE_LIST_OF_SPORTS, nlpData.data.lxresult.data.match.matchList, MESSAGE_FROM_AI);
             }
-            //语音播报
-            aiuiService.tts(response.response);
+        } else {
+            //没有比赛数据
+            response = AiResponse.getInstance().getNoMatchList();
+            sendMessage(response.response, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
+
         }
+        //语音播报
+        aiuiService.tts(response.response);
     }
 
     /**

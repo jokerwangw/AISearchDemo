@@ -151,7 +151,14 @@ public class AiResponse {
      * 赛事列表反馈语
      */
     private List<Response> matchList = new ArrayList<Response>(Arrays.asList(
-            new Response("已为你找到%s的比赛", RespType.NORMAL)
+            new Response("已为你找到以下比赛信息", RespType.NORMAL)
+    ));
+
+    /**
+     * 没有查询到赛事信息
+     */
+    private List<Response> noMatchData = new ArrayList<>(Arrays.asList(
+            new Response("抱歉小主，暂未查询到你要的信息呢",RespType.NORMAL)
     ));
 
 
@@ -288,6 +295,22 @@ public class AiResponse {
         }
         return target;
     }
+
+
+    /**
+     * 获取查询不到赛事信息的反馈语
+     * @return
+     */
+    public Response getNoMatchList(){
+        Response target = null;
+        try {
+            target = (Response) noMatchData.get(random.nextInt(matchList.size())).clone();
+        } catch (CloneNotSupportedException c) {
+            c.printStackTrace();
+        }
+        return target;
+    }
+
 
 
 

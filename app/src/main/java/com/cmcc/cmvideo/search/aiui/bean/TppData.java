@@ -125,6 +125,9 @@ public class TppData {
                  * type : 1
                  * winner : 7724250
                  * action:跳转路由
+                 * highResolutionH：赛事节目图片
+                 * duration:节目时长
+                 * explanationName:节目名称
                  */
 
                 public int CompetitionCountDownTime;
@@ -158,6 +161,9 @@ public class TppData {
                 public String type;
                 public String winner;
                 public ActionBean action;
+                public String highResolutionH;
+                public String duration;
+                public String explanationName;
 
             }
         }
