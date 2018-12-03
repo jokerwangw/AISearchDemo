@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -7,85 +8,88 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimen_80dp"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        tools:ignore="UselessParent">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1.5"
+            android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tv_match_start_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/dimen_3dp"
-                android:text="20:23"
+                android:layout_marginStart="@dimen/dimen_3dp"
                 android:textColor="#ff333333"
-                android:textSize="@dimen/dimen_15dp" />
+                android:textSize="@dimen/dimen_15dp"
+                tools:ignore="SpUsage" />
 
             <TextView
+                android:id="@+id/tv_stage_round_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/dimen_3dp"
+                android:layout_marginStart="@dimen/dimen_3dp"
                 android:layout_marginTop="@dimen/dimen_5dp"
-                android:text="中超联赛第11轮"
                 android:textColor="#ff848494"
-                android:textSize="@dimen/dimen_10dp" />
+                android:textSize="@dimen/dimen_10dp"
+                tools:ignore="SpUsage" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2.5"
+            android:layout_marginEnd="@dimen/dimen_15dp"
+            android:layout_marginStart="@dimen/dimen_8dp"
+            android:layout_weight="2"
             android:orientation="vertical">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/dimen_8dp">
+                android:layout_height="wrap_content">
 
-                <ImageView
+                <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
                     android:id="@+id/im_team_badge_one"
                     android:layout_width="@dimen/dimen_15dp"
                     android:layout_height="@dimen/dimen_15dp"
-                    android:layout_centerVertical="true"
-                    android:src="@mipmap/icon_normal_team_badge" />
+                    android:layout_centerVertical="true" />
 
                 <TextView
+                    android:id="@+id/tv_team_name_one"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="@dimen/dimen_5dp"
-                    android:layout_toRightOf="@+id/im_team_badge_one"
-                    android:text="那不勒斯"
+                    android:layout_marginStart="@dimen/dimen_5dp"
+                    android:layout_toEndOf="@+id/im_team_badge_one"
                     android:textColor="#ff333333"
-                    android:textSize="@dimen/dimen_15dp" />
+                    android:textSize="@dimen/dimen_15dp"
+                    tools:ignore="RelativeOverlap,SpUsage" />
 
                 <TextView
+                    android:id="@+id/tv_team_score_one"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:textColor="#ff000000"
-                    android:textSize="@dimen/dimen_16dp" />
+                    android:textSize="@dimen/dimen_16dp"
+                    tools:ignore="RelativeOverlap,SpUsage" />
 
-                <ImageView
-                    android:id="@+id/im_team_score"
+                <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
+                    android:id="@+id/im_team_score_one"
                     android:layout_width="@dimen/dimen_15dp"
                     android:layout_height="@dimen/dimen_15dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="@dimen/dimen_15dp"
-                    android:src="@mipmap/icon_team_score" />
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true" />
             </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/dimen_8dp"
                 android:layout_marginTop="@dimen/dimen_10dp">
 
-                <ImageView
+                <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
                     android:id="@+id/im_team_badge_two"
                     android:layout_width="@dimen/dimen_15dp"
                     android:layout_height="@dimen/dimen_15dp"
@@ -93,49 +97,51 @@
                     android:src="@mipmap/icon_normal_team_badge" />
 
                 <TextView
+                    android:id="@+id/tv_team_name_two"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="@dimen/dimen_5dp"
-                    android:layout_toRightOf="@+id/im_team_badge_two"
-                    android:text="萨索洛"
+                    android:layout_marginStart="@dimen/dimen_5dp"
+                    android:layout_toEndOf="@+id/im_team_badge_two"
                     android:textColor="#ff333333"
-                    android:textSize="@dimen/dimen_15dp" />
+                    android:textSize="@dimen/dimen_15dp"
+                    tools:ignore="RelativeOverlap,SpUsage" />
 
                 <TextView
+                    android:id="@+id/tv_team_score_two"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:textColor="#ff000000"
-                    android:textSize="@dimen/dimen_15dp" />
+                    android:textSize="@dimen/dimen_15dp"
+                    tools:ignore="RelativeOverlap,SpUsage" />
 
-                <ImageView
+                <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
+                    android:id="@+id/im_team_score_two"
                     android:layout_width="@dimen/dimen_15dp"
                     android:layout_height="@dimen/dimen_15dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="@dimen/dimen_15dp"
-                    android:src="@mipmap/icon_team_score" />
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true" />
             </RelativeLayout>
         </LinearLayout>
 
         <View
             android:layout_width="@dimen/dimen_2dp"
-            android:layout_height="@dimen/dimen_60dp"
+            android:layout_height="@dimen/dimen_55dp"
             android:background="#EFEFEF" />
 
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1.5">
+            android:layout_weight="1">
 
-            <ImageView
-                android:layout_width="@dimen/dimen_60dp"
+            <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
+                android:id="@+id/im_match_state"
+                android:layout_width="@dimen/dimen_57dp"
                 android:layout_height="@dimen/dimen_25dp"
                 android:layout_centerInParent="true"
-                android:layout_centerVertical="true"
-                android:src="@mipmap/icon_look_back" />
+                android:layout_centerVertical="true" />
         </RelativeLayout>
     </LinearLayout>
 </RelativeLayout>

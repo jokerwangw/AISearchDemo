@@ -143,17 +143,18 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
     @Override
     public void onInitSearchByAIListData(List<SearchByAIBean> searchByAIBeanList) {
         if (null != mView) {
+
             //TODO 测试代码，模拟数据
-            for (int i = 0; i < searchByAIBeanList.size(); i++) {
-                if (searchByAIBeanList.get(i).getMessageType() == 9) {
-                    SearchByAIBean searchByAIBean = searchByAIBeanList.get(i);
-                    int type = 0;
-                    //设置默认type为0
-                    searchByAIBean.setMatchListClickType(type);
-                    //设置type对应的日期
-                    searchByAIBean.setMatchListCurDate(getCurDate(type));
-                }
-            }
+            //            for (int i = 0; i < searchByAIBeanList.size(); i++) {
+            //                if (searchByAIBeanList.get(i).getMessageType() == 9) {
+            //                    SearchByAIBean searchByAIBean = searchByAIBeanList.get(i);
+            //                    int type = 0;
+            //                    //设置默认type为0
+            //                    searchByAIBean.setMatchListClickType(type);
+            //                    //设置type对应的日期
+            //                    searchByAIBean.setMatchListCurDate(getCurDate(type));
+            //                }
+            //            }
             //TODO 测试代码，模拟数据
 
             mView.showInitList(searchByAIBeanList);

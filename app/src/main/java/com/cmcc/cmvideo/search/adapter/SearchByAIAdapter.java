@@ -910,17 +910,31 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
      * 展示体育赛事列表
      */
     private void showSportsList(ItemSearchByAIListOfSportViewHolder itemSearchByAIListOfSportViewHolder, SearchByAIBean searchByAIBean) {
-        if (0 == searchByAIBean.getMatchListClickType() || -2 == searchByAIBean.getMatchListClickType() || 3 == searchByAIBean.getMatchListClickType()) {
-            itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setVisibility(View.VISIBLE);
-            itemSearchByAIListOfSportViewHolder.llEmptyView.setVisibility(View.GONE);
+        if (null != searchByAIBean.getMatchList() && !searchByAIBean.getMatchList().isEmpty()) {
+            int pos = -1;
+            for (int i = 0; i < searchByAIBean.getMatchList().size(); i++) {
+                if (searchByAIBean.getMatchListClickType() == searchByAIBean.getMatchList().get(i).CompetitionTimeDesc) {
+                    pos = i;
+                    break;
+                }
+            }
 
-            SportsVideoAdapter sportsVideoAdapter = new SportsVideoAdapter(mContext, itemSportsVideoClickListener);
-            WrapContentLinearLayoutManager wrapContentLinearLayoutManager = new WrapContentLinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-            itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setHasFixedSize(true);
-            itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setItemViewCacheSize(100);
-            itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setLayoutManager(wrapContentLinearLayoutManager);
-            itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setAdapter(sportsVideoAdapter);
-            sportsVideoAdapter.bindData(new ArrayList<TppData.MatchBean.MatchListBean.MatchEventInfoBean>(), true);
+            if (-1 != pos) {
+                itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setVisibility(View.VISIBLE);
+                itemSearchByAIListOfSportViewHolder.llEmptyView.setVisibility(View.GONE);
+
+                SportsVideoAdapter sportsVideoAdapter = new SportsVideoAdapter(mContext, itemSportsVideoClickListener);
+                WrapContentLinearLayoutManager wrapContentLinearLayoutManager = new WrapContentLinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+                itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setHasFixedSize(true);
+                itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setItemViewCacheSize(100);
+                itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setLayoutManager(wrapContentLinearLayoutManager);
+                itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setAdapter(sportsVideoAdapter);
+
+                sportsVideoAdapter.bindData(searchByAIBean.getMatchList().get(pos).matchEventInfo, true);
+            } else {
+                itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setVisibility(View.GONE);
+                itemSearchByAIListOfSportViewHolder.llEmptyView.setVisibility(View.VISIBLE);
+            }
         } else {
             itemSearchByAIListOfSportViewHolder.sportsListRecyclerView.setVisibility(View.GONE);
             itemSearchByAIListOfSportViewHolder.llEmptyView.setVisibility(View.VISIBLE);
