@@ -47,35 +47,33 @@ public class SportsVideoAdapter extends BaseRecyclerAdapter<TppData.MatchBean.Ma
             itemSportsVideoViewHolder.imTeamBadgeTwo.setImageURI(matchEventInfoBean.confrontTeamTwoimage);
             itemSportsVideoViewHolder.tvTeamNameTwo.setText(matchEventInfoBean.confrontTeamTwoname);
 
-            if (!TextUtils.isEmpty(matchEventInfoBean.startTime) && !TextUtils.isEmpty(matchEventInfoBean.endTime)) {
-                if (new Date().getTime() < Long.valueOf(matchEventInfoBean.startTime)) {
-                    //预约
-                    itemSportsVideoViewHolder.tvTeamScoreOne.setVisibility(View.GONE);
-                    itemSportsVideoViewHolder.imTeamScoreOne.setVisibility(View.VISIBLE);
-                    itemSportsVideoViewHolder.tvTeamScoreTwo.setVisibility(View.GONE);
-                    itemSportsVideoViewHolder.imTeamScoreTwo.setVisibility(View.VISIBLE);
-                    itemSportsVideoViewHolder.imTeamScoreOne.setImageURI(Uri.parse("res://" + mContext.getPackageName() + File.separator + R.mipmap.icon_team_score));
-                    itemSportsVideoViewHolder.imTeamScoreTwo.setImageURI(Uri.parse("res://" + mContext.getPackageName() + File.separator + R.mipmap.icon_team_score));
-                    itemSportsVideoViewHolder.imMatchState.setImageURI(Uri.parse("res://" + mContext.getPackageName() + File.separator + R.mipmap.icon_bespeak));
-                } else if (new Date().getTime() >= Long.valueOf(matchEventInfoBean.endTime) && new Date().getTime() < Long.valueOf(matchEventInfoBean.endTime)) {
-                    //直播中
-                    itemSportsVideoViewHolder.tvTeamScoreOne.setVisibility(View.VISIBLE);
-                    itemSportsVideoViewHolder.imTeamScoreOne.setVisibility(View.GONE);
-                    itemSportsVideoViewHolder.tvTeamScoreTwo.setVisibility(View.VISIBLE);
-                    itemSportsVideoViewHolder.imTeamScoreTwo.setVisibility(View.GONE);
-                    itemSportsVideoViewHolder.tvTeamScoreOne.setText(matchEventInfoBean.confrontTeamOnescore);
-                    itemSportsVideoViewHolder.tvTeamScoreTwo.setText(matchEventInfoBean.confrontTeamTwoscore);
-                    itemSportsVideoViewHolder.imMatchState.setImageURI(Uri.parse("res://" + mContext.getPackageName() + File.separator + R.mipmap.icon_living));
-                } else {
-                    //回看
-                    itemSportsVideoViewHolder.tvTeamScoreOne.setVisibility(View.VISIBLE);
-                    itemSportsVideoViewHolder.imTeamScoreOne.setVisibility(View.GONE);
-                    itemSportsVideoViewHolder.tvTeamScoreTwo.setVisibility(View.VISIBLE);
-                    itemSportsVideoViewHolder.imTeamScoreTwo.setVisibility(View.GONE);
-                    itemSportsVideoViewHolder.tvTeamScoreOne.setText(matchEventInfoBean.confrontTeamOnescore);
-                    itemSportsVideoViewHolder.tvTeamScoreTwo.setText(matchEventInfoBean.confrontTeamTwoscore);
-                    itemSportsVideoViewHolder.imMatchState.setImageURI(Uri.parse("res://" + mContext.getPackageName() + File.separator + R.mipmap.icon_look_back));
-                }
+            if (2 == matchEventInfoBean.CompetitionStatus) {
+                //预约
+                itemSportsVideoViewHolder.tvTeamScoreOne.setVisibility(View.GONE);
+                itemSportsVideoViewHolder.imTeamScoreOne.setVisibility(View.VISIBLE);
+                itemSportsVideoViewHolder.tvTeamScoreTwo.setVisibility(View.GONE);
+                itemSportsVideoViewHolder.imTeamScoreTwo.setVisibility(View.VISIBLE);
+                itemSportsVideoViewHolder.imTeamScoreOne.setImageURI(Uri.parse("res://" + mContext.getPackageName() + File.separator + R.mipmap.icon_team_score));
+                itemSportsVideoViewHolder.imTeamScoreTwo.setImageURI(Uri.parse("res://" + mContext.getPackageName() + File.separator + R.mipmap.icon_team_score));
+                itemSportsVideoViewHolder.imMatchState.setImageURI(Uri.parse("res://" + mContext.getPackageName() + File.separator + R.mipmap.icon_bespeak));
+            } else if (1 == matchEventInfoBean.CompetitionStatus) {
+                //直播中
+                itemSportsVideoViewHolder.tvTeamScoreOne.setVisibility(View.VISIBLE);
+                itemSportsVideoViewHolder.imTeamScoreOne.setVisibility(View.GONE);
+                itemSportsVideoViewHolder.tvTeamScoreTwo.setVisibility(View.VISIBLE);
+                itemSportsVideoViewHolder.imTeamScoreTwo.setVisibility(View.GONE);
+                itemSportsVideoViewHolder.tvTeamScoreOne.setText(matchEventInfoBean.confrontTeamOnescore);
+                itemSportsVideoViewHolder.tvTeamScoreTwo.setText(matchEventInfoBean.confrontTeamTwoscore);
+                itemSportsVideoViewHolder.imMatchState.setImageURI(Uri.parse("res://" + mContext.getPackageName() + File.separator + R.mipmap.icon_living));
+            } else if (0 == matchEventInfoBean.CompetitionStatus){
+                //回看
+                itemSportsVideoViewHolder.tvTeamScoreOne.setVisibility(View.VISIBLE);
+                itemSportsVideoViewHolder.imTeamScoreOne.setVisibility(View.GONE);
+                itemSportsVideoViewHolder.tvTeamScoreTwo.setVisibility(View.VISIBLE);
+                itemSportsVideoViewHolder.imTeamScoreTwo.setVisibility(View.GONE);
+                itemSportsVideoViewHolder.tvTeamScoreOne.setText(matchEventInfoBean.confrontTeamOnescore);
+                itemSportsVideoViewHolder.tvTeamScoreTwo.setText(matchEventInfoBean.confrontTeamTwoscore);
+                itemSportsVideoViewHolder.imMatchState.setImageURI(Uri.parse("res://" + mContext.getPackageName() + File.separator + R.mipmap.icon_look_back));
             }
         }
     }
