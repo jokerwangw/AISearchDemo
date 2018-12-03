@@ -88,7 +88,7 @@ public class TppData {
              */
 
             public String matchEventTime;
-            public String CompetitionTimeDesc ;
+            public int CompetitionTimeDesc ;
             public List<MatchBean.MatchListBean.MatchEventInfoBean> matchEventInfo;
 
 
