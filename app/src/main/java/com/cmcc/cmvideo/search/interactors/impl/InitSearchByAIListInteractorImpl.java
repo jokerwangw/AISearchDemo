@@ -47,7 +47,7 @@ public class InitSearchByAIListInteractorImpl extends AbstractInteractor impleme
         //测试测试
         //searchByAIBeanList.add(new SearchByAIBean("测试测试", MESSAGE_TYPE_LIST_OF_SPORTS, MESSAGE_FROM_AI));
         //searchByAIBeanList.add(new SearchByAIBean("测试测试", MESSAGE_TYPE_LIST_OF_SPORTS, MESSAGE_FROM_AI));
-        //searchByAIBeanList.add(new SearchByAIBean("测试测试", MESSAGE_TYPE_VIDEO_OF_SPORTS, MESSAGE_FROM_AI));
+        searchByAIBeanList.add(new SearchByAIBean("测试测试", MESSAGE_TYPE_VIDEO_OF_SPORTS, MESSAGE_FROM_AI));
 
         mMainThread.post(new Runnable() {
             @Override

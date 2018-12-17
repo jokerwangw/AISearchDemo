@@ -2,6 +2,7 @@ package com.cmcc.cmvideo.search.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -22,12 +23,15 @@ import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.interactors.ItemSearchByAIClickListener;
 import com.cmcc.cmvideo.search.interactors.ItemSportsVideoClickListener;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
+import com.cmcc.cmvideo.util.DeviceUtil;
 import com.cmcc.cmvideo.widget.NestRecyclerView;
+import com.cmcc.cmvideo.widget.SportVideoCountDownView;
 import com.cmcc.cmvideo.widget.WrapContentLinearLayoutManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -955,7 +959,50 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
      * @param searchByAIBean
      */
     private void bindItemSearchByAIVideoOfSportsView(RecyclerView.ViewHolder holder, SearchByAIBean searchByAIBean) {
+        if (null != searchByAIBean.getMatchList()
+                && !searchByAIBean.getMatchList().isEmpty()
+                && null != searchByAIBean.getMatchList().get(0)
+                && !searchByAIBean.getMatchList().get(0).matchEventInfo.isEmpty()
+                && null != searchByAIBean.getMatchList().get(0).matchEventInfo.get(0)) {
 
+            ItemSearchByAIVideoOfSportsViewHolder itemSearchByAIVideoOfSportsViewHolder = (ItemSearchByAIVideoOfSportsViewHolder) holder;
+            TppData.MatchBean.MatchListBean.MatchEventInfoBean matchEventInfoBean = searchByAIBean.getMatchList().get(0).matchEventInfo.get(0);
+            if (null != itemSearchByAIVideoOfSportsViewHolder.imVideoBgOne && null != itemSearchByAIVideoOfSportsViewHolder.imVideoBgTwo) {
+                ViewGroup.LayoutParams params1 = itemSearchByAIVideoOfSportsViewHolder.imVideoBgOne.getLayoutParams();
+                ViewGroup.LayoutParams params2 = itemSearchByAIVideoOfSportsViewHolder.imVideoBgTwo.getLayoutParams();
+                int width, height;
+
+                width = DeviceUtil.fastGetScreenWidth() - 40;
+                height = (int) (width * 421.0 / 750.0);
+                params1.width = width;
+                params1.height = height;
+                params2.width = width;
+                params2.height = height;
+
+                itemSearchByAIVideoOfSportsViewHolder.imVideoBgOne.setLayoutParams(params1);
+                itemSearchByAIVideoOfSportsViewHolder.imVideoBgTwo.setLayoutParams(params2);
+            }
+
+            if (2 == matchEventInfoBean.CompetitionStatus) {
+                //预约
+                itemSearchByAIVideoOfSportsViewHolder.rlContainerOne.setVisibility(View.GONE);
+                itemSearchByAIVideoOfSportsViewHolder.rlContainerTwo.setVisibility(View.VISIBLE);
+                //itemSearchByAIVideoOfSportsViewHolder.imVideoBgTwo.setImageURI(Uri.parse("res://" + mContext.getPackageName() + File.separator + R.mipmap.video));
+                itemSearchByAIVideoOfSportsViewHolder.imVideoBgTwo.setImageURI(matchEventInfoBean.highResolutionH);
+                itemSearchByAIVideoOfSportsViewHolder.tvVideoLiveTitle.setText(mContext.getString(R.string.aiui_video_live_title));
+                itemSearchByAIVideoOfSportsViewHolder.imTeamBadgeOne.setImageURI(matchEventInfoBean.confrontTeamOneimage);
+                itemSearchByAIVideoOfSportsViewHolder.imTeamBadgeTwo.setImageURI(matchEventInfoBean.confrontTeamTwoimage);
+                //TODO 倒计时正在开发
+                //itemSearchByAIVideoOfSportsViewHolder.sportVideoCountdownView.setMatchBeginTime(Long.valueOf(matchEventInfoBean.duration));
+            } else if (1 == matchEventInfoBean.CompetitionStatus || 0 == matchEventInfoBean.CompetitionStatus) {
+                //直播中
+                //回看
+                itemSearchByAIVideoOfSportsViewHolder.rlContainerOne.setVisibility(View.VISIBLE);
+                itemSearchByAIVideoOfSportsViewHolder.rlContainerTwo.setVisibility(View.GONE);
+                itemSearchByAIVideoOfSportsViewHolder.imVideoBgOne.setImageURI(matchEventInfoBean.highResolutionH);
+            }
+            itemSearchByAIVideoOfSportsViewHolder.tvVideoTitle.setText(matchEventInfoBean.explanationName);
+        }
     }
 
     private String getImageUrl(String imageJsonObj) {
@@ -1246,8 +1293,31 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
      * 类型：MESSAGE_TYPE_VIDEO_OF_SPORTS
      */
     private class ItemSearchByAIVideoOfSportsViewHolder extends BaseViewHolder {
+        private RelativeLayout rlContainerOne;
+        private MGSimpleDraweeView imVideoBgOne;
+
+        private RelativeLayout rlContainerTwo;
+        private MGSimpleDraweeView imVideoBgTwo;
+        private TextView tvVideoLiveTitle;
+        private SportVideoCountDownView sportVideoCountdownView;
+        private MGSimpleDraweeView imTeamBadgeOne;
+        private MGSimpleDraweeView imTeamBadgeTwo;
+
+        private TextView tvVideoTitle;
+
         private ItemSearchByAIVideoOfSportsViewHolder(View itemView) {
             super(itemView);
+            rlContainerOne = (RelativeLayout) itemView.findViewById(R.id.rl_container_one);
+            imVideoBgOne = (MGSimpleDraweeView) itemView.findViewById(R.id.im_video_bg_one);
+
+            rlContainerTwo = (RelativeLayout) itemView.findViewById(R.id.rl_container_two);
+            imVideoBgTwo = (MGSimpleDraweeView) itemView.findViewById(R.id.im_video_bg_two);
+            tvVideoLiveTitle = (TextView) itemView.findViewById(R.id.tv_video_live_title);
+            sportVideoCountdownView = (SportVideoCountDownView) itemView.findViewById(R.id.sport_video_countdown_view);
+            imTeamBadgeOne = (MGSimpleDraweeView) itemView.findViewById(R.id.im_team_badge_one);
+            imTeamBadgeTwo = (MGSimpleDraweeView) itemView.findViewById(R.id.im_team_badge_two);
+
+            tvVideoTitle = (TextView) itemView.findViewById(R.id.tv_video_title);
         }
     }
 }

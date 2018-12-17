@@ -146,13 +146,26 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 
             //TODO 测试代码，模拟数据
             //            for (int i = 0; i < searchByAIBeanList.size(); i++) {
-            //                if (searchByAIBeanList.get(i).getMessageType() == 9) {
+            //                if (searchByAIBeanList.get(i).getMessageType() == 10) {
             //                    SearchByAIBean searchByAIBean = searchByAIBeanList.get(i);
             //                    int type = 0;
             //                    //设置默认type为0
             //                    searchByAIBean.setMatchListClickType(type);
             //                    //设置type对应的日期
             //                    searchByAIBean.setMatchListCurDate(getCurDate(type));
+            //                    //设置体育数据
+            //                    List<TppData.MatchBean.MatchListBean> matchList = new ArrayList<>();
+            //                    TppData.MatchBean.MatchListBean matchListBean = new TppData.MatchBean.MatchListBean();
+            //                    List<TppData.MatchBean.MatchListBean.MatchEventInfoBean> matchEventInfo = new ArrayList<>();
+            //                    TppData.MatchBean.MatchListBean.MatchEventInfoBean matchEventInfoBean = new TppData.MatchBean.MatchListBean.MatchEventInfoBean();
+            //
+            //                    matchEventInfoBean.CompetitionStatus = 2;
+            //                    matchEventInfoBean.explanationName = "西甲第一轮";
+            //
+            //                    matchEventInfo.add(matchEventInfoBean);
+            //                    matchListBean.matchEventInfo = matchEventInfo;
+            //                    matchList.add(matchListBean);
+            //                    searchByAIBean.setMatchList(matchList);
             //                }
             //            }
             //TODO 测试代码，模拟数据

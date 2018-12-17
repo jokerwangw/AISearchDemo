@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -10,12 +11,94 @@
         android:background="@drawable/search_by_ai_list_of_sports_bg"
         android:orientation="vertical">
 
-        <FrameLayout
+        <RelativeLayout
+            android:id="@+id/rl_container_one"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dimen_150dp"
-            android:layout_marginTop="@dimen/dimen_25dp" />
+            android:layout_height="@dimen/dimen_170dp"
+            android:visibility="gone">
+
+            <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
+                android:id="@+id/im_video_bg_one"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                fresco:actualImageScaleType="fitXY"
+                fresco:viewAspectRatio="0.712" />
+
+            <ImageView
+                android:layout_width="@dimen/dimen_50dp"
+                android:layout_height="@dimen/dimen_50dp"
+                android:layout_centerInParent="true"
+                android:src="@mipmap/icon_aiui_sports_video_player" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_container_two"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_170dp">
+
+            <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
+                android:id="@+id/im_video_bg_two"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dimen_15dp"
+                android:layout_marginLeft="@dimen/dimen_20dp"
+                android:layout_marginRight="@dimen/dimen_20dp"
+                fresco:actualImageScaleType="fitXY"
+                fresco:viewAspectRatio="0.712" />
+
+            <TextView
+                android:id="@+id/tv_video_live_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_20dp"
+                android:gravity="center_horizontal"
+                android:text="@string/aiui_video_live_title"
+                android:textColor="@color/white"
+                android:textSize="@dimen/dimen_15dp" />
+
+            <com.cmcc.cmvideo.widget.SportVideoCountDownView
+                android:id="@+id/sport_video_countdown_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_video_live_title"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dimen_10dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
+                    android:id="@+id/im_team_badge_one"
+                    android:layout_width="@dimen/dimen_60dp"
+                    android:layout_height="@dimen/dimen_60dp"
+                    android:layout_centerVertical="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/dimen_20dp"
+                    android:gravity="center"
+                    android:text="VS"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/dimen_20dp" />
+
+                <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
+                    android:id="@+id/im_team_badge_two"
+                    android:layout_width="@dimen/dimen_60dp"
+                    android:layout_height="@dimen/dimen_60dp"
+                    android:layout_centerVertical="true" />
+            </LinearLayout>
+
+        </RelativeLayout>
 
         <TextView
+            android:id="@+id/tv_video_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/dimen_25dp"
@@ -23,9 +106,8 @@
             android:layout_marginRight="@dimen/dimen_10dp"
             android:layout_marginTop="@dimen/dimen_10dp"
             android:gravity="center_vertical"
-            android:text="2018年国际足球友谊赛 中国VS叙利亚"
             android:textColor="@color/sport_video_title"
-            android:textSize="@dimen/dimen_16dp" />
+            android:textSize="@dimen/dimen_15dp" />
 
     </LinearLayout>
 

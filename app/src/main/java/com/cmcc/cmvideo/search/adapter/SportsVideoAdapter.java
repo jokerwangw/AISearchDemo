@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cmcc.cmvideo.R;
@@ -34,9 +35,9 @@ public class SportsVideoAdapter extends BaseRecyclerAdapter<TppData.MatchBean.Ma
     }
 
     @Override
-    public void onBindHoder(RecyclerView.ViewHolder holder, TppData.MatchBean.MatchListBean.MatchEventInfoBean matchEventInfoBean, int position) {
+    public void onBindHoder(RecyclerView.ViewHolder holder, final TppData.MatchBean.MatchListBean.MatchEventInfoBean matchEventInfoBean, final int position) {
         if (null != holder && null != matchEventInfoBean) {
-            ItemSportsVideoViewHolder itemSportsVideoViewHolder = (ItemSportsVideoViewHolder) holder;
+            final ItemSportsVideoViewHolder itemSportsVideoViewHolder = (ItemSportsVideoViewHolder) holder;
 
             itemSportsVideoViewHolder.tvMatchStartTime.setText(matchEventInfoBean.matchStartTime);
             itemSportsVideoViewHolder.tvStageRoundName.setText(matchEventInfoBean.stageRoundName);
@@ -65,7 +66,7 @@ public class SportsVideoAdapter extends BaseRecyclerAdapter<TppData.MatchBean.Ma
                 itemSportsVideoViewHolder.tvTeamScoreOne.setText(matchEventInfoBean.confrontTeamOnescore);
                 itemSportsVideoViewHolder.tvTeamScoreTwo.setText(matchEventInfoBean.confrontTeamTwoscore);
                 itemSportsVideoViewHolder.imMatchState.setImageURI(Uri.parse("res://" + mContext.getPackageName() + File.separator + R.mipmap.icon_living));
-            } else if (0 == matchEventInfoBean.CompetitionStatus){
+            } else if (0 == matchEventInfoBean.CompetitionStatus) {
                 //回看
                 itemSportsVideoViewHolder.tvTeamScoreOne.setVisibility(View.VISIBLE);
                 itemSportsVideoViewHolder.imTeamScoreOne.setVisibility(View.GONE);
@@ -75,6 +76,24 @@ public class SportsVideoAdapter extends BaseRecyclerAdapter<TppData.MatchBean.Ma
                 itemSportsVideoViewHolder.tvTeamScoreTwo.setText(matchEventInfoBean.confrontTeamTwoscore);
                 itemSportsVideoViewHolder.imMatchState.setImageURI(Uri.parse("res://" + mContext.getPackageName() + File.separator + R.mipmap.icon_look_back));
             }
+
+            itemSportsVideoViewHolder.llContainer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (null != mItemSportsVideoClickListener) {
+                        mItemSportsVideoClickListener.clickItem(position, -1);
+                    }
+                }
+            });
+
+            itemSportsVideoViewHolder.imMatchState.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (null != mItemSportsVideoClickListener) {
+                        mItemSportsVideoClickListener.clickItem(position, matchEventInfoBean.CompetitionStatus);
+                    }
+                }
+            });
         }
     }
 
@@ -87,6 +106,7 @@ public class SportsVideoAdapter extends BaseRecyclerAdapter<TppData.MatchBean.Ma
 
     private class ItemSportsVideoViewHolder extends BaseViewHolder {
 
+        private LinearLayout llContainer;
         private TextView tvMatchStartTime;
         private TextView tvStageRoundName;
         private MGSimpleDraweeView imTeamBadgeOne;
@@ -101,6 +121,7 @@ public class SportsVideoAdapter extends BaseRecyclerAdapter<TppData.MatchBean.Ma
 
         private ItemSportsVideoViewHolder(View itemView) {
             super(itemView);
+            llContainer = (LinearLayout) itemView.findViewById(R.id.ll_container);
             tvMatchStartTime = (TextView) itemView.findViewById(R.id.tv_match_start_time);
             tvStageRoundName = (TextView) itemView.findViewById(R.id.tv_stage_round_name);
             imTeamBadgeOne = (MGSimpleDraweeView) itemView.findViewById(R.id.im_team_badge_one);
