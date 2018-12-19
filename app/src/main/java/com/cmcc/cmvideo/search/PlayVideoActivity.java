@@ -104,6 +104,10 @@ public class PlayVideoActivity extends AppCompatActivity implements PlayVideoPre
                     //换一集
                     tvResponseControl.setText(getResources().getString(R.string.vdo_change));
                     break;
+                case AiuiConstants.VDO_WHICH_EPISODE:
+                    //第几集
+                    tvResponseControl.setText(getResources().getString(R.string.vdo_episode));
+                    break;
                 default:
                     break;
             }

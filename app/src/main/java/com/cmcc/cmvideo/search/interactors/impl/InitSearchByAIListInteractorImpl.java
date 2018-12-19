@@ -12,8 +12,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_FROM_AI;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_NORMAL;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageFrom.MESSAGE_FROM_AI;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_NORMAL;
+
 
 /**
  * Created by Yyw on 2018/5/21.

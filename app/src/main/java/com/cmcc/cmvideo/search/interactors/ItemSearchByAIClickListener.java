@@ -23,7 +23,7 @@ public interface ItemSearchByAIClickListener {
     /**
      * 点击了类型为MESSAGE_TYPE_EVERYONE_IS_WATCHING的条目
      */
-    public void clickItemSearchByAIEveryoneISWatching(String speechText, String titleText);
+    public void clickItemSearchByAIEveryoneISWatching(boolean isClickMore, int position, String speechText, String titleText);
 
     /**
      * 点击了类型为MESSAGE_TYPE_I_WANT_TO_SEE的条目
@@ -62,4 +62,5 @@ public interface ItemSearchByAIClickListener {
      * 点击了类型为MESSAGE_TYPE_THE_LATEST_VIDEO的条目
      */
     public void clickItemSearchByAITheLatestVideo();
+
 }

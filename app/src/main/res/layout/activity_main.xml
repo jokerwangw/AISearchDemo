@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     tools:context="com.cmcc.cmvideo.MainActivity">
 
+    <TextView
+        android:id="@+id/tv_current_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/dimen_10dp"
+        android:text="当前版本号:"
+        android:textColor="@color/guess_you_like_movie_name"
+        android:textSize="@dimen/dimen_16dp"/>
+
     <Button
         android:id="@+id/turn_to_ai_search"
         android:layout_width="wrap_content"
@@ -38,5 +48,7 @@
         android:paddingRight="@dimen/dimen_8dp"
         android:textColor="#333333"
         android:textOff="开启语音助手"
-        android:textOn="关闭语音助手"/>
+        android:textOn="关闭语音助手"
+        android:visibility="gone"/>
+
 </RelativeLayout>

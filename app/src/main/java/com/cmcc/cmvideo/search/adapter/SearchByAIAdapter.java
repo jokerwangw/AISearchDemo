@@ -1,12 +1,11 @@
 package com.cmcc.cmvideo.search.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -26,20 +25,19 @@ import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static com.cmcc.cmvideo.util.Constants.IMG_BASE_URL;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_FROM_AI;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_APPOINTMENT;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_CAN_ASK_AI;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_EVERYONE_IS_WATCHING;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_I_WANT_TO_SEE;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_NORMAL;
-import static com.cmcc.cmvideo.util.Constants.MESSAGE_TYPE_THE_LATEST_VIDEO;
+import static com.cmcc.cmvideo.util.AiuiConstants.IMG_BASE_URL;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageFrom.MESSAGE_FROM_AI;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_APPOINTMENT;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_CAN_ASK_AI;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_EVERYONE_IS_WATCHING;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_I_WANT_TO_SEE;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_NORMAL;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_THE_LATEST_VIDEO;
 
 /**
  * Created by Yyw on 2018/5/21.
@@ -187,11 +185,33 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 });
             } else if (holder instanceof ItemSearchByAIAppointmentViewHolder) {
             } else if (holder instanceof ItemSearchByAIEveryoneISWatchingViewHolder) {
-                final List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
-                if (null == videoList) {
+                if (null == searchByAIBean) {
                     return;
                 }
+                final List<TppData.DetailsListBean> videoList = searchByAIBean.getVideoList();
+                String deailsJson = searchByAIBean.getDeailsJson();
+                if (null == videoList || TextUtils.isEmpty(deailsJson)) {
+                    return;
+                }
+
+                boolean satisfy = false;
                 final ItemSearchByAIEveryoneISWatchingViewHolder itemSearchByAIEveryoneISWatchingViewHolder = (ItemSearchByAIEveryoneISWatchingViewHolder) holder;
+
+                try {
+                    JSONObject jsonObject = new JSONObject(deailsJson);
+                    satisfy = jsonObject.optJSONObject("data").optJSONObject("lxresult").optBoolean("satisfy");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if (!satisfy || videoList.size() <= 2) {
+                    itemSearchByAIEveryoneISWatchingViewHolder.tvMovieList.setTextColor(Color.parseColor("#999999"));
+                    itemSearchByAIEveryoneISWatchingViewHolder.tvMovieList.setEnabled(false);
+                }else {
+                    itemSearchByAIEveryoneISWatchingViewHolder.tvMovieList.setTextColor(Color.parseColor("#FF4F16"));
+                    itemSearchByAIEveryoneISWatchingViewHolder.tvMovieList.setEnabled(true);
+                }
+
                 if (!TextUtils.isEmpty(searchByAIBean.getMessage())) {
                     itemSearchByAIEveryoneISWatchingViewHolder.title.setText(searchByAIBean.getMessage());
                 }
@@ -227,11 +247,38 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                     itemSearchByAIEveryoneISWatchingViewHolder.itemName3.setVisibility(View.INVISIBLE);
                 }
 
+                itemSearchByAIEveryoneISWatchingViewHolder.itemVideoOne.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (null != ItemSearchByAIClickListener) {
+                            ItemSearchByAIClickListener.clickItemSearchByAIEveryoneISWatching(false, 0, searchByAIBean.getDeailsJson(), itemSearchByAIEveryoneISWatchingViewHolder.title.getText().toString().trim());
+                        }
+                    }
+                });
+
+                itemSearchByAIEveryoneISWatchingViewHolder.itemVideoTwo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (null != ItemSearchByAIClickListener) {
+                            ItemSearchByAIClickListener.clickItemSearchByAIEveryoneISWatching(false, 1, searchByAIBean.getDeailsJson(), itemSearchByAIEveryoneISWatchingViewHolder.title.getText().toString().trim());
+                        }
+                    }
+                });
+
+                itemSearchByAIEveryoneISWatchingViewHolder.itemVideoThree.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (null != ItemSearchByAIClickListener) {
+                            ItemSearchByAIClickListener.clickItemSearchByAIEveryoneISWatching(false, 2, searchByAIBean.getDeailsJson(), itemSearchByAIEveryoneISWatchingViewHolder.title.getText().toString().trim());
+                        }
+                    }
+                });
+
                 itemSearchByAIEveryoneISWatchingViewHolder.tvMovieList.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (null != ItemSearchByAIClickListener) {
-                            ItemSearchByAIClickListener.clickItemSearchByAIEveryoneISWatching(searchByAIBean.getSpeechText(), itemSearchByAIEveryoneISWatchingViewHolder.title.getText().toString().trim());
+                            ItemSearchByAIClickListener.clickItemSearchByAIEveryoneISWatching(true, -1, searchByAIBean.getDeailsJson(), itemSearchByAIEveryoneISWatchingViewHolder.title.getText().toString().trim());
                         }
                     }
                 });
@@ -255,10 +302,13 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                             String imgUrl = jsonObject.optString("highResolutionV");
                             if (!TextUtils.isEmpty(imgUrl)) {
                                 if (imgUrl.startsWith("http")) {
+
                                     itemSearchByAIGuessWhatYouLikeViewHolder.itemDetailImg.setImageURI(imgUrl);
                                 } else {
-                                    itemSearchByAIGuessWhatYouLikeViewHolder.itemDetailImg.setImageURI(IMG_BASE_URL + imgUrl);
+                                    imgUrl = IMG_BASE_URL + imgUrl;
+                                    itemSearchByAIGuessWhatYouLikeViewHolder.itemDetailImg.setImageURI(imgUrl);
                                 }
+
                             }
 
                         } catch (Exception e) {
@@ -351,6 +401,15 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                     } else {
                         itemSearchByAIGuessWhatYouLikeViewHolder.itemLanguage.setVisibility(View.GONE);
                     }
+
+                    itemSearchByAIGuessWhatYouLikeViewHolder.itemContain.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (null != ItemSearchByAIClickListener) {
+                                ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLike(false, detailsListBean);
+                            }
+                        }
+                    });
 
                     itemSearchByAIGuessWhatYouLikeViewHolder.itemChange.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -478,10 +537,10 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                         itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.llVideoList.setVisibility(View.VISIBLE);
                         itemSearchByAIGuessWhatYouLikeListHorizontalViewHolder.llVideoList.removeAllViews();
                         if (detailsListBean.subserials.size() > 5) {
-                            for (int i = 0; i < 3; i++) {
+                            for (int i = detailsListBean.subserials.size() - 1; i > detailsListBean.subserials.size() - 4; i--) {
                                 final int pos = i;
                                 View root = LayoutInflater.from(holder.itemView.getContext()).inflate(R.layout.item_search_by_ai_horizontal_item, null, false);
-                                if (2 == i) {
+                                if (detailsListBean.subserials.size() - 3 == i) {
                                     ((TextView) root.findViewById(R.id.tv_release_num)).setText("...");
                                 } else {
                                     int num = i + 1;
@@ -492,13 +551,13 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                                     @Override
                                     public void onClick(View v) {
                                         if (null != ItemSearchByAIClickListener) {
-                                            ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLikeListHorizontal(false, pos == 2 ? true : false, detailsListBean, pos);
+                                            ItemSearchByAIClickListener.clickItemSearchByAIGuessWhatYouLikeListHorizontal(false, pos == detailsListBean.subserials.size() - 3, detailsListBean, pos);
                                         }
                                     }
                                 });
                             }
 
-                            for (int i = detailsListBean.subserials.size() - 2; i < detailsListBean.subserials.size(); i++) {
+                            for (int i = 1; i >= 0; i--) {
                                 int num = i + 1;
                                 final int pos = i;
                                 View root = LayoutInflater.from(holder.itemView.getContext()).inflate(R.layout.item_search_by_ai_horizontal_item, null, false);
@@ -514,7 +573,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                                 });
                             }
                         } else {
-                            for (int i = 0; i < detailsListBean.subserials.size(); i++) {
+                            for (int i = 4; i >= 0; i--) {
                                 final int pos = i;
                                 View root = LayoutInflater.from(holder.itemView.getContext()).inflate(R.layout.item_search_by_ai_horizontal_item, null, false);
                                 int num = i + 1;
@@ -772,7 +831,9 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
      * 类型：MESSAGE_TYPE_EVERYONE_IS_WATCHING
      */
     private class ItemSearchByAIEveryoneISWatchingViewHolder extends BaseViewHolder {
-
+        private LinearLayout itemVideoOne;
+        private LinearLayout itemVideoTwo;
+        private LinearLayout itemVideoThree;
         private MGSimpleDraweeView itemImg1;
         private MGSimpleDraweeView itemImg2;
         private MGSimpleDraweeView itemImg3;
@@ -787,7 +848,9 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
 
         private ItemSearchByAIEveryoneISWatchingViewHolder(View itemView) {
             super(itemView);
-
+            itemVideoOne = (LinearLayout) itemView.findViewById(R.id.ll_item_video_one);
+            itemVideoTwo = (LinearLayout) itemView.findViewById(R.id.ll_item_video_two);
+            itemVideoThree = (LinearLayout) itemView.findViewById(R.id.ll_item_video_three);
             itemImg1 = (MGSimpleDraweeView) itemView.findViewById(R.id.item_img1);
             itemImg2 = (MGSimpleDraweeView) itemView.findViewById(R.id.item_img2);
             itemImg3 = (MGSimpleDraweeView) itemView.findViewById(R.id.item_img3);
@@ -835,6 +898,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
      */
     private class ItemSearchByAIGuessWhatYouLikeViewHolder extends BaseViewHolder {
 
+        private RelativeLayout itemContain;
         private MGSimpleDraweeView itemDetailImg;
         private TextView itemWatchNum;
         private TextView itemVideoName;
@@ -850,6 +914,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
 
         private ItemSearchByAIGuessWhatYouLikeViewHolder(View itemView) {
             super(itemView);
+            itemContain = (RelativeLayout) itemView.findViewById(R.id.rl_contain);
             itemDetailImg = (MGSimpleDraweeView) itemView.findViewById(R.id.item_detail_img);
             itemWatchNum = (TextView) itemView.findViewById(R.id.item_watch_num);
             itemVideoName = (TextView) itemView.findViewById(R.id.item_video_name);

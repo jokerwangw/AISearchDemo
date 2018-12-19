@@ -5,9 +5,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.res.AssetManager;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -29,33 +29,41 @@ import com.cmcc.cmvideo.base.MainThreadImpl;
 import com.cmcc.cmvideo.base.ThreadExecutor;
 import com.cmcc.cmvideo.search.adapter.SearchByAIAdapter;
 import com.cmcc.cmvideo.search.aiui.AIUIService;
-import com.cmcc.cmvideo.search.aiui.FuncAdapter;
 import com.cmcc.cmvideo.search.aiui.IAIUIService;
 import com.cmcc.cmvideo.search.aiui.Logger;
+import com.cmcc.cmvideo.search.aiui.bean.MicBean;
 import com.cmcc.cmvideo.search.aiui.bean.TppData;
 import com.cmcc.cmvideo.search.interactors.ItemSearchByAIClickListener;
+import com.cmcc.cmvideo.search.model.LastTextDataBean;
 import com.cmcc.cmvideo.search.model.SearchByAIBean;
 import com.cmcc.cmvideo.search.model.SearchByAIEventBean;
 import com.cmcc.cmvideo.search.model.SearchByAIRefreshUIEventBean;
 import com.cmcc.cmvideo.search.presenters.SearchByAIPresenter;
 import com.cmcc.cmvideo.search.presenters.impl.SearchByAIPresenterImpl;
-import com.cmcc.cmvideo.weight.VoiceLineView;
+import com.cmcc.cmvideo.util.AIUIUtils;
+import com.cmcc.cmvideo.util.ServiceUtils;
+import com.cmcc.cmvideo.widget.VoiceLineView;
+import com.cmcc.cmvideo.widget.WrapContentLinearLayoutManager;
 import com.iflytek.aiui.AIUIConstant;
 import com.iflytek.aiui.AIUIEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_EVERYONE_IS_WATCHING;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
+import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL;
+
 
 /**
  * Created by Yyw on 2018/5/21.
@@ -63,7 +71,6 @@ import butterknife.OnClick;
  */
 
 public class SearchByAIActivity extends AppCompatActivity implements SearchByAIPresenter.View {
-
     @BindView(R.id.search_by_ai_recyclerView)
     RecyclerView mSearchRecyclerView;
     @BindView(R.id.rl_search_voice_input_ring)
@@ -101,6 +108,10 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private boolean isOpenSpeaker = false;
     private AudioManager audioManager = null;
     private int currVolume = 0;
+    private int mViewCacheSize = 100;
+    private String lastText = "";
+    private boolean isBindService = false;
+    private boolean isAvailableVideo = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -114,15 +125,16 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
 
     private void initView() {
         mSearchByAIAdapter = new SearchByAIAdapter(mContext, itemSearchByAIClickListener);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        WrapContentLinearLayoutManager wrapContentLinearLayoutManager = new WrapContentLinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mSearchRecyclerView.setHasFixedSize(true);
-        mSearchRecyclerView.setLayoutManager(layoutManager);
+        mSearchRecyclerView.setItemViewCacheSize(mViewCacheSize);
+        mSearchRecyclerView.setLayoutManager(wrapContentLinearLayoutManager);
         mSearchRecyclerView.setAdapter(mSearchByAIAdapter);
         btSearchVoiceInput.setOnTouchListener(onTouchListener);
     }
 
     private void initData() {
+        EventBus.getDefault().register(this);
         mSearchByAIPresenter = new SearchByAIPresenterImpl(
                 ThreadExecutor.getInstance(),
                 MainThreadImpl.getInstance(),
@@ -133,226 +145,17 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         mSearchByAIPresenter.initListSearchItem();
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         if (null != audioManager) {
-            isOpenSpeaker = audioManager.isSpeakerphoneOn();
-            vSpekaker.setVisibility(isOpenSpeaker ? View.VISIBLE : View.GONE);
-        }
-    }
 
-    /**
-     * 点击不同条目对应的点击事件
-     */
-    private ItemSearchByAIClickListener itemSearchByAIClickListener = new ItemSearchByAIClickListener() {
-        @Override
-        public void clickItemSearchByAICanAskAI(String recommendText) {
-            if (aiuiService != null) {
-                aiuiService.textUnderstander(recommendText);
-            }
-        }
-
-        @Override
-        public void clickItemSearchByAIAppointment() {
-        }
-
-        @Override
-        public void clickItemSearchByAIEveryoneISWatching(String speechText, String titleText) {
-            Intent intent = new Intent(mContext, LookMoreActivity.class);
-            intent.putExtra(LookMoreActivity.KEY_MORE_DATE_SPEECH_TEXT, speechText);
-            intent.putExtra(LookMoreActivity.KEY_TITLE, titleText);
-            startActivity(intent);
-        }
-
-        @Override
-        public void clickItemSearchByAIIWantTOSee() {
-        }
-
-        @Override
-        public void clickItemSearchByAIGuessWhatYouLike(boolean isChangeBt, TppData.DetailsListBean detailsListBean) {
-            if (isChangeBt && null != aiuiService) {
-                aiuiService.textUnderstander("换一个");
-            }
-        }
-
-        @Override
-        public void clickItemSearchByAIGuessWhatYouLikeListHorizontal(boolean isChangeBt, boolean isClickLookMore, TppData.DetailsListBean detailsListBean, int position) {
-            if (null != aiuiService) {
-                if (isChangeBt) {
-                    aiuiService.textUnderstander("换一个");
-                } else if (isClickLookMore) {
-                    Toast.makeText(mContext, "查看更多", Toast.LENGTH_SHORT).show();
-                } else {
-                    int pos = position + 1;
-                    Toast.makeText(mContext, "查看第" + pos + "集", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-
-        @Override
-        public void clickItemSearchByAIGuessWhatYouLikeListVertical(boolean isChangeBt, boolean isClickLookMore, TppData.DetailsListBean detailsListBean, int position) {
-            if (null != aiuiService) {
-                if (isChangeBt) {
-                    aiuiService.textUnderstander("换一个");
-                } else if (isClickLookMore) {
-                    Toast.makeText(mContext, "查看更多", Toast.LENGTH_SHORT).show();
-                } else {
-                    int pos = position + 1;
-                    Toast.makeText(mContext, "查看第" + pos + "条", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-
-        @Override
-        public void clickItemSearchByAITheLatestVideo() {
-        }
-    };
-
-    private View.OnTouchListener onTouchListener = new View.OnTouchListener() {
-        @SuppressLint("ClickableViewAccessibility")
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    downY = event.getY();
-                    downTime = System.currentTimeMillis();
-                    startSearch();
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    fingerStartMove(downY, event.getY());
-                    break;
-                case MotionEvent.ACTION_UP:
-                    upTime = System.currentTimeMillis();
-                    long clickTime = upTime - downTime;
-                    checkClickType(clickTime, downY - event.getY());
-                    break;
-                default:
-                    break;
-            }
-            return true;
-        }
-    };
-
-    private ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            aiuiService = (IAIUIService) service;
-            mSearchByAIPresenter.setAIUIService(aiuiService);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-        }
-    };
-
-    /**
-     * 获取音频播放焦点
-     */
-    @Override
-    public void requestAudioFocus() {
-        FuncAdapter.Lock(this, null);
-    }
-
-    /**
-     * 释放音频播放焦点
-     */
-    @Override
-    public void abandonAudioFocus() {
-        FuncAdapter.UnLock(this, null);
-    }
-
-    /**
-     * 区分用户搜索的点击事件类型
-     *
-     * @param clickTime
-     */
-    private void checkClickType(long clickTime, float moveValue) {
-        if (clickTime <= MAX_CLICK_TIME && moveValue > -MAX_CLICK_MOVE_VALUE && moveValue < MAX_CLICK_MOVE_VALUE) {
-            //点击事件
-            closeViewAnimation();
-            tvCancelSearch.setVisibility(View.VISIBLE);
-            rlSearchVoiceInputRing.setVisibility(View.GONE);
-            tvSlideCancelSearch.setVisibility(View.GONE);
-            rlSearchVoiceInput.setVisibility(View.GONE);
-            setViewAnimation(true);
-        } else {
-            //长按事件
-            if (moveValue >= MIN_MOVE_VALUE) {
-                mSearchByAIPresenter.cancelRecordAudio();
-            }
-            //长按事件
-            closeSearch();
-
-        }
-    }
-
-    /**
-     * 长按状态下手指滑动得操作
-     *
-     * @param downY
-     * @param moveY
-     */
-    private void fingerStartMove(float downY, float moveY) {
-        float moveValue = downY - moveY;
-        if (moveValue >= 50) {
-            tvSlideCancelSearch.setVisibility(View.GONE);
-            imReleaseFinger.setVisibility(View.VISIBLE);
-            tvReleaseFingerCancelSearch.setVisibility(View.VISIBLE);
-        } else {
-            tvSlideCancelSearch.setVisibility(View.VISIBLE);
-            imReleaseFinger.setVisibility(View.GONE);
-            tvReleaseFingerCancelSearch.setVisibility(View.GONE);
-        }
-    }
-
-    /**
-     * 标题栏关闭事件
-     */
-    @OnClick(R.id.bt_title_close)
-    public void clickTitleClose() {
-        finish();
-    }
-
-    /**
-     * 扬声器
-     */
-    @OnClick(R.id.bt_title_voice)
-    public void clickOpenSpeaker() {
-        try {
-            if (isOpenSpeaker) {
-                //关闭扬声器
-                if (audioManager != null) {
-                    audioManager.setSpeakerphoneOn(false);
-                    audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, currVolume, AudioManager.STREAM_VOICE_CALL);
-                }
-            } else {
+            try {
                 //打开扬声器
-                if (audioManager != null) {
-                    audioManager.setMode(AudioManager.ROUTE_SPEAKER);
-                    currVolume = audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL);
-                    //setSpeakerphoneOn() only work when audio mode set to MODE_IN_CALL.
-                    audioManager.setMode(AudioManager.MODE_IN_CALL);
-                    audioManager.setSpeakerphoneOn(true);
-                    audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL), AudioManager.STREAM_VOICE_CALL);
-                }
+                AIUIUtils.setAudioMode(SearchByAIActivity.this, AudioManager.MODE_NORMAL);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            isOpenSpeaker = !isOpenSpeaker;
-            vSpekaker.setVisibility(isOpenSpeaker ? View.VISIBLE : View.GONE);
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            isOpenSpeaker = audioManager.isSpeakerphoneOn();
+            vSpekaker.setVisibility(isOpenSpeaker ? View.GONE : View.VISIBLE);
         }
-    }
-
-    /**
-     * 标题栏右侧按钮
-     */
-    @OnClick(R.id.bt_title_voice)
-    public void clickTitleVoice() {
-    }
-
-    /**
-     * 取消搜索
-     */
-    @OnClick(R.id.tv_cancel_search)
-    public void clickCancelSearch() {
-        closeSearch();
     }
 
     /**
@@ -374,6 +177,13 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     public void onMessageEvent(SearchByAIEventBean event) {
         if (null != event) {
             setAdapterData(false, event.getSearchByAIBeanList());
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiveLastText(LastTextDataBean text) {
+        if (null != text) {
+            lastText = text.getLastText();
         }
     }
 
@@ -417,6 +227,176 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         }
     }
 
+
+    /**
+     * 点击不同条目对应的点击事件
+     */
+    private ItemSearchByAIClickListener itemSearchByAIClickListener = new ItemSearchByAIClickListener() {
+        @Override
+        public void clickItemSearchByAICanAskAI(String recommendText) {
+            if (aiuiService != null) {
+                aiuiService.textUnderstander(recommendText);
+            }
+        }
+
+        @Override
+        public void clickItemSearchByAIAppointment() {
+        }
+
+        @Override
+        public void clickItemSearchByAIEveryoneISWatching(boolean isClickMore, int position, String deailsJson, String titleText) {
+            if (isClickMore) {
+                //查看更多
+                mSearchByAIPresenter.lookMore(titleText, deailsJson);
+            } else {
+                int i = position + 1;
+                Toast.makeText(mContext, "查看==" + i, Toast.LENGTH_SHORT).show();
+                mSearchByAIPresenter.turnToPlayVideo(MESSAGE_TYPE_EVERYONE_IS_WATCHING, false, null, deailsJson, position);
+            }
+        }
+
+        @Override
+        public void clickItemSearchByAIIWantTOSee() {
+        }
+
+        @Override
+        public void clickItemSearchByAIGuessWhatYouLike(boolean isChangeBt, TppData.DetailsListBean detailsListBean) {
+            if (null != aiuiService && null != detailsListBean) {
+                if (isChangeBt) {
+                    aiuiService.textUnderstander("换一个");
+                } else {
+                    Toast.makeText(mContext, "查看==" + detailsListBean.name, Toast.LENGTH_SHORT).show();
+                    mSearchByAIPresenter.turnToPlayVideo(MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE, false, detailsListBean, null, -1);
+                }
+            }
+        }
+
+        @Override
+        public void clickItemSearchByAIGuessWhatYouLikeListHorizontal(boolean isChangeBt, boolean isClickLookMore, TppData.DetailsListBean detailsListBean, int position) {
+            if (null != aiuiService) {
+                if (isChangeBt) {
+                    aiuiService.textUnderstander("换一个");
+                } else if (isClickLookMore) {
+                    Toast.makeText(mContext, "查看更多", Toast.LENGTH_SHORT).show();
+                    mSearchByAIPresenter.turnToPlayVideo(MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL, true, detailsListBean, null, position);
+                } else {
+                    int pos = position + 1;
+                    Toast.makeText(mContext, "查看第" + pos + "集", Toast.LENGTH_SHORT).show();
+                    mSearchByAIPresenter.turnToPlayVideo(MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL, false, detailsListBean, null, position);
+                }
+            }
+        }
+
+        @Override
+        public void clickItemSearchByAIGuessWhatYouLikeListVertical(boolean isChangeBt, boolean isClickLookMore, TppData.DetailsListBean detailsListBean, int position) {
+            if (null != aiuiService) {
+                if (isChangeBt) {
+                    aiuiService.textUnderstander("换一个");
+                } else if (isClickLookMore) {
+                    Toast.makeText(mContext, "查看更多", Toast.LENGTH_SHORT).show();
+                    mSearchByAIPresenter.turnToPlayVideo(MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL, true, detailsListBean, null, position);
+                } else {
+                    int pos = position + 1;
+                    Toast.makeText(mContext, "查看第" + pos + "条", Toast.LENGTH_SHORT).show();
+                    mSearchByAIPresenter.turnToPlayVideo(MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL, false, detailsListBean, null, position);
+                }
+            }
+        }
+
+        @Override
+        public void clickItemSearchByAITheLatestVideo() {
+
+        }
+    };
+
+    private View.OnTouchListener onTouchListener = new View.OnTouchListener() {
+        @SuppressLint("ClickableViewAccessibility")
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    downY = event.getY();
+                    downTime = System.currentTimeMillis();
+                    startSearch();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    fingerStartMove(downY, event.getY());
+                    break;
+                case MotionEvent.ACTION_UP:
+                    upTime = System.currentTimeMillis();
+                    long clickTime = upTime - downTime;
+                    checkClickType(clickTime, downY - event.getY());
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        }
+    };
+
+    /**
+     * 标题栏关闭事件
+     */
+    @OnClick(R.id.bt_title_close)
+    public void clickTitleClose() {
+        finish();
+    }
+
+    /**
+     * 扬声器
+     */
+    @OnClick(R.id.bt_title_voice)
+    public void clickOpenSpeaker() {
+        try {
+            if (isOpenSpeaker) {
+                //关闭扬声器
+                if (audioManager != null) {
+                    AIUIUtils.setAudioMode(SearchByAIActivity.this, AudioManager.MODE_IN_COMMUNICATION);
+                }
+            } else {
+                //打开扬声器
+                if (audioManager != null) {
+                    AIUIUtils.setAudioMode(SearchByAIActivity.this, AudioManager.MODE_NORMAL);
+                }
+            }
+            isOpenSpeaker = audioManager.isSpeakerphoneOn();
+            vSpekaker.setVisibility(isOpenSpeaker ? View.GONE : View.VISIBLE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 标题栏右侧按钮
+     */
+    @OnClick(R.id.bt_title_voice)
+    public void clickTitleVoice() {
+    }
+
+    /**
+     * 耳机接入状态
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void getMicStatus(MicBean result) {
+        isAvailableVideo = result.isConnect();
+        Logger.debug("isAvailableVideo>>>>>>>>>>" + isAvailableVideo);
+    }
+
+    /**
+     * 取消搜索
+     */
+    @OnClick(R.id.tv_cancel_search)
+    public void clickCancelSearch() {
+        closeSearch();
+        //耳机模式下要是手动点击了 "取消搜索" 后 ，需要用户再次唤醒才可以交互 ，
+        //否则就处理为 ：耳机模式下不支持  取消搜索  ，该咋样还是咋样
+        if (!isAvailableVideo) {
+            if (null != aiuiService) {
+                aiuiService.stopAiui();
+            }
+        }
+    }
+
     /**
      * 设置适配器
      *
@@ -426,11 +406,57 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     private void setAdapterData(boolean isInit, List<SearchByAIBean> searchByAIBeanList) {
         if (null != searchByAIBeanList && null != mSearchByAIAdapter) {
             if (isInit) {
-                mSearchByAIAdapter.bindData(searchByAIBeanList, true);
+                mSearchByAIAdapter.bindData(searchByAIBeanList, false);
             } else {
                 mSearchByAIAdapter.addItems(searchByAIBeanList);
             }
-            mSearchRecyclerView.scrollToPosition(mSearchByAIAdapter.getItemCount() - 1);
+            int position = mSearchByAIAdapter.getItemCount() - 1;
+            if (position > 1 && position < mSearchByAIAdapter.getItemCount()) {
+                mSearchRecyclerView.scrollToPosition(position);
+            }
+        }
+    }
+
+    /**
+     * 区分用户搜索的点击事件类型
+     *
+     * @param clickTime
+     */
+    private void checkClickType(long clickTime, float moveValue) {
+        if (clickTime <= MAX_CLICK_TIME && moveValue > -MAX_CLICK_MOVE_VALUE && moveValue < MAX_CLICK_MOVE_VALUE) {
+            //点击事件
+            closeViewAnimation();
+            tvCancelSearch.setVisibility(View.VISIBLE);
+            rlSearchVoiceInputRing.setVisibility(View.GONE);
+            tvSlideCancelSearch.setVisibility(View.GONE);
+            rlSearchVoiceInput.setVisibility(View.GONE);
+            setViewAnimation(true);
+        } else {
+            //长按事件
+            if (moveValue >= MIN_MOVE_VALUE) {
+                mSearchByAIPresenter.cancelRecordAudio();
+            }
+            //长按事件
+            closeSearch();
+        }
+    }
+
+    /**
+     * 长按状态下手指滑动得操作
+     *
+     * @param downY
+     * @param moveY
+     */
+    private void fingerStartMove(float downY, float moveY) {
+        float moveValue = downY - moveY;
+        if (moveValue >= 50) {
+            tvSlideCancelSearch.setVisibility(View.GONE);
+            imReleaseFinger.setVisibility(View.VISIBLE);
+            tvReleaseFingerCancelSearch.setVisibility(View.VISIBLE);
+        } else {
+            tvSlideCancelSearch.setVisibility(View.VISIBLE);
+            imReleaseFinger.setVisibility(View.GONE);
+            tvReleaseFingerCancelSearch.setVisibility(View.GONE);
         }
     }
 
@@ -502,6 +528,29 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
         mVoiceLineView.setVolume(arg2 + 120);
     }
 
+    /**
+     * 初始化conn
+     */
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            isBindService = true;
+            aiuiService = (IAIUIService) service;
+            mSearchByAIPresenter.setAIUIService(aiuiService);
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mSearchByAIPresenter.analysisDefaultData(getIntent().getStringExtra("TPP_DATA"));
+                }
+            }, 1000);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+        }
+    };
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -537,9 +586,10 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (null != connection) {
+        if (isBindService && null != connection) {
             unbindService(connection);
         }
+        isBindService = false;
         if (null != mSearchByAIPresenter) {
             mSearchByAIPresenter.destroy();
         }
@@ -559,5 +609,6 @@ public class SearchByAIActivity extends AppCompatActivity implements SearchByAIP
     @Override
     public void showError(String message) {
     }
+
 
 }

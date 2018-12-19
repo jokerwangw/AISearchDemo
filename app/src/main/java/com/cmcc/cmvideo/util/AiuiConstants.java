@@ -8,14 +8,48 @@ import retrofit2.http.PUT;
  * @date 2018/5/30
  */
 public class AiuiConstants {
+    public static class MessageFrom {
+        /*** 消息来自AI*/
+        public final static String MESSAGE_FROM_AI = "message_from_ai";
+        /*** 消息来自用户*/
+        public final static String MESSAGE_FROM_USER = "message_from_user";
+    }
+
+    public static class MessageType {
+        /*** 聊天类消息*/
+        public final static int MESSAGE_TYPE_NORMAL = 0;
+        /*** 可以这样问AI*/
+        public final static int MESSAGE_TYPE_CAN_ASK_AI = 1;
+        /*** AI预约电影成功的类型*/
+        public final static int MESSAGE_TYPE_APPOINTMENT = 2;
+        /*** 大家都在看*/
+        public final static int MESSAGE_TYPE_EVERYONE_IS_WATCHING = 3;
+        /*** 我想看XXXX*/
+        public final static int MESSAGE_TYPE_I_WANT_TO_SEE = 8;
+        /*** 猜你喜欢*/
+        public final static int MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE = 4;
+        /*** 猜你喜欢_列表横向展示*/
+        public final static int MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL = 6;
+        /*** 猜你喜欢_列表垂直展示*/
+        public final static int MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_VERTICAL = 7;
+        /*** 最新影讯*/
+        public final static int MESSAGE_TYPE_THE_LATEST_VIDEO = 5;
+    }
+
+    /*** 图片地址*/
+    public final static String IMG_BASE_URL = "http://wapx.cmvideo.cn:8080/publish/poms";
+
     public final static String MICRO_MESSAGE = "小咪为您服务";
     public final static String MICRO_ENTER_MESSAGE = "主淫，主淫，需要我为你做什么";
+    public final static String MICRO_DISABLE_MESSAGE = "主淫，没有麦，臣妾办不到啊";
+
 
     /**
      * 技能名(闲聊、频道、跳转充值页、展示流量、购票页、系统设置、投屏播放)
      */
     public final static String QA_SERVICE = "openQA";
     public final static String VIDEO_SERVICE = "video";
+    public final static String USER_VIDEO_SERVICE = "LINGXI2018.user_video";
     public final static String VIEWCMD_SERVICE = "viewCmd";
     //指令控制技能名  如：开启/关闭语音助手、投屏指令
     public final static String CONTROL_MIGU = "LINGXI2018.control_migu";
@@ -25,6 +59,19 @@ public class AiuiConstants {
 
     //商店技能 世界杯
     public final static String WORLD_CUP_SERVICE = "AIUI.WorldCup";
+
+    //笑话技能
+    public final static String JOKE_SERVICE = "joke";
+
+
+    //百科词条查询技能
+    public final static String QUERY_ENCYCLO_SERVICE = "LEIQIAO.cyclopedia";
+    //意图名 百科词条
+    public final static String KEYWORD_QUERY_INTENT = "KEYWORD_QUERY";
+
+    //天气查询技能
+    public final static String QUERY_WEATHER_SERVICE = "weather";
+
 
     //世界杯意图名
     public final static String WORLD_CUP_QUERY_OPEN = "QUERY_OPEN";
@@ -84,6 +131,13 @@ public class AiuiConstants {
     //快进到or快退到多少时刻
     public final static String VIDEO_FASTWORD_TO = "fastForwardTo";
 
+    //音量增加
+    public final static String VIDEO_VOLUME_PLUS = "volume_plus";
+    public final static String VIDEO_VOLUME_MINUS = "volume_minus";
+    public final static String VIDEO_MUTE = "mute";
+    public final static String VIDEO_VOLUME_MAX = "volume_max";
+
+
     public final static String HOURS = "hour";
     public final static String MINUTE = "minute";
     public final static String SECOND = "second";
@@ -97,11 +151,19 @@ public class AiuiConstants {
     public final static int VDO_OPEN = 5;
     public final static int VDO_CLOSE = 6;
     public final static int VDO_SCREEN = 7;
-    //快进 快退 快进（快退） 换一集
+    //快进 快退 快进（快退） 换一集  第几集
     public final static int VDO_FASTWORD = 8;
     public final static int VDO_BACKWORD = 9;
     public final static int VDO_FASTWORD_TO = 10;
     public final static int VDO_CHANGE = 11;
+    public final static int VDO_WHICH_EPISODE = 12;
+
+    //音量增加  音量减小  静音  最大音量
+    public final static int VOLUME_PLUS = 13;
+    public final static int VOLUME_MINUS = 14;
+    public final static int VOLUME_MUTE = 15;
+    public final static int VOLUME_MAX = 16;
+
 
 
     //自定义直播技能

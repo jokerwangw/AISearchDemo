@@ -4,7 +4,6 @@ import java.util.List;
 
 
 public class IatBean {
-
     /**
      * sn : 2
      * ls : false

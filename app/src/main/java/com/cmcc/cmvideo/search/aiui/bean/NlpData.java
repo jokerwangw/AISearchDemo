@@ -1,5 +1,6 @@
 package com.cmcc.cmvideo.search.aiui.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class NlpData {
@@ -12,7 +13,6 @@ public class NlpData {
     public AnswerBean answer;
     public List<SemanticBean> semantic;
     public List<NlpData> moreResults;
-
 
     public static class SemanticBean {
         public String intent;
@@ -39,9 +39,7 @@ public class NlpData {
         public String name;
         public String value;
         public String normValue;
-
     }
-
 
     /**
      * answer : {"answerType":"openQA","emotion":"default","question":{"question":"我好无聊啊","question_ws":"我/NP// 好/VI// 无聊/AA// 啊/UE//"},"text":"有我陪你，你就不会感到无聊啦。","topicID":"32184159073720340","type":"T"}
@@ -72,7 +70,6 @@ public class NlpData {
         public String topicID;
         public String type;
 
-
         public static class QuestionBean {
             /**
              * question : 我好无聊啊
@@ -81,7 +78,6 @@ public class NlpData {
 
             public String question;
             public String question_ws;
-
         }
     }
 

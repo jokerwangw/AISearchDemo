@@ -6,8 +6,6 @@ package com.cmcc.cmvideo.search.aiui.bean;
  * @date 2018/6/19
  */
 public class ControlEventBean {
-
-
     /**
      * 视频控制指令类型  播放  暂停  下一集  上一集  打开语音助手  关闭语音助手  投屏播放
      * public final static int VDO_PAUSE = 1;
@@ -23,22 +21,27 @@ public class ControlEventBean {
      * public final static int VDO_BACKWORD = 9;
      * public final static int VDO_FASTWORD_TO = 10;
      * public final static int VDO_CHANGE = 11;
-     * 快进 快退 快进（快退） 换一集
+     * 快进 快退 快进（快退） 换一集  第几集
      */
-
 
     private int controlType;
     private String hour;
     private String minute;
     private String second;
 
+    //第几集 的 几
+    private String episode;
 
     public ControlEventBean() {
-
     }
 
     public ControlEventBean(int controlType) {
         this.controlType = controlType;
+    }
+
+    public ControlEventBean(int controlType, String episode) {
+        this.controlType = controlType;
+        this.episode = episode;
     }
 
 

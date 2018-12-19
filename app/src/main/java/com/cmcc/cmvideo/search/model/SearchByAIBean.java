@@ -11,32 +11,31 @@ import java.util.List;
 
 public class SearchByAIBean {
     private String message;
-    private String source;
-    private String speechText;
-    private int messageType;
+    private String deailsJson;    private String source;
+    private String speechText;    private int messageType;
     private String messageFrom;
     private List<TppData.DetailsListBean> videoList;
 
-
     public SearchByAIBean() {
     }
+
     public SearchByAIBean(String message, int messageType, String messageFrom) {
-        this(message,messageType,messageFrom,null);
+        this(message, messageType, messageFrom, null);
     }
 
-    public SearchByAIBean(String message, int messageType, String messageFrom,List<TppData.DetailsListBean> videoList) {
+    public SearchByAIBean(String message, int messageType, String messageFrom, List<TppData.DetailsListBean> videoList) {
         this.message = message;
         this.messageType = messageType;
         this.messageFrom = messageFrom;
         this.videoList = videoList;
     }
 
-    public String getSpeechText() {
-        return speechText;
+    public String getDeailsJson() {
+        return deailsJson;
     }
 
-    public void setSpeechText(String speechText) {
-        this.speechText = speechText;
+    public void setDeailsJson(String deailsJson) {
+        this.deailsJson = deailsJson;
     }
 
     public String getMessage() {

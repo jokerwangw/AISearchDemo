@@ -5,18 +5,22 @@ import java.util.List;
 
 public class TppData {
     public LxResultBean lxresult;
-    public static class LxResultBean{
+
+    public static class LxResultBean {
         public String code;
         public String codedesc;
+        public boolean satisfy;
         public DataBean data;
     }
-    public static class DataBean{
+
+    public static class DataBean {
         public String correct;
         public String service;
         public List<DetailsListBean> detailslist;
 
     }
-    public static class DetailsListBean implements Serializable{
+
+    public static class DetailsListBean implements Serializable {
         //区域
         public String area;
         //片名
@@ -41,8 +45,12 @@ public class TppData {
         public String releasetime;
         //剧集 第一集，第二集...
         public List<SubserialsBean> subserials;
+
+        //跳转路由对象
+        public ActionBean action;
     }
-    public static class SubserialsBean implements Serializable{
+
+    public static class SubserialsBean implements Serializable {
         //第一集名称
         public String name;
         //影片ID

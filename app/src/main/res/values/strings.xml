@@ -14,7 +14,7 @@
     <string name="release_finger_cancel_search">松开手指 取消发送</string>
 
     <string name="ai_ask_recommend1">大家都在看什么</string>
-    <string name="ai_ask_recommend2">我好像看好看的恐怖片</string>
+    <string name="ai_ask_recommend2">我好想看好看的恐怖片</string>
     <string name="ai_ask_recommend3">最近有什么新片子</string>
     <string name="ai_ask_recommend4">我要开通钻石会员</string>
     <string name="ai_ask_recommend5">我的流量还剩余多少</string>
@@ -32,6 +32,7 @@
     <string name="vdo_backword">快退</string>
     <string name="vdo_fastword_to">快进（快退）至</string>
     <string name="vdo_change">换一集</string>
+    <string name="vdo_episode">第几集</string>
 
     <string name="look_more_resource">查看更多 >></string>
 </resources>
