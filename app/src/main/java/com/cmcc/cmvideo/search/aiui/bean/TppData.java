@@ -64,38 +64,38 @@ public class TppData {
      */
 
     /**
-     * match : {"CompetitionBroadCastText":"现在进行到了9轮","matchList":[{"matchEventInfo":[{"CompetitionCountDownTime":-1946220000,"CompetitionStatus":2,"_id":"130000076380","competitionId":"4","competitionLogo":"http://image.suning.cn/uimg/SDSP/competition/4.png?v=20181031","competitionName":"西甲","competitionType":"1","confrontTeamOneid":"7724250","confrontTeamOneimage":"http://image.suning.cn/uimg/SDSP/team/250.png?v=1498717895433","confrontTeamOnename":"巴塞罗那","confrontTeamOnescore":"4","confrontTeamTwoid":"7724244","confrontTeamTwoimage":"http://image.suning.cn/uimg/SDSP/team/244.png?v=1498717892078","confrontTeamTwoname":"塞维利亚","confrontTeamTwoscore":"2","endTime":"1540069200000","keyword":"10月21日02:45","matchStartTime":"02:45","pID":"648227431","projectId":"151","roundId":"9","seasonId":"1273","seasonName":"2018/2019","stageId":"2878","stageRoundName":"联赛第9轮","startTime":"1540061100000","time":"2018.10.21","title":"18/19赛季西甲第9轮全场集锦：巴塞罗那4:2塞维利亚","type":"1","winner":"7724250"}],"matchEventTime":"2018.10.21"}]}
+     * match : {"competitionBroadCastText":"现在进行到了9轮","matchList":[{"matchEventInfo":[{"competitionCountDownTime":-1946220000,"competitionStatus":2,"_id":"130000076380","competitionId":"4","competitionLogo":"http://image.suning.cn/uimg/SDSP/competition/4.png?v=20181031","competitionName":"西甲","competitionType":"1","confrontTeamOneid":"7724250","confrontTeamOneimage":"http://image.suning.cn/uimg/SDSP/team/250.png?v=1498717895433","confrontTeamOnename":"巴塞罗那","confrontTeamOnescore":"4","confrontTeamTwoid":"7724244","confrontTeamTwoimage":"http://image.suning.cn/uimg/SDSP/team/244.png?v=1498717892078","confrontTeamTwoname":"塞维利亚","confrontTeamTwoscore":"2","endTime":"1540069200000","keyword":"10月21日02:45","matchStartTime":"02:45","pID":"648227431","projectId":"151","roundId":"9","seasonId":"1273","seasonName":"2018/2019","stageId":"2878","stageRoundName":"联赛第9轮","startTime":"1540061100000","time":"2018.10.21","title":"18/19赛季西甲第9轮全场集锦：巴塞罗那4:2塞维利亚","type":"1","winner":"7724250"}],"matchEventTime":"2018.10.21"}]}
      */
 
 
     public static class MatchBean implements Serializable{
         /**
          * CompetitionBroadCastText : 现在进行到了9轮
-         * matchList : [{"matchEventInfo":[{"CompetitionCountDownTime":-1946220000,"CompetitionStatus":2,"_id":"130000076380","competitionId":"4","competitionLogo":"http://image.suning.cn/uimg/SDSP/competition/4.png?v=20181031","competitionName":"西甲","competitionType":"1","confrontTeamOneid":"7724250","confrontTeamOneimage":"http://image.suning.cn/uimg/SDSP/team/250.png?v=1498717895433","confrontTeamOnename":"巴塞罗那","confrontTeamOnescore":"4","confrontTeamTwoid":"7724244","confrontTeamTwoimage":"http://image.suning.cn/uimg/SDSP/team/244.png?v=1498717892078","confrontTeamTwoname":"塞维利亚","confrontTeamTwoscore":"2","endTime":"1540069200000","keyword":"10月21日02:45","matchStartTime":"02:45","pID":"648227431","projectId":"151","roundId":"9","seasonId":"1273","seasonName":"2018/2019","stageId":"2878","stageRoundName":"联赛第9轮","startTime":"1540061100000","time":"2018.10.21","title":"18/19赛季西甲第9轮全场集锦：巴塞罗那4:2塞维利亚","type":"1","winner":"7724250"}],"matchEventTime":"2018.10.21"}]
+         * matchList : [{"matchEventInfo":[{"competitionCountDownTime":-1946220000,"competitionStatus":2,"_id":"130000076380","competitionId":"4","competitionLogo":"http://image.suning.cn/uimg/SDSP/competition/4.png?v=20181031","competitionName":"西甲","competitionType":"1","confrontTeamOneid":"7724250","confrontTeamOneimage":"http://image.suning.cn/uimg/SDSP/team/250.png?v=1498717895433","confrontTeamOnename":"巴塞罗那","confrontTeamOnescore":"4","confrontTeamTwoid":"7724244","confrontTeamTwoimage":"http://image.suning.cn/uimg/SDSP/team/244.png?v=1498717892078","confrontTeamTwoname":"塞维利亚","confrontTeamTwoscore":"2","endTime":"1540069200000","keyword":"10月21日02:45","matchStartTime":"02:45","pID":"648227431","projectId":"151","roundId":"9","seasonId":"1273","seasonName":"2018/2019","stageId":"2878","stageRoundName":"联赛第9轮","startTime":"1540061100000","time":"2018.10.21","title":"18/19赛季西甲第9轮全场集锦：巴塞罗那4:2塞维利亚","type":"1","winner":"7724250"}],"matchEventTime":"2018.10.21"}]
          */
 
         //播报语
-        public String CompetitionBroadCastText;
+        public String competitionBroadCastText;
         //赛事列表
         public List<MatchBean.MatchListBean> matchList;
 
 
         public static class MatchListBean implements Serializable{
             /**
-             * matchEventInfo : [{"CompetitionCountDownTime":-1946220000,"CompetitionStatus":2,"_id":"130000076380","competitionId":"4","competitionLogo":"http://image.suning.cn/uimg/SDSP/competition/4.png?v=20181031","competitionName":"西甲","competitionType":"1","confrontTeamOneid":"7724250","confrontTeamOneimage":"http://image.suning.cn/uimg/SDSP/team/250.png?v=1498717895433","confrontTeamOnename":"巴塞罗那","confrontTeamOnescore":"4","confrontTeamTwoid":"7724244","confrontTeamTwoimage":"http://image.suning.cn/uimg/SDSP/team/244.png?v=1498717892078","confrontTeamTwoname":"塞维利亚","confrontTeamTwoscore":"2","endTime":"1540069200000","keyword":"10月21日02:45","matchStartTime":"02:45","pID":"648227431","projectId":"151","roundId":"9","seasonId":"1273","seasonName":"2018/2019","stageId":"2878","stageRoundName":"联赛第9轮","startTime":"1540061100000","time":"2018.10.21","title":"18/19赛季西甲第9轮全场集锦：巴塞罗那4:2塞维利亚","type":"1","winner":"7724250"}]
+             * matchEventInfo : [{"competitionCountDownTime":-1946220000,"competitionStatus":2,"_id":"130000076380","competitionId":"4","competitionLogo":"http://image.suning.cn/uimg/SDSP/competition/4.png?v=20181031","competitionName":"西甲","competitionType":"1","confrontTeamOneid":"7724250","confrontTeamOneimage":"http://image.suning.cn/uimg/SDSP/team/250.png?v=1498717895433","confrontTeamOnename":"巴塞罗那","confrontTeamOnescore":"4","confrontTeamTwoid":"7724244","confrontTeamTwoimage":"http://image.suning.cn/uimg/SDSP/team/244.png?v=1498717892078","confrontTeamTwoname":"塞维利亚","confrontTeamTwoscore":"2","endTime":"1540069200000","keyword":"10月21日02:45","matchStartTime":"02:45","pID":"648227431","projectId":"151","roundId":"9","seasonId":"1273","seasonName":"2018/2019","stageId":"2878","stageRoundName":"联赛第9轮","startTime":"1540061100000","time":"2018.10.21","title":"18/19赛季西甲第9轮全场集锦：巴塞罗那4:2塞维利亚","type":"1","winner":"7724250"}]
              * matchEventTime : 2018.10.21
-             * CompetitionTimeDesc : 7天赛事日期标识 默认当天是4 ，前一天-1，前两天是-2 ；后一天是1 ，后两天是2
+             * competitionTimeDesc : 7天赛事日期标识 默认当天是4 ，前一天-1，前两天是-2 ；后一天是1 ，后两天是2
              */
 
             public String matchEventTime;
-            public int CompetitionTimeDesc ;
+            public int competitionTimeDesc ;
             public List<MatchBean.MatchListBean.MatchEventInfoBean> matchEventInfo;
 
 
             public static class MatchEventInfoBean implements Serializable{
                 /**
-                 * CompetitionCountDownTime : -1946220000
-                 * CompetitionStatus : 2
+                 * competitionCountDownTime : -1946220000
+                 * competitionStatus : 2
                  * mgdbId : 130000076380
                  * competitionId : 4
                  * competitionLogo : http://image.suning.cn/uimg/SDSP/competition/4.png?v=20181031
@@ -130,8 +130,8 @@ public class TppData {
                  * explanationName:节目名称
                  */
 
-                public int CompetitionCountDownTime;
-                public int CompetitionStatus;
+                public int competitionCountDownTime;
+                public int competitionStatus;
                 public String mgdbId;
                 public String competitionId;
                 public String competitionLogo;
@@ -162,8 +162,6 @@ public class TppData {
                 public String winner;
                 public ActionBean action;
                 public String highResolutionH;
-                public String duration;
-                public String explanationName;
 
             }
         }

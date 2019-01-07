@@ -1152,8 +1152,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                 && null != nlpData.data.lxresult.data.match
                 && null != nlpData.data.lxresult.data.match.matchList) {
             //如果后端返回拼接好的播报语就取后端的，比如查两个队的比分
-            if (!TextUtils.isEmpty(nlpData.data.lxresult.data.match.CompetitionBroadCastText)) {
-                response.response = nlpData.data.lxresult.data.match.CompetitionBroadCastText;
+            if (!TextUtils.isEmpty(nlpData.data.lxresult.data.match.competitionBroadCastText)) {
+                response.response = nlpData.data.lxresult.data.match.competitionBroadCastText;
             }
 
             if (nlpData.data.lxresult.data.match.matchList.size() == 1

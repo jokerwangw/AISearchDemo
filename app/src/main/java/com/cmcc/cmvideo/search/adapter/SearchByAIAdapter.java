@@ -1001,7 +1001,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 itemSearchByAIVideoOfSportsViewHolder.rlContainerTwo.setVisibility(View.GONE);
                 itemSearchByAIVideoOfSportsViewHolder.imVideoBgOne.setImageURI(matchEventInfoBean.highResolutionH);
             }
-            itemSearchByAIVideoOfSportsViewHolder.tvVideoTitle.setText(matchEventInfoBean.explanationName);
+            itemSearchByAIVideoOfSportsViewHolder.tvVideoTitle.setText(matchEventInfoBean.title);
         }
     }
 
