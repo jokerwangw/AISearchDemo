@@ -917,7 +917,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
         if (null != searchByAIBean.getMatchList() && !searchByAIBean.getMatchList().isEmpty()) {
             int pos = -1;
             for (int i = 0; i < searchByAIBean.getMatchList().size(); i++) {
-                if (searchByAIBean.getMatchListClickType() == searchByAIBean.getMatchList().get(i).CompetitionTimeDesc) {
+                if (searchByAIBean.getMatchListClickType() == searchByAIBean.getMatchList().get(i).competitionTimeDesc) {
                     pos = i;
                     break;
                 }
@@ -983,7 +983,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 itemSearchByAIVideoOfSportsViewHolder.imVideoBgTwo.setLayoutParams(params2);
             }
 
-            if (2 == matchEventInfoBean.CompetitionStatus) {
+            if (2 == matchEventInfoBean.competitionStatus) {
                 //预约
                 itemSearchByAIVideoOfSportsViewHolder.rlContainerOne.setVisibility(View.GONE);
                 itemSearchByAIVideoOfSportsViewHolder.rlContainerTwo.setVisibility(View.VISIBLE);
@@ -994,7 +994,7 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 itemSearchByAIVideoOfSportsViewHolder.imTeamBadgeTwo.setImageURI(matchEventInfoBean.confrontTeamTwoimage);
                 //TODO 倒计时正在开发
                 //itemSearchByAIVideoOfSportsViewHolder.sportVideoCountdownView.setMatchBeginTime(Long.valueOf(matchEventInfoBean.duration));
-            } else if (1 == matchEventInfoBean.CompetitionStatus || 0 == matchEventInfoBean.CompetitionStatus) {
+            } else if (1 == matchEventInfoBean.competitionStatus || 0 == matchEventInfoBean.competitionStatus) {
                 //直播中
                 //回看
                 itemSearchByAIVideoOfSportsViewHolder.rlContainerOne.setVisibility(View.VISIBLE);

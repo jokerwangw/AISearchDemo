@@ -1147,10 +1147,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
      */
     private void doSports(NlpData nlpData) {
         AiResponse.Response response = null;
-        if (null != nlpData.data && null != nlpData.data.lxresult
-                && null != nlpData.data.lxresult.data
-                && null != nlpData.data.lxresult.data.match
-                && null != nlpData.data.lxresult.data.match.matchList) {
+        if (isSportsMatches(nlpData)) {
             //如果后端返回拼接好的播报语就取后端的，比如查两个队的比分
             if (!TextUtils.isEmpty(nlpData.data.lxresult.data.match.competitionBroadCastText)) {
                 response.response = nlpData.data.lxresult.data.match.competitionBroadCastText;
@@ -1178,6 +1175,16 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         }
         //语音播报
         aiuiService.tts(response.response);
+    }
+
+    private boolean isSportsMatches(NlpData nlpData){
+        if (null != nlpData.data && null != nlpData.data.lxresult
+                && null != nlpData.data.lxresult.data
+                && null != nlpData.data.lxresult.data.match
+                && null != nlpData.data.lxresult.data.match.matchList){
+            return true ;
+        }
+        return false;
     }
 
     /**

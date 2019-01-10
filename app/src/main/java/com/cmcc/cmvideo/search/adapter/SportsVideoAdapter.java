@@ -48,7 +48,7 @@ public class SportsVideoAdapter extends BaseRecyclerAdapter<TppData.MatchBean.Ma
             itemSportsVideoViewHolder.imTeamBadgeTwo.setImageURI(matchEventInfoBean.confrontTeamTwoimage);
             itemSportsVideoViewHolder.tvTeamNameTwo.setText(matchEventInfoBean.confrontTeamTwoname);
 
-            if (2 == matchEventInfoBean.CompetitionStatus) {
+            if (2 == matchEventInfoBean.competitionStatus) {
                 //预约
                 itemSportsVideoViewHolder.tvTeamScoreOne.setVisibility(View.GONE);
                 itemSportsVideoViewHolder.imTeamScoreOne.setVisibility(View.VISIBLE);
@@ -57,7 +57,7 @@ public class SportsVideoAdapter extends BaseRecyclerAdapter<TppData.MatchBean.Ma
                 itemSportsVideoViewHolder.imTeamScoreOne.setImageURI(Uri.parse("res://" + mContext.getPackageName() + File.separator + R.mipmap.icon_team_score));
                 itemSportsVideoViewHolder.imTeamScoreTwo.setImageURI(Uri.parse("res://" + mContext.getPackageName() + File.separator + R.mipmap.icon_team_score));
                 itemSportsVideoViewHolder.imMatchState.setImageURI(Uri.parse("res://" + mContext.getPackageName() + File.separator + R.mipmap.icon_bespeak));
-            } else if (1 == matchEventInfoBean.CompetitionStatus) {
+            } else if (1 == matchEventInfoBean.competitionStatus) {
                 //直播中
                 itemSportsVideoViewHolder.tvTeamScoreOne.setVisibility(View.VISIBLE);
                 itemSportsVideoViewHolder.imTeamScoreOne.setVisibility(View.GONE);
@@ -66,7 +66,7 @@ public class SportsVideoAdapter extends BaseRecyclerAdapter<TppData.MatchBean.Ma
                 itemSportsVideoViewHolder.tvTeamScoreOne.setText(matchEventInfoBean.confrontTeamOnescore);
                 itemSportsVideoViewHolder.tvTeamScoreTwo.setText(matchEventInfoBean.confrontTeamTwoscore);
                 itemSportsVideoViewHolder.imMatchState.setImageURI(Uri.parse("res://" + mContext.getPackageName() + File.separator + R.mipmap.icon_living));
-            } else if (0 == matchEventInfoBean.CompetitionStatus) {
+            } else if (0 == matchEventInfoBean.competitionStatus) {
                 //回看
                 itemSportsVideoViewHolder.tvTeamScoreOne.setVisibility(View.VISIBLE);
                 itemSportsVideoViewHolder.imTeamScoreOne.setVisibility(View.GONE);
@@ -90,7 +90,7 @@ public class SportsVideoAdapter extends BaseRecyclerAdapter<TppData.MatchBean.Ma
                 @Override
                 public void onClick(View v) {
                     if (null != mItemSportsVideoClickListener) {
-                        mItemSportsVideoClickListener.clickItem(position, matchEventInfoBean.CompetitionStatus);
+                        mItemSportsVideoClickListener.clickItem(position, matchEventInfoBean.competitionStatus);
                     }
                 }
             });
