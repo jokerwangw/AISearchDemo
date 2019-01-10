@@ -159,8 +159,8 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
             //                    List<TppData.MatchBean.MatchListBean.MatchEventInfoBean> matchEventInfo = new ArrayList<>();
             //                    TppData.MatchBean.MatchListBean.MatchEventInfoBean matchEventInfoBean = new TppData.MatchBean.MatchListBean.MatchEventInfoBean();
             //
-            //                    matchEventInfoBean.CompetitionStatus = 2;
-            //                    matchEventInfoBean.explanationName = "西甲第一轮";
+            //                    matchEventInfoBean.competitionStatus = 2;
+            //                    matchEventInfoBean.title = "西甲第一轮";
             //
             //                    matchEventInfo.add(matchEventInfoBean);
             //                    matchListBean.matchEventInfo = matchEventInfo;
@@ -1177,12 +1177,12 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         aiuiService.tts(response.response);
     }
 
-    private boolean isSportsMatches(NlpData nlpData){
+    private boolean isSportsMatches(NlpData nlpData) {
         if (null != nlpData.data && null != nlpData.data.lxresult
                 && null != nlpData.data.lxresult.data
                 && null != nlpData.data.lxresult.data.match
-                && null != nlpData.data.lxresult.data.match.matchList){
-            return true ;
+                && null != nlpData.data.lxresult.data.match.matchList) {
+            return true;
         }
         return false;
     }

@@ -14,15 +14,24 @@
         <RelativeLayout
             android:id="@+id/rl_container_one"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dimen_170dp"
+            android:layout_height="wrap_content"
             android:visibility="gone">
 
             <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
                 android:id="@+id/im_video_bg_one"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="@dimen/dimen_8dp"
+                android:layout_marginRight="@dimen/dimen_8dp"
+                android:layout_marginTop="@dimen/dimen_8dp"
                 fresco:actualImageScaleType="fitXY"
-                fresco:viewAspectRatio="0.712" />
+                fresco:roundBottomLeft="true"
+                fresco:roundBottomRight="true"
+                fresco:roundTopLeft="true"
+                fresco:roundTopRight="true"
+                fresco:roundedCornerRadius="@dimen/dimen_8dp"
+                fresco:viewAspectRatio="0.5625" />
 
             <ImageView
                 android:layout_width="@dimen/dimen_50dp"
@@ -34,18 +43,24 @@
         <RelativeLayout
             android:id="@+id/rl_container_two"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dimen_170dp">
+            android:layout_height="wrap_content"
+            android:visibility="gone">
 
             <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
                 android:id="@+id/im_video_bg_two"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/dimen_15dp"
-                android:layout_marginLeft="@dimen/dimen_20dp"
-                android:layout_marginRight="@dimen/dimen_20dp"
+                android:layout_marginLeft="@dimen/dimen_8dp"
+                android:layout_marginRight="@dimen/dimen_8dp"
+                android:layout_marginTop="@dimen/dimen_8dp"
                 fresco:actualImageScaleType="fitXY"
-                fresco:viewAspectRatio="0.712" />
+                fresco:roundBottomLeft="true"
+                fresco:roundBottomRight="true"
+                fresco:roundTopLeft="true"
+                fresco:roundTopRight="true"
+                fresco:roundedCornerRadius="@dimen/dimen_8dp"
+                fresco:viewAspectRatio="0.5625" />
 
             <TextView
                 android:id="@+id/tv_video_live_title"
@@ -68,21 +83,22 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
+                android:layout_below="@+id/sport_video_countdown_view"
                 android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dimen_25dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
                     android:id="@+id/im_team_badge_one"
-                    android:layout_width="@dimen/dimen_60dp"
-                    android:layout_height="@dimen/dimen_60dp"
-                    android:layout_centerVertical="true" />
+                    android:layout_width="@dimen/dimen_45dp"
+                    android:layout_height="@dimen/dimen_50dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/dimen_20dp"
+                    android:layout_marginLeft="@dimen/dimen_28dp"
+                    android:layout_marginRight="@dimen/dimen_28dp"
                     android:gravity="center"
                     android:text="VS"
                     android:textColor="@color/white"
@@ -90,9 +106,8 @@
 
                 <com.cmcc.cmvideo.foundation.fresco.MGSimpleDraweeView
                     android:id="@+id/im_team_badge_two"
-                    android:layout_width="@dimen/dimen_60dp"
-                    android:layout_height="@dimen/dimen_60dp"
-                    android:layout_centerVertical="true" />
+                    android:layout_width="@dimen/dimen_45dp"
+                    android:layout_height="@dimen/dimen_50dp" />
             </LinearLayout>
 
         </RelativeLayout>
@@ -101,13 +116,15 @@
             android:id="@+id/tv_video_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/dimen_25dp"
-            android:layout_marginLeft="@dimen/dimen_10dp"
-            android:layout_marginRight="@dimen/dimen_10dp"
-            android:layout_marginTop="@dimen/dimen_10dp"
+            android:layout_marginBottom="@dimen/dimen_10dp"
+            android:layout_marginLeft="@dimen/dimen_25dp"
+            android:layout_marginRight="@dimen/dimen_25dp"
+            android:layout_marginTop="@dimen/dimen_8dp"
+            android:ellipsize="end"
             android:gravity="center_vertical"
+            android:maxLines="1"
             android:textColor="@color/sport_video_title"
-            android:textSize="@dimen/dimen_15dp" />
+            android:textSize="@dimen/dimen_13dp" />
 
     </LinearLayout>
 

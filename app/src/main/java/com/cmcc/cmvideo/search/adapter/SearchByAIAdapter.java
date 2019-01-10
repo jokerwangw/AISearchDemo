@@ -965,15 +965,16 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 && !searchByAIBean.getMatchList().get(0).matchEventInfo.isEmpty()
                 && null != searchByAIBean.getMatchList().get(0).matchEventInfo.get(0)) {
 
+            int width = 0;
+            int height = 0;
             ItemSearchByAIVideoOfSportsViewHolder itemSearchByAIVideoOfSportsViewHolder = (ItemSearchByAIVideoOfSportsViewHolder) holder;
             TppData.MatchBean.MatchListBean.MatchEventInfoBean matchEventInfoBean = searchByAIBean.getMatchList().get(0).matchEventInfo.get(0);
             if (null != itemSearchByAIVideoOfSportsViewHolder.imVideoBgOne && null != itemSearchByAIVideoOfSportsViewHolder.imVideoBgTwo) {
                 ViewGroup.LayoutParams params1 = itemSearchByAIVideoOfSportsViewHolder.imVideoBgOne.getLayoutParams();
                 ViewGroup.LayoutParams params2 = itemSearchByAIVideoOfSportsViewHolder.imVideoBgTwo.getLayoutParams();
-                int width, height;
 
-                width = DeviceUtil.fastGetScreenWidth() - 40;
-                height = (int) (width * 421.0 / 750.0);
+                width = DeviceUtil.fastGetScreenWidth() - DeviceUtil.dip2px(mContext, 20);
+                height = (int) (width * 9.0 / 16.0);
                 params1.width = width;
                 params1.height = height;
                 params2.width = width;
@@ -987,11 +988,12 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 //预约
                 itemSearchByAIVideoOfSportsViewHolder.rlContainerOne.setVisibility(View.GONE);
                 itemSearchByAIVideoOfSportsViewHolder.rlContainerTwo.setVisibility(View.VISIBLE);
-                //itemSearchByAIVideoOfSportsViewHolder.imVideoBgTwo.setImageURI(Uri.parse("res://" + mContext.getPackageName() + File.separator + R.mipmap.video));
+                itemSearchByAIVideoOfSportsViewHolder.imVideoBgTwo.setImageURI("https://m.miguvideo.com/mgs/share/match_share/prd/v_20190109200300_7b9ed76e/dist/assets/bg_def_video_hdpi.png", width, height);
                 itemSearchByAIVideoOfSportsViewHolder.imVideoBgTwo.setImageURI(matchEventInfoBean.highResolutionH);
                 itemSearchByAIVideoOfSportsViewHolder.tvVideoLiveTitle.setText(mContext.getString(R.string.aiui_video_live_title));
                 itemSearchByAIVideoOfSportsViewHolder.imTeamBadgeOne.setImageURI(matchEventInfoBean.confrontTeamOneimage);
                 itemSearchByAIVideoOfSportsViewHolder.imTeamBadgeTwo.setImageURI(matchEventInfoBean.confrontTeamTwoimage);
+                itemSearchByAIVideoOfSportsViewHolder.tvVideoTitle.setText(matchEventInfoBean.title + "           " + matchEventInfoBean.confrontTeamOnename + "vs" + matchEventInfoBean.confrontTeamTwoname);
                 //TODO 倒计时正在开发
                 //itemSearchByAIVideoOfSportsViewHolder.sportVideoCountdownView.setMatchBeginTime(Long.valueOf(matchEventInfoBean.duration));
             } else if (1 == matchEventInfoBean.competitionStatus || 0 == matchEventInfoBean.competitionStatus) {
@@ -999,9 +1001,10 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 //回看
                 itemSearchByAIVideoOfSportsViewHolder.rlContainerOne.setVisibility(View.VISIBLE);
                 itemSearchByAIVideoOfSportsViewHolder.rlContainerTwo.setVisibility(View.GONE);
-                itemSearchByAIVideoOfSportsViewHolder.imVideoBgOne.setImageURI(matchEventInfoBean.highResolutionH);
+                itemSearchByAIVideoOfSportsViewHolder.imVideoBgOne.setImageURI(matchEventInfoBean.highResolutionH, width, height);
+                itemSearchByAIVideoOfSportsViewHolder.tvVideoTitle.setText(matchEventInfoBean.title);
             }
-            itemSearchByAIVideoOfSportsViewHolder.tvVideoTitle.setText(matchEventInfoBean.title);
+
         }
     }
 
