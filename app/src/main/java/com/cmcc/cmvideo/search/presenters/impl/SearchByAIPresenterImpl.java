@@ -306,7 +306,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         }
 
         //语义后处理没有返回数据则直接退出
-        if (!hasVideoData(nlpData) || !"0000000".equals(nlpData.data.lxresult.code)) {
+        if (!hasVideoData(nlpData) || !"0000000".equals(nlpData.data.lxresult.code) || !isSportsMatches(nlpData)) {
             //没有影片数据且存在answer 则播报  随机播报一条反馈语言
             AiResponse.Response response = AiResponse.getInstance().getNetWorkStatus();
             aiuiService.tts(response.response);
@@ -1186,6 +1186,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         }
         return false;
     }
+
 
     /**
      * 根据type获取日期

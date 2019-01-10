@@ -33,7 +33,7 @@ import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_NORMA
 
 public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
     private long startTime = 0;
-    private final int TIME_OUT = 5000;
+    private final int TIME_OUT = 8000;
     private int mCurrentState = AIUIConstant.STATE_IDLE;
     private boolean isAvailableVideo = false;
     //最后一次语义的状态
