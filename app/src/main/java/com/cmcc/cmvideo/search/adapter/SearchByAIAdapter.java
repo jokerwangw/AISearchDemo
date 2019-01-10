@@ -993,7 +993,8 @@ public class SearchByAIAdapter extends BaseRecyclerAdapter<SearchByAIBean> {
                 itemSearchByAIVideoOfSportsViewHolder.tvVideoLiveTitle.setText(mContext.getString(R.string.aiui_video_live_title));
                 itemSearchByAIVideoOfSportsViewHolder.imTeamBadgeOne.setImageURI(matchEventInfoBean.confrontTeamOneimage);
                 itemSearchByAIVideoOfSportsViewHolder.imTeamBadgeTwo.setImageURI(matchEventInfoBean.confrontTeamTwoimage);
-                itemSearchByAIVideoOfSportsViewHolder.tvVideoTitle.setText(matchEventInfoBean.title + "           " + matchEventInfoBean.confrontTeamOnename + "vs" + matchEventInfoBean.confrontTeamTwoname);
+                String title = matchEventInfoBean.title + "           " + matchEventInfoBean.confrontTeamOnename + "vs" + matchEventInfoBean.confrontTeamTwoname;
+                itemSearchByAIVideoOfSportsViewHolder.tvVideoTitle.setText(title);
                 //TODO 倒计时正在开发
                 //itemSearchByAIVideoOfSportsViewHolder.sportVideoCountdownView.setMatchBeginTime(Long.valueOf(matchEventInfoBean.duration));
             } else if (1 == matchEventInfoBean.competitionStatus || 0 == matchEventInfoBean.competitionStatus) {
