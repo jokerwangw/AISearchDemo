@@ -72,6 +72,10 @@ public class AiuiConstants {
     //天气查询技能
     public final static String QUERY_WEATHER_SERVICE = "weather";
 
+    // 2019/4/12  新增技能 不良语料
+    public final static String LINGXI_BAD_WORDS = "LINGXI2018.badWords";
+    public final static String LINGXI_SENSITIVE = "LINGXI2018.sensitiveWord";
+
 
     //世界杯意图名
     public final static String WORLD_CUP_QUERY_OPEN = "QUERY_OPEN";

@@ -201,9 +201,26 @@ public class AIUISemanticProcessor implements AIUIService.AIUIEventListener {
             case AiuiConstants.JOKE_SERVICE:
                 intentJokeQuery(mData);
                 break;
+            case AiuiConstants.LINGXI_BAD_WORDS:
+                intentBadWords(mData);
+                break;
+            case AiuiConstants.LINGXI_SENSITIVE:
+                intentBadWords(mData);
+                break;
 
             default:
                 break;
+        }
+    }
+
+    /**
+     * 敏感词汇 不良语料
+     * @param nlpData
+     */
+    private void intentBadWords(NlpData nlpData) {
+        if ((nlpData.answer != null && !TextUtils.isEmpty(nlpData.answer.text))) {
+            aiuiService.tts(nlpData.getAnswer().text);
+            sendMessage(nlpData.getAnswer().text, MESSAGE_TYPE_NORMAL, MESSAGE_FROM_AI);
         }
     }
 
