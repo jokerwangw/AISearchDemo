@@ -66,6 +66,10 @@ public class AIUIService extends Service {
     private String lastNlp;
     private String lastLoadMoreNlp;
 
+    private static final String BROADCAST_PERMISSION_DISC = "com.cmcc.cmvideo.search.aiui.permissions.MY_BROADCAST";
+    private static final String BROADCAST_ACTION_DISC = "com.cmcc.cmvideo.search.aiui.permissions.my_broadcast";
+
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -88,9 +92,9 @@ public class AIUIService extends Service {
             mAIUIAgent.destroy();
         }
         SpeechUtility.getUtility().destroy();
-        if (null != mReceiver) {
-            unregisterReceiver(mReceiver);
-        }
+//        if (null != mReceiver) {
+//            unregisterReceiver(mReceiver);
+//        }
         super.onDestroy();
     }
 
@@ -104,7 +108,7 @@ public class AIUIService extends Service {
         //MSC初始化（登陆）
         SpeechUtility.createUtility(this, "appid=5aceb703");
 
-        sendBroadcast();
+//        sendBroadcast();
         setUserDataParam("", "", "", "1");
         Logger.debug(">>>>>>>>>>>onCreate>>>>>>>");
     }
@@ -113,9 +117,9 @@ public class AIUIService extends Service {
      * 发送检测耳机状态广播
      */
     private void sendBroadcast() {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
-        registerReceiver(mReceiver, intentFilter);
+//        IntentFilter intentFilter = new IntentFilter();
+//        intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
+//        registerReceiver(mReceiver, intentFilter,BROADCAST_PERMISSION_DISC,null);
     }
 
     private void ivwMode() {
@@ -251,6 +255,7 @@ public class AIUIService extends Service {
 
         @Override
         public void getLookMorePage(final String lookMoreText, final int pageIndex, final int pageSize, boolean isLookMoreData, String lastNlp) {
+            Log.d(TAG, "查看更多传给后台的数据lastNlp:" + lastNlp);
             if (!TextUtils.isEmpty(lastNlp)) {
                 JSONObject jsonObject = null;
                 try {
@@ -263,9 +268,12 @@ public class AIUIService extends Service {
                 }
                 lastLoadMoreNlp = jsonObject == null ? "" : jsonObject.toString();
             }
+
+            Log.d(TAG, "查看更多传给后台的数据lastLoadMoreNlp:" + lastLoadMoreNlp);
             setUserDataParam(pageSize + "", pageIndex + "", "", isLookMoreData ? "" : "3", lastLoadMoreNlp);
             String params = "data_type=text";
             byte[] textData = lookMoreText.getBytes();
+            Log.d(TAG, "查看更多传给后台的数据textData:" + textData);
             AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, params, textData);
             mAIUIAgent.sendMessage(msg);
         }
@@ -591,10 +599,11 @@ public class AIUIService extends Service {
     public void clearSpeakableData() {
         try {
             JSONObject data = new JSONObject();
-            JSONObject state = new JSONObject();
-            state.put("activeStatus", "fg");
-            state.put("sceneStatus", "default");
-            data.put("video::default", state);
+            //解决 单说演员名会返回结果 的问题  不要上传video::default  : {"activeStatus":"fg","sceneStatus":"default"}
+//            JSONObject state = new JSONObject();
+//            state.put("activeStatus", "fg");
+//            state.put("sceneStatus", "default");
+//            data.put("video::default", state);
             JSONObject viewCmd = new JSONObject();
             viewCmd.put("activeStatus", "bg");
             viewCmd.put("sceneStatus", "default");
@@ -788,35 +797,35 @@ public class AIUIService extends Service {
     /**
      * 检测耳机是否插入
      */
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
-                if (intent.hasExtra("state")) {
-                    if (intent.getIntExtra("state", 0) == 0) {
-                        semanticProcessor.setIsMicConnect(false);
-                        navigation.isHeadset(false);
-                        EventBus.getDefault().post(new MicBean(false));
-                        //切换为外放模式
-                        //PlayerManager.getInstance().changeToReceiver();
-                        if (isIvwModel) {
-                            standardMode();
-                        }
-                    } else if (intent.getIntExtra("state", 0) == 1) {
-                        navigation.isHeadset(true);
-                        semanticProcessor.setIsMicConnect(true);
-                        EventBus.getDefault().post(new MicBean(true));
-                        //切换为耳机模式
-                        //PlayerManager.getInstance().changeToHeadset();
-                        if (!isIvwModel) {
-                            ivwMode();
-                        }
-                    }
-                }
-            }
-        }
-    };
+//    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            String action = intent.getAction();
+//            if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
+//                if (intent.hasExtra("state")) {
+//                    if (intent.getIntExtra("state", 0) == 0) {
+//                        semanticProcessor.setIsMicConnect(false);
+//                        navigation.isHeadset(false);
+//                        EventBus.getDefault().post(new MicBean(false));
+//                        //切换为外放模式
+//                        //PlayerManager.getInstance().changeToReceiver();
+//                        if (isIvwModel) {
+//                            standardMode();
+//                        }
+//                    } else if (intent.getIntExtra("state", 0) == 1) {
+//                        navigation.isHeadset(true);
+//                        semanticProcessor.setIsMicConnect(true);
+//                        EventBus.getDefault().post(new MicBean(true));
+//                        //切换为耳机模式
+//                        //PlayerManager.getInstance().changeToHeadset();
+//                        if (!isIvwModel) {
+//                            ivwMode();
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    };
 
     /**
      * 设置用户参数
