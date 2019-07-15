@@ -56,8 +56,6 @@ import java.util.regex.Pattern;
 
 import static com.cmcc.cmvideo.util.AiuiConstants.IMG_BASE_URL;
 import static com.cmcc.cmvideo.util.AiuiConstants.MessageFrom.MESSAGE_FROM_AI;
-import static com.cmcc.cmvideo.util.AiuiConstants.MessageFrom.MESSAGE_FROM_USER;
-import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_CAN_ASK_AI;
 import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_EVERYONE_IS_WATCHING;
 import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE;
 import static com.cmcc.cmvideo.util.AiuiConstants.MessageType.MESSAGE_TYPE_GUESS_WHAT_YOU_LIKE_LIST_HORIZONTAL;
@@ -731,6 +729,7 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
 //                    对names去重
 //                    Arrays.sort(names);
                     List<String> namesList = new ArrayList<>();
+                    Logger.debug("names=" + names[0]);
                     namesList.add(names[0]);
                     for (int i = 1; i < names.length; i++) {
                         if (!names[i].equals(namesList.get(namesList.size() - 1))) {
@@ -738,16 +737,30 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
                         }
                     }
 
-                    for (String name : namesList) {
-                        for (TppData.DetailsListBean bean : lastVideoSearchByAIBean.getVideoList()) {
-                            Logger.debug("name【" + name + "】beanName【" + bean.name + "】");
-                            if (name.equals(bean.name)) {
-                                // 找到多个匹配结果
-                                selectedVideoList.add(bean);
+
+//                    for (String name : namesList) {
+//                        for (TppData.DetailsListBean bean : lastVideoSearchByAIBean.getVideoList()) {
+//                            Logger.debug("name【" + names[0] + "】beanName【" + bean.name + "】");
+//                            if (names[0].equals(bean.name)) {
+//                                // 找到多个匹配结果
+//                                selectedVideoList.add(bean);
+//                            }
+//                        }
+//
+//                    }
+
+
+                    for (TppData.DetailsListBean bean : lastVideoSearchByAIBean.getVideoList()) {
+                        Logger.debug("nlpData.text【" + nlpData.text + "】beanName【" + bean.name + "】");
+                        if (bean.name.contains(nlpData.text)){
+                            // 找到多个匹配结果
+                            selectedVideoList.add(bean);
+                            if (selectedVideoList.size() == 1){
+                                break;
                             }
                         }
-
                     }
+
 
                     if (selectedVideoList.size() == 0) {
                         return;
