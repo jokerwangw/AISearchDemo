@@ -463,10 +463,15 @@ public class SearchByAIPresenterImpl extends AbstractPresenter implements Search
         if (map == null) {
             return cardTitle.toString();
         }
+        //单说演员名搜索视频数据时  卡片title处理
+        if (map.size() ==1 && map.containsKey(AiuiConstants.VIDEO_ARTIST)){
+            cardTitle.append("“").append(map.get(AiuiConstants.VIDEO_ARTIST).replace("|", "、")).append("”").append("的作品");
+        }
+
         if (map.containsKey(AiuiConstants.VIDEO_NAME)) {
             return map.get(AiuiConstants.VIDEO_NAME);
         }
-        if (map.containsKey(AiuiConstants.VIDEO_ARTIST)) {
+        if (map.containsKey(AiuiConstants.VIDEO_ARTIST) && map.size() >1) {
             cardTitle.append("“").append(map.get(AiuiConstants.VIDEO_ARTIST).replace("|", "、")).append("”").append("的");
         }
         if (map.containsKey(AiuiConstants.VIDEO_POPULAR)) {
